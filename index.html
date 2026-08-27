@@ -1,0 +1,1227 @@
+<title>Macro Soundings</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,400;6..96,600;6..96,700&family=Barlow+Condensed:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+
+<style>
+:root{
+  --paper:#F4EFE3; --panel:#FCFAF3; --ink:#12242F; --ink-soft:#4F6673;
+  --rule:#C4B99F; --rule-soft:#DCD2BB;
+  --sky:#D6E9F0; --sea:#8FC2D8; --sea-deep:#5D9BBA; --land:#E3CE99; --rock:#C7B183;
+  --verd:#2F7D6C; --amber:#C8841A; --rust:#B24326; --stamp:#B24326;
+  --navy:#1B3E6B;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#081722; --panel:#102431; --ink:#EFE6CC; --ink-soft:#8FA8B5;
+    --rule:#2B4759; --rule-soft:#1B3546;
+    --sky:#0C2233; --sea:#0F3247; --sea-deep:#092536; --land:#223B48; --rock:#2C4B5B;
+    --verd:#63B8A3; --amber:#E5AC45; --rust:#D96C48; --stamp:#D96C48;
+    --navy:#2E5688;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#081722; --panel:#102431; --ink:#EFE6CC; --ink-soft:#8FA8B5;
+  --rule:#2B4759; --rule-soft:#1B3546;
+  --sky:#0C2233; --sea:#0F3247; --sea-deep:#092536; --land:#223B48; --rock:#2C4B5B;
+  --verd:#63B8A3; --amber:#E5AC45; --rust:#D96C48; --stamp:#D96C48;
+  --navy:#2E5688;
+}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0; background:var(--paper); color:var(--ink); overflow:hidden;
+  font-family:"Barlow Condensed","Helvetica Neue",Arial,sans-serif; font-size:17px; line-height:1.5; -webkit-font-smoothing:antialiased}
+
+/* ---------- the world ---------- */
+.world{position:fixed; inset:0; background:var(--paper); overflow:hidden}
+.scene{position:absolute; inset:0; transition:transform .55s cubic-bezier(.5,0,.75,0), opacity .4s ease .3s}
+.scene.zooming{transform:scale(2.1); opacity:0}
+svg.chart{display:block; width:100%; height:100%}
+
+.obj{cursor:pointer; transition:opacity .25s ease}
+.obj:focus{outline:none}
+.obj:focus-visible .focusring, .obj.hot .focusring{opacity:1}
+.focusring{opacity:0; transition:opacity .2s ease}
+.scene.engaged .obj:not(.hot):not(.linked){opacity:.3}
+.linked .linkmark{opacity:1}
+.linkmark{opacity:0; transition:opacity .25s ease}
+.lbl{font-family:"Barlow Condensed",sans-serif; font-size:15px; font-weight:600; letter-spacing:.13em; text-transform:uppercase; fill:var(--ink-soft); pointer-events:none; user-select:none}
+.num{font-family:"IBM Plex Mono",monospace; font-size:14px; font-weight:500; fill:var(--ink); pointer-events:none; user-select:none}
+.sounding{font-family:"IBM Plex Mono",monospace; font-size:11px; fill:var(--sea-deep); opacity:.75; pointer-events:none}
+.annot{font-family:"IBM Plex Mono",monospace; font-size:12px; fill:var(--verd); pointer-events:none}
+
+/* ---------- discreet corner mark (replaces the masthead) ---------- */
+.mark{position:absolute; top:20px; left:24px; z-index:4; font-family:"IBM Plex Mono",monospace;
+  font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:var(--ink-soft); pointer-events:none; line-height:1.9}
+.mark b{font-weight:600; color:var(--ink)}
+.mark s{display:block; text-decoration:none; color:var(--stamp)}
+.mark i{display:block; font-style:normal; color:var(--ink-soft)}
+.mark i em{font-style:normal; color:var(--verd); font-weight:600}
+
+/* ---------- callout ---------- */
+.callout{position:absolute; z-index:5; width:290px; pointer-events:none; background:var(--panel); border:1px solid var(--ink); padding:13px 15px 14px; opacity:0; transform:translateY(4px); transition:opacity .18s ease, transform .18s ease; box-shadow:3px 3px 0 var(--rule-soft)}
+.callout.show{opacity:1; transform:translateY(0)}
+.callout .eyebrow{font-size:11px; letter-spacing:.18em; text-transform:uppercase; color:var(--ink-soft); font-family:"IBM Plex Mono",monospace; font-weight:500}
+.callout .big{font-family:"IBM Plex Mono",monospace; font-size:27px; font-weight:600; margin:5px 0 2px; font-variant-numeric:tabular-nums; letter-spacing:-.02em}
+.callout .chg{font-family:"IBM Plex Mono",monospace; font-size:12.5px; font-weight:500}
+.callout p{margin:9px 0 0; font-size:15px; line-height:1.45; color:var(--ink-soft)}
+.callout .tie{margin-top:10px; padding-top:9px; border-top:1px solid var(--rule-soft); font-size:13px; letter-spacing:.05em; text-transform:uppercase; color:var(--verd); font-weight:600}
+.callout ul{margin:8px 0 0; padding:0; list-style:none}
+.callout li{display:flex; gap:10px; font-size:14px; padding:4px 0; border-bottom:1px solid var(--rule-soft)}
+.callout li:last-child{border-bottom:0}
+.callout li span{font-family:"IBM Plex Mono",monospace; font-size:11.5px; color:var(--ink-soft); flex:0 0 92px}
+.up{color:var(--rust)} .down{color:var(--verd)}
+
+/* ---------- the one control ---------- */
+.lens{position:absolute; top:18px; right:18px; z-index:8; width:46px; height:46px; border:1.5px solid var(--ink); background:var(--panel); color:var(--ink); cursor:pointer; display:grid; place-items:center; padding:0; transition:background .18s ease, color .18s ease, transform .18s ease}
+.lens:hover{transform:scale(1.06)}
+.lens[aria-expanded="true"]{background:var(--ink); color:var(--panel)}
+.lens:focus-visible{outline:2px solid var(--verd); outline-offset:3px}
+.lens svg{width:22px; height:22px; fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round}
+
+/* ---------- the charts, behind the glass ---------- */
+.panel{position:absolute; left:0; right:0; bottom:0; z-index:7; max-height:64vh; overflow-y:auto;
+  background:var(--panel); border-top:2px solid var(--ink); box-shadow:0 -8px 30px rgba(0,0,0,.14);
+  transform:translateY(101%); transition:transform .42s cubic-bezier(.2,.8,.3,1)}
+.panel.open{transform:translateY(0)}
+.panel-in{padding:20px 26px 26px}
+.panel-head{display:flex; flex-wrap:wrap; align-items:baseline; justify-content:space-between; gap:16px; padding-bottom:12px; border-bottom:1px solid var(--rule)}
+.panel-title{font-family:"Bodoni Moda",Georgia,serif; font-size:26px; font-weight:700; letter-spacing:-.01em}
+.panel-sub{font-family:"IBM Plex Mono",monospace; font-size:10.5px; letter-spacing:.17em; text-transform:uppercase; color:var(--ink-soft)}
+.panel-close{font-family:"Barlow Condensed",sans-serif; font-size:14px; font-weight:600; letter-spacing:.15em; text-transform:uppercase;
+  background:transparent; border:1.5px solid var(--ink); color:var(--ink); padding:6px 16px; cursor:pointer; transition:background .2s ease, color .2s ease}
+.panel-close:hover{background:var(--ink); color:var(--panel)}
+.panel-close:focus-visible{outline:2px solid var(--verd); outline-offset:2px}
+
+.readout{display:grid; grid-template-columns:repeat(auto-fit,minmax(148px,1fr)); gap:1px; margin-top:16px; background:var(--rule-soft); border:1px solid var(--rule-soft)}
+.cell{background:var(--panel); padding:12px 14px 13px}
+.cell .k{font-family:"IBM Plex Mono",monospace; font-size:10px; font-weight:500; letter-spacing:.15em; text-transform:uppercase; color:var(--ink-soft)}
+.cell .v{font-family:"IBM Plex Mono",monospace; font-size:22px; font-weight:600; margin-top:4px; font-variant-numeric:tabular-nums; letter-spacing:-.02em}
+.cell .d{font-family:"IBM Plex Mono",monospace; font-size:11.5px; margin-top:3px}
+
+.controls{display:flex; flex-wrap:wrap; align-items:center; gap:16px; margin-top:18px}
+.toggle{display:flex; border:1.5px solid var(--ink); flex:0 0 auto}
+.toggle button{font-family:"Barlow Condensed",sans-serif; font-size:14px; font-weight:600; letter-spacing:.15em; text-transform:uppercase; background:transparent; color:var(--ink); border:0; padding:8px 18px; cursor:pointer; transition:background .2s ease, color .2s ease}
+.toggle button + button{border-left:1.5px solid var(--ink)}
+.toggle button[aria-pressed="true"]{background:var(--ink); color:var(--panel)}
+.toggle button:focus-visible{outline:2px solid var(--verd); outline-offset:2px}
+.toggle-note{font-size:15px; color:var(--ink-soft); flex:1 1 280px; min-width:0}
+
+.panel-notes{display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:24px; margin-top:22px; padding-top:18px; border-top:1px solid var(--rule)}
+.panel-notes h3{font-family:"IBM Plex Mono",monospace; font-size:10px; font-weight:600; letter-spacing:.19em; text-transform:uppercase; color:var(--ink-soft); margin:0 0 7px}
+.panel-notes p{margin:0; font-size:15px; line-height:1.5}
+.panel-notes code{font-family:"IBM Plex Mono",monospace; font-size:12px}
+
+/* ================= LAUNCH + SPACE ================= */
+.launch{position:fixed; inset:0; z-index:70; background:#03080F; opacity:0; pointer-events:none; transition:opacity .35s ease; overflow:hidden}
+.launch.show{opacity:1; pointer-events:auto}
+.launch-sky{position:absolute; inset:0; background:linear-gradient(180deg,#7FB3CC 0%,#AFD0DC 45%,#E2D8C1 100%); opacity:1; transition:opacity 1.9s ease}
+.launch.lift .launch-sky{opacity:0}
+.launch-stars{position:absolute; inset:0; opacity:0; transition:opacity 1.6s ease .7s}
+.launch.lift .launch-stars{opacity:1}
+.star{position:absolute; background:#EDE6D2; border-radius:50%}
+.lrocket{position:absolute; left:50%; bottom:-140px; width:96px; margin-left:-48px; opacity:0}
+.launch.lift .lrocket{animation:ascend 2.3s cubic-bezier(.42,0,.9,.6) forwards}
+@keyframes ascend{
+  0%{opacity:1; transform:translateY(0) scale(.85)}
+  8%{transform:translateY(-14px) scale(.86) rotate(-.8deg)}
+  16%{transform:translateY(-40px) scale(.88) rotate(.8deg)}
+  70%{opacity:1}
+  100%{opacity:0; transform:translateY(-125vh) scale(1.25)}
+}
+.lrocket svg{display:block; width:100%; height:auto}
+.plume{position:absolute; left:50%; top:100%; width:44px; margin-left:-22px; height:150px; border-radius:0 0 50% 50%;
+  background:linear-gradient(180deg,#F0C36B 0%,#D9843A 35%,rgba(169,69,38,0) 100%); filter:blur(3px); transform-origin:top center; opacity:0}
+.launch.lift .plume{animation:burn 2.3s ease-out forwards}
+@keyframes burn{0%{opacity:0; transform:scaleY(.2)} 12%{opacity:1; transform:scaleY(1.1)} 60%{opacity:.9; transform:scaleY(.8)} 100%{opacity:0; transform:scaleY(.3)}}
+.space-stage{position:absolute; inset:0; display:grid; place-items:center; text-align:center; padding:28px; overflow-y:auto; opacity:0; transition:opacity .8s ease}
+.launch.arrived .space-stage{opacity:1}
+.space-inner{max-width:780px}
+.earth{width:clamp(190px,32vmin,290px); height:clamp(190px,32vmin,290px); border-radius:50%; margin:0 auto 38px; position:relative; overflow:hidden;
+  box-shadow:0 0 46px rgba(96,164,214,.30), 0 0 110px rgba(96,164,214,.14), inset -22px -14px 54px rgba(0,0,0,.72), inset 10px 8px 30px rgba(190,225,245,.20);
+  transform:scale(.55); transition:transform 1.1s cubic-bezier(.2,.8,.3,1)}
+.launch.arrived .earth{transform:scale(1)}
+.earth-layer{position:absolute; top:0; left:0; width:200%; height:100%}
+.earth-layer svg{display:block; width:100%; height:100%}
+.launch.arrived .earth-map{animation:spin 42s linear infinite}
+.launch.arrived .earth-clouds{animation:spin 31s linear infinite}
+@keyframes spin{from{transform:translateX(0)} to{transform:translateX(-50%)}}
+.earth-clouds{opacity:.24}
+.earth-poles{position:absolute; inset:0; width:100%; height:100%}
+.earth-shade{position:absolute; inset:0; border-radius:50%; background:radial-gradient(circle at 32% 28%, rgba(255,255,255,.20) 0%, rgba(255,255,255,0) 42%, rgba(0,0,0,.30) 70%, rgba(0,0,0,.80) 100%)}
+.thesis-lbl{font-family:"IBM Plex Mono",monospace; font-size:11px; letter-spacing:.24em; text-transform:uppercase; color:#5FAA99; margin-bottom:18px}
+.thesis{font-family:"Bodoni Moda",Georgia,serif; font-size:clamp(17px,2.1vw,25px); line-height:1.44; color:#EDE6D2; margin:0 auto; text-wrap:pretty; max-width:44ch}
+.space-figs{display:flex; flex-wrap:wrap; gap:8px 28px; justify-content:center; margin-top:32px; font-family:"IBM Plex Mono",monospace; font-size:12.5px; color:rgba(237,230,210,.6); letter-spacing:.06em}
+.space-close{position:absolute; top:24px; right:24px; z-index:3; background:transparent; border:1.5px solid rgba(237,230,210,.4); color:#EDE6D2; font-family:"Barlow Condensed",sans-serif; font-size:14px; letter-spacing:.16em; text-transform:uppercase; padding:9px 17px; cursor:pointer; opacity:0; transition:opacity .6s ease}
+.launch.arrived .space-close{opacity:1}
+.space-close:hover{border-color:#EDE6D2}
+
+@media (max-height:600px){
+  .earth{width:clamp(120px,19vmin,170px); height:clamp(120px,19vmin,170px); margin-bottom:20px}
+  .thesis{font-size:clamp(14px,1.7vw,18px)}
+  .space-figs{margin-top:18px; gap:6px 20px; font-size:11.5px}
+  .thesis-lbl{margin-bottom:12px}
+}
+@media (prefers-reduced-motion: reduce){
+  *{transition-duration:.01ms !important; animation-duration:.01ms !important}
+  .scene.zooming{transform:none}
+}
+</style>
+
+<div class="world">
+  <div class="scene" id="scene">
+    <svg class="chart" id="svg" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" role="img" aria-label="An illustrated nautical chart of the United States economy filling the screen: a mountain range is the Treasury yield curve, an island derrick and a tanker are the two oil benchmarks, a shoreline town is the inflation basket, a headland flying the American flag carries the Federal Reserve, cloud cover is the credit spread, a distant lighthouse marks upcoming events, an island datacentre is AI capital spending, and a rocket on the shore launches to the overall read."></svg>
+    <div class="callout" id="callout" aria-live="polite"></div>
+  </div>
+
+  <div class="mark"><b>Macro Soundings</b> · <span id="mark-date"></span><s>Sample data — not for navigation</s><i id="session"></i></div>
+
+  <div class="panel" id="panel">
+    <div class="panel-in">
+      <div class="panel-head">
+        <div class="panel-title">The figures</div>
+        <div class="panel-sub" id="panel-sub"></div>
+        <button class="panel-close" id="panel-close">Close</button>
+      </div>
+      <div class="readout" id="readout"></div>
+      <div class="controls">
+        <div class="toggle" role="group" aria-label="Inflation measure">
+          <button id="btn-cpi" aria-pressed="true">CPI</button>
+          <button id="btn-pce" aria-pressed="false">PCE</button>
+        </div>
+        <div class="toggle-note" id="toggle-note"></div>
+      </div>
+      <div class="panel-notes">
+        <div><h3>How to read it</h3><p>Every shape is sized by a number. Peak heights are yields, the gap between the derrick and the tanker is the oil spread, the vessel&rsquo;s draft is debt to GDP, and building widths are basket weights with heights as the year-over-year change.</p></div>
+        <div><h3>The connections</h3><p>Hover anything and the objects it drives stay lit while the rest dims — credit to the 10-year, oil to the fuel depot, fares to the transport shed, the funds rate to the short end, debt to the long bond.</p></div>
+        <div><h3>Status</h3><p>Sample figures, realistic magnitudes. To be fed by <code>DGS2 · DGS10 · DGS30 · BAMLH0A0HYM2 · DCOILWTICO · DCOILBRENTEU · DFF · CPIAUCSL · PCEPI · GFDEGDQ188S · T10YIE</code>, rebuilt daily.</p></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="launch" id="launch" aria-hidden="true">
+  <div class="launch-sky"></div>
+  <div class="launch-stars" id="launch-stars"></div>
+  <div class="lrocket" id="lrocket">
+    <svg viewBox="0 0 96 190" aria-hidden="true">
+      <path d="M48,4 q24,38 24,86 q0,32 -10,52 h-28 q-10,-20 -10,-52 q0,-48 24,-86 Z" fill="#FBF8F0" stroke="#152736" stroke-width="3" stroke-linejoin="round"/>
+      <circle cx="48" cy="74" r="12" fill="#3F7F72" stroke="#152736" stroke-width="3"/>
+      <path d="M24,120 q-18,26 -16,50 q14,-10 24,-14 Z" fill="#A94526" stroke="#152736" stroke-width="3" stroke-linejoin="round"/>
+      <path d="M72,120 q18,26 16,50 q-14,-10 -24,-14 Z" fill="#A94526" stroke="#152736" stroke-width="3" stroke-linejoin="round"/>
+      <rect x="34" y="158" width="28" height="16" rx="3" fill="#152736"/>
+    </svg>
+    <div class="plume"></div>
+  </div>
+  <button class="space-close" id="space-close">Return to surface</button>
+  <div class="space-stage">
+    <div class="space-inner">
+      <div class="earth">
+        <div class="earth-layer earth-map" id="earth-map"></div>
+        <div class="earth-layer earth-clouds" id="earth-clouds"></div>
+        <svg class="earth-poles" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+          <ellipse cx="50" cy="-1" rx="42" ry="11" fill="#E8F1F5" opacity=".9"/>
+          <ellipse cx="50" cy="101" rx="46" ry="12" fill="#E8F1F5" opacity=".9"/>
+        </svg>
+        <div class="earth-shade"></div>
+      </div>
+      <div class="thesis-lbl">The read, <span id="space-date"></span></div>
+      <p class="thesis" id="thesis"></p>
+      <div class="space-figs" id="space-figs"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+/* ============================================================
+   DATA — illustrative. Exact shape the FRED build script emits.
+   `summary` is hand-written (or generated) each day.
+   ============================================================ */
+/* === DATA:START - generated by scripts/fetch_data.py. Do not edit by hand; ===
+   === edit manual.json for the read, the watch list and AI capex.        === */
+var DATA = {
+  "asOf": "2026-08-26",
+  "summary": "Although 10-year yields are increasing, credit spreads are tightening. Meaning the market isn't risky — companies can pay back their debt. It's the actual Treasury yield making rates seem high. Inflation is still 3.5%, debt is at its highest, and AI capex is strong. Will the Fed hike? Fisher says real = nominal − inflation, and real is sitting around zero.",
+  "curve": [
+    {
+      "key": "3M",
+      "label": "3-month bill",
+      "yield": 3.85
+    },
+    {
+      "key": "2Y",
+      "label": "2-year note",
+      "yield": 4.19
+    },
+    {
+      "key": "10Y",
+      "label": "10-year note",
+      "yield": 4.66,
+      "chg": 0.02
+    },
+    {
+      "key": "30Y",
+      "label": "30-year bond",
+      "yield": 5.18
+    }
+  ],
+  "oil": {
+    "wti": {
+      "price": 83.9,
+      "chg": -2.44
+    },
+    "brent": {
+      "price": 88.24,
+      "chg": -4.47
+    }
+  },
+  "fed": {
+    "lower": 3.5,
+    "upper": 3.75,
+    "lastMove": -0.25,
+    "lastDate": "29 Jul 2026",
+    "nextDate": "16 Sep 2026"
+  },
+  "credit": {
+    "oas": 267,
+    "chg": -6
+  },
+  "breakeven": 2.33,
+  "realTips": 2.34,
+  "debt": {
+    "gdp": 122.6,
+    "chg": 2.0
+  },
+  "airfare": {
+    "yoy": 25.5,
+    "chg": -1.0
+  },
+  "inflation": {
+    "cpi": 3.3,
+    "pce": 3.7
+  },
+  "ai": {
+    "capex": 648,
+    "yoy": 38.4
+  },
+  "watch": [
+    {
+      "when": "10 Sep",
+      "what": "August CPI"
+    },
+    {
+      "when": "16 Sep",
+      "what": "FOMC — hike or hold"
+    },
+    {
+      "when": "26 Sep",
+      "what": "August PCE"
+    },
+    {
+      "when": "2 Oct",
+      "what": "Payrolls"
+    }
+  ],
+  "components": [
+    {
+      "key": "shelter",
+      "name": "Shelter",
+      "cpi": 34.9,
+      "pce": 15.4,
+      "yoy": 3.2,
+      "kind": "houses"
+    },
+    {
+      "key": "food",
+      "name": "Food",
+      "cpi": 13.6,
+      "pce": 7.6,
+      "yoy": 2.9,
+      "kind": "market"
+    },
+    {
+      "key": "medical",
+      "name": "Medical care",
+      "cpi": 8.1,
+      "pce": 17.2,
+      "yoy": 1.7,
+      "kind": "hospital"
+    },
+    {
+      "key": "transport",
+      "name": "Transportation",
+      "cpi": 16.4,
+      "pce": 9.0,
+      "yoy": 5.6,
+      "kind": "transit"
+    },
+    {
+      "key": "energy",
+      "name": "Energy",
+      "cpi": 6.6,
+      "pce": 3.8,
+      "yoy": 14.4,
+      "kind": "fuel"
+    },
+    {
+      "key": "other",
+      "name": "Other goods & services",
+      "cpi": 20.4,
+      "pce": 47.0,
+      "yoy": -1.0,
+      "kind": "shops"
+    }
+  ]
+};
+/* === DATA:END === */
+
+/* ============================================================
+   COPY — every sentence in the world lives here. Edit freely;
+   nothing below reads text from anywhere else.
+   Tokens available: {{v}} value, {{n}} a second number.
+   ============================================================ */
+var COPY = {
+  "10Y": "Peaking, and not for one reason. Geopolitical tension pushes oil up, transportation costs follow, and inflation expectations reprice. Add the Fed decision on top of that and you get this.",
+  "2Y":  "Sitting above the funds rate, which means the market is pricing hikes, not cuts. This is the one to watch into the meeting.",
+  "30Y": "Inflation expectations, plus how much paper the Treasury has to sell. With debt where it is, that second part is doing more work than it used to.",
+  "3M":  "Effectively today's policy rate, priced in the bill market.",
+  credit:"Tightening, not widening. Meaning the market isn't pricing risk — companies can service their debt. So when rates look high, that's the Treasury yield doing it, not credit stress.",
+  fed:   "Cut 25bp in July. Now inflation is 3.5% and the 2-year is trading above the funds rate. Will they hike? Interesting to see.",
+  wti:   "Landlocked at Cushing — no water access, so it prices under the seaborne grade. Up with everything else.",
+  brent: "Seaborne, so it moves first when shipping routes are threatened. That is why the gap to WTI is wide right now.",
+  airfare:"Jet fuel feeds straight into this. Oil up, fares up, and it lands in the transportation line of the basket.",
+  ai:    "Nvidia earnings were strong and the spend keeps climbing. Big enough to move GDP on its own, and the one line here that isn't answering to rates.",
+  debt:  "Highest it has been. Rates this high on a balance sheet this size is the part that compounds.",
+  fisher:"Real = nominal − inflation. The waterline is inflation, the float is whatever is left over. Policy is sitting a quarter point above it, which is barely restrictive at all. The market's real 10-year is a different story — the long end is doing more work than the Fed is.",
+  watch: "What could move this next.",
+  rocket:"Launch for the read.",
+  satellite:"Every figure on one screen — the readings behind the picture.",
+  comp:  "Width is the weight in the index, height is the year-over-year."
+};
+
+function yieldOf(k){ for(var i=0;i<DATA.curve.length;i++) if(DATA.curve[i].key===k) return DATA.curve[i].yield; return 0; }
+function headline(m){ var t=0,w=0; DATA.components.forEach(function(c){ t+=c[m]*c.yoy; w+=c[m]; }); return t/w; }
+// Published CPI is the number; the CPI-weighted basket reconciles to it by construction.
+// Reweighting those same lines to PCE shares isolates the weight effect — it is not
+// published PCE, because PCE also differs in scope and formula. Both are shown.
+var D={ slope:yieldOf("10Y")-yieldOf("2Y"), hyYield:yieldOf("10Y")+DATA.credit.oas/100,
+        spread:DATA.oil.brent.price-DATA.oil.wti.price,
+        cpi:DATA.inflation.cpi, pce:DATA.inflation.pce,
+        cpiWeighted:headline("cpi"), pceWeighted:headline("pce") };
+D.real10 = yieldOf("10Y") - D.cpi;            // Fisher: real = nominal − inflation
+D.realPolicy = DATA.fed.upper - D.cpi;
+D.realMarket = (DATA.realTips !== undefined) ? DATA.realTips : yieldOf("10Y") - DATA.breakeven;
+var measure="cpi";
+function f(n,d){ return n.toFixed(d===undefined?2:d); }
+function sgn(n,d,s){ return (n>=0?"+":"−")+f(Math.abs(n),d)+(s||""); }
+
+/* ============================================================
+   GEOMETRY
+   ============================================================ */
+var W=1600, H=900, SEA=545, NEAR=802;
+var PEAK_X={"3M":430,"2Y":650,"10Y":880,"30Y":1110};
+function peakY(y){ return SEA-40-(y-3.0)*104; }
+
+function defs(){
+  return '<defs>'
+  + '<pattern id="hatch" width="7" height="7" patternTransform="rotate(45)" patternUnits="userSpaceOnUse"><line x1="0" y1="0" x2="0" y2="7" stroke="var(--ink)" stroke-width="1" opacity=".16"/></pattern>'
+  + '<pattern id="hatchLand" width="6" height="6" patternTransform="rotate(-45)" patternUnits="userSpaceOnUse"><line x1="0" y1="0" x2="0" y2="6" stroke="var(--ink)" stroke-width="1" opacity=".13"/></pattern>'
+  + '</defs>';
+}
+function grounds(){
+  var s='<rect x="0" y="0" width="'+W+'" height="'+SEA+'" fill="var(--sky)"/>'
+       +'<rect x="0" y="'+SEA+'" width="'+W+'" height="'+(H-SEA)+'" fill="var(--sea)"/>';
+  for(var i=0;i<9;i++){ var y=SEA+26+i*31;
+    s+='<line x1="0" y1="'+y+'" x2="'+W+'" y2="'+y+'" stroke="var(--sea-deep)" stroke-width="1" opacity="'+(0.12+i*0.028).toFixed(3)+'"/>'; }
+  [[720,620,"18"],[1000,660,"24"],[560,700,"27"],[1240,610,"12"],[860,760,"31"]].forEach(function(p){
+    s+='<text class="sounding" x="'+p[0]+'" y="'+p[1]+'">'+p[2]+'</text>'; });
+  return s;
+}
+
+/* --- CREDIT: cloud cover --- */
+function clouds(){
+  var oas=DATA.credit.oas, t=Math.max(0,Math.min(1,(oas-250)/350)), op=(0.18+t*0.60).toFixed(3), body='';
+  [[300,140,92,48],[400,124,116,58],[520,144,100,50],[630,132,104,54],[730,150,82,42],[450,168,142,46]].forEach(function(p){
+    body+='<ellipse cx="'+p[0]+'" cy="'+p[1]+'" rx="'+p[2]+'" ry="'+p[3]+'" fill="var(--ink)" opacity="'+op+'"/>'; });
+  if(t>0.15) for(var i=0;i<9;i++){ var x=340+i*44;
+    body+='<line x1="'+x+'" y1="196" x2="'+(x-15)+'" y2="'+(238+i%3*15)+'" stroke="var(--rust)" stroke-width="1.6" opacity="'+(t*0.72).toFixed(2)+'"/>'; }
+  return '<g class="obj" id="obj-credit" data-metric="credit" tabindex="0" role="button" aria-label="High yield credit spread, '+oas+' basis points">'
+    +'<rect x="190" y="62" width="640" height="190" fill="transparent"/>'+body
+    +'<ellipse class="focusring" cx="512" cy="146" rx="258" ry="100" fill="none" stroke="var(--rust)" stroke-width="2" stroke-dasharray="6 5"/>'
+    +'<circle class="linkmark" cx="512" cy="146" r="7" fill="var(--rust)"/>'
+    +'<text class="lbl" x="826" y="60" text-anchor="end">Credit weather</text></g>';
+}
+
+/* --- CURVE: mountain range (peaks are true yields) --- */
+function mountains(){
+  var pts=[[190,SEA]];
+  DATA.curve.forEach(function(c,i){
+    var px=PEAK_X[c.key], py=peakY(c.yield);
+    if(i>0){ var pv=DATA.curve[i-1];
+      pts.push([(PEAK_X[pv.key]+px)/2, Math.min(Math.min(peakY(pv.yield),py)+76, SEA-6)]); }
+    pts.push([px,py]);
+  });
+  pts.push([1380,SEA]);
+  var poly=pts.map(function(p){ return f(p[0],1)+','+f(p[1],1); }).join(' ');
+  var s='<g><polygon points="'+poly+'" fill="var(--land)"/><polygon points="'+poly+'" fill="url(#hatch)"/>'
+       +'<polyline points="'+poly+'" fill="none" stroke="var(--ink)" stroke-width="2.2" stroke-linejoin="round"/>';
+  DATA.curve.forEach(function(c){
+    var px=PEAK_X[c.key], py=peakY(c.yield);
+    s+='<g class="obj" id="obj-peak-'+c.key+'" data-metric="peak-'+c.key+'" tabindex="0" role="button" aria-label="'+c.label+' yield, '+f(c.yield)+' percent">'
+      +'<rect x="'+(px-62)+'" y="'+f(py-32,1)+'" width="124" height="'+f(SEA-py+32,1)+'" fill="transparent"/>'
+      +'<circle class="focusring" cx="'+px+'" cy="'+f(py,1)+'" r="13" fill="none" stroke="var(--verd)" stroke-width="2.5"/>'
+      +'<circle class="linkmark" cx="'+px+'" cy="'+f(py,1)+'" r="7" fill="var(--verd)"/>'
+      +'<text class="num" x="'+px+'" y="'+f(py-22,1)+'" text-anchor="middle">'+f(c.yield)+'%</text>'
+      +'<text class="lbl" x="'+px+'" y="'+f(py-41,1)+'" text-anchor="middle" font-size="13">'+c.key+'</text></g>';
+  });
+  return s+'</g>';
+}
+
+/* --- LIGHTHOUSE: back-left corner, small and far off --- */
+function lighthouse(){
+  var x=1200, base=590, k=0.55;
+  var s='<g>';
+  s+='<polygon points="'+(x-46*k)+','+base+' '+(x-26*k)+','+(base-16*k)+' '+(x+26*k)+','+(base-16*k)+' '+(x+46*k)+','+base+'" fill="var(--rock)" stroke="var(--ink)" stroke-width="1.5" stroke-linejoin="round"/>';
+  var t='';
+  t+='<polygon points="'+(x-14*k)+','+(base-16*k)+' '+(x-9*k)+','+(base-86*k)+' '+(x+9*k)+','+(base-86*k)+' '+(x+14*k)+','+(base-16*k)+'" fill="var(--panel)" stroke="var(--ink)" stroke-width="1.6" stroke-linejoin="round"/>';
+  t+='<rect x="'+(x-12*k)+'" y="'+(base-52*k)+'" width="'+(24*k)+'" height="'+(12*k)+'" fill="var(--rust)" opacity=".8"/>';
+  t+='<rect x="'+(x-12*k)+'" y="'+(base-98*k)+'" width="'+(24*k)+'" height="'+(12*k)+'" fill="var(--panel)" stroke="var(--ink)" stroke-width="1.6"/>';
+  t+='<circle cx="'+x+'" cy="'+(base-92*k)+'" r="'+(4*k)+'" fill="var(--amber)"/>';
+  t+='<polygon points="'+(x-15*k)+','+(base-102*k)+' '+x+','+(base-116*k)+' '+(x+15*k)+','+(base-102*k)+'" fill="var(--verd)" stroke="var(--ink)" stroke-width="1.6" stroke-linejoin="round"/>';
+  t+='<polygon points="'+(x+6*k)+','+(base-96*k)+' '+(x+126)+','+(base-124*k)+' '+(x+126)+','+(base-62*k)+'" fill="var(--amber)" opacity=".17"/>';
+  s+='<g class="obj" id="obj-watch" data-metric="watch" tabindex="0" role="button" aria-label="What to watch: '+DATA.watch.length+' upcoming events">'
+    +'<rect x="'+(x-48)+'" y="'+(base-124)+'" width="180" height="130" fill="transparent"/>'+t
+    +'<rect class="focusring" x="'+(x-22)+'" y="'+(base-120*k)+'" width="44" height="'+(112*k)+'" fill="none" stroke="var(--amber)" stroke-width="2" stroke-dasharray="5 4"/>'
+    +'<circle class="linkmark" cx="'+x+'" cy="'+(base-124*k)+'" r="6" fill="var(--amber)"/>'
+    +'<text class="lbl" x="'+x+'" y="'+(base-128*k)+'" text-anchor="middle" font-size="11">Ahead</text></g>';
+  return s+'</g>';
+}
+
+/* --- AI ISLAND: back-right corner, small --- */
+function island(){
+  var x=1430, base=596, k=0.62;
+  var s='<g>';
+  s+='<polygon points="'+(x-84*k)+','+base+' '+(x-52*k)+','+(base-14*k)+' '+(x+50*k)+','+(base-14*k)+' '+(x+84*k)+','+base+'" fill="var(--land)" stroke="var(--ink)" stroke-width="1.5" stroke-linejoin="round"/>';
+  var dc='';
+  dc+='<rect x="'+(x-48*k)+'" y="'+(base-58*k)+'" width="'+(96*k)+'" height="'+(44*k)+'" fill="var(--panel)" stroke="var(--ink)" stroke-width="1.7"/>';
+  for(var i=0;i<4;i++) dc+='<line x1="'+(x-34*k+i*22*k)+'" y1="'+(base-52*k)+'" x2="'+(x-34*k+i*22*k)+'" y2="'+(base-20*k)+'" stroke="var(--verd)" stroke-width="3" opacity=".7"/>';
+  dc+='<rect x="'+(x-54*k)+'" y="'+(base-66*k)+'" width="'+(108*k)+'" height="'+(9*k)+'" fill="var(--panel)" stroke="var(--ink)" stroke-width="1.6"/>';
+  [-26,0,26].forEach(function(o,i){
+    dc+='<path d="M'+(x+o*k)+','+(base-68*k)+' q -6,-13 2,-24 q 7,-10 1,-19" fill="none" stroke="var(--ink)" stroke-width="1.4" opacity="'+(0.3-i*0.05).toFixed(2)+'"/>'; });
+  s+='<g class="obj" id="obj-ai" data-metric="ai" tabindex="0" role="button" aria-label="AI capital spending, '+DATA.ai.capex+' billion dollars annualised">'
+    +'<rect x="'+(x-70)+'" y="'+(base-116)+'" width="140" height="126" fill="transparent"/>'+dc
+    +'<rect class="focusring" x="'+(x-58*k)+'" y="'+(base-112*k)+'" width="'+(116*k)+'" height="'+(104*k)+'" fill="none" stroke="var(--verd)" stroke-width="2" stroke-dasharray="5 4"/>'
+    +'<circle class="linkmark" cx="'+x+'" cy="'+(base-116*k)+'" r="6" fill="var(--verd)"/>'
+    +'<text class="lbl" x="'+x+'" y="'+(base-120*k)+'" text-anchor="middle" font-size="11">AI capex</text>'
+    +'<text class="num" x="'+x+'" y="'+(base+22)+'" text-anchor="middle" font-size="12.5">$'+DATA.ai.capex+'bn</text></g>';
+  return s+'</g>';
+}
+
+/* --- OIL: WTI on the rock, Brent afloat. The gap is the spread. --- */
+function ships(){
+  var wtiX=660, y=712, sc=0.64;
+  var gap=Math.max(280,Math.min(360,120+D.spread*16)), brentX=wtiX+gap;   // faithful in the normal range, clamped at extremes
+
+  /* --- WTI: derrick and tanks on an outcrop. It cannot move; that is the point. --- */
+  var base=y-10, rw=64, rh=74;
+  var rock=(wtiX-rw)+','+base+' '+(wtiX-rw*0.45)+','+(base-rh*0.66)+' '+(wtiX-rw*0.06)+','+(base-rh)
+         +' '+(wtiX+rw*0.42)+','+(base-rh*0.52)+' '+(wtiX+rw)+','+base;
+  var w='<polygon points="'+rock+'" fill="var(--rock)" stroke="var(--ink)" stroke-width="1.9" stroke-linejoin="round"/>'
+       +'<polygon points="'+rock+'" fill="url(#hatchLand)"/>';
+  // derrick
+  var dx=wtiX-6, dh=68, dy=base-30-dh;   // foot on the shoulder, head above the apex
+  w+='<polygon points="'+f(dx-13,1)+','+f(dy+dh,1)+' '+f(dx-4,1)+','+f(dy,1)+' '+f(dx+4,1)+','+f(dy,1)+' '+f(dx+13,1)+','+f(dy+dh,1)+'" fill="none" stroke="var(--ink)" stroke-width="2"/>';
+  for(var i=1;i<4;i++){
+    var t=i/4, ly=dy+dh*t, lw=4+9*t;
+    w+='<line x1="'+f(dx-lw,1)+'" y1="'+f(ly,1)+'" x2="'+f(dx+lw,1)+'" y2="'+f(ly,1)+'" stroke="var(--ink)" stroke-width="1.4" opacity=".65"/>';
+  }
+  w+='<line x1="'+f(dx-9,1)+'" y1="'+f(dy+dh*0.35,1)+'" x2="'+f(dx+9,1)+'" y2="'+f(dy+dh*0.8,1)+'" stroke="var(--ink)" stroke-width="1.2" opacity=".45"/>';
+  w+='<line x1="'+f(dx+9,1)+'" y1="'+f(dy+dh*0.35,1)+'" x2="'+f(dx-9,1)+'" y2="'+f(dy+dh*0.8,1)+'" stroke="var(--ink)" stroke-width="1.2" opacity=".45"/>';
+  // storage tanks on the shelf
+  [[26,10],[48,8]].forEach(function(t){
+    var tx=wtiX+t[0], ty=base-6, r=t[1];
+    w+='<rect x="'+f(tx-r,1)+'" y="'+f(ty-r*1.5,1)+'" width="'+f(r*2,1)+'" height="'+f(r*1.5,1)+'" fill="var(--panel)" stroke="var(--ink)" stroke-width="1.6"/>';
+    w+='<ellipse cx="'+f(tx,1)+'" cy="'+f(ty-r*1.5,1)+'" rx="'+f(r,1)+'" ry="'+f(r*0.36,1)+'" fill="var(--amber)" stroke="var(--ink)" stroke-width="1.6"/>';
+  });
+
+  var s='<g class="obj" id="obj-wti" data-metric="wti" tabindex="0" role="button" aria-label="West Texas Intermediate crude, '+f(DATA.oil.wti.price)+' dollars, priced inland and unable to reach a ship">'
+    +'<rect x="'+(wtiX-rw-14)+'" y="'+(base-rh-58)+'" width="'+(rw*2+28)+'" height="'+(rh+96)+'" fill="transparent"/>'+w
+    +'<rect class="focusring" x="'+(wtiX-rw-8)+'" y="'+(base-rh-54)+'" width="'+(rw*2+16)+'" height="'+(rh+86)+'" fill="none" stroke="var(--amber)" stroke-width="2.5" stroke-dasharray="6 5"/>'
+    +'<circle class="linkmark" cx="'+wtiX+'" cy="'+(base-rh-58)+'" r="7" fill="var(--amber)"/>'
+    +'<text class="lbl" x="'+wtiX+'" y="'+(base+30)+'" text-anchor="middle" font-size="13">WTI · landlocked</text>'
+    +'<text class="num" x="'+wtiX+'" y="'+(base+50)+'" text-anchor="middle">$'+f(DATA.oil.wti.price)+'</text></g>';
+
+  /* --- Brent: already at sea --- */
+  var bw2=96*sc, bx=brentX;
+  var b='<polygon points="'+(bx-bw2)+','+y+' '+(bx+bw2)+','+y+' '+(bx+bw2*0.78)+','+(y+26*sc)+' '+(bx-bw2*0.86)+','+(y+26*sc)+'" fill="var(--panel)" stroke="var(--ink)" stroke-width="2" stroke-linejoin="round"/>'
+    +'<rect x="'+(bx+bw2*0.26)+'" y="'+(y-24*sc)+'" width="'+(bw2*0.44)+'" height="'+(24*sc)+'" fill="var(--panel)" stroke="var(--ink)" stroke-width="1.8"/>'
+    +'<line x1="'+(bx+bw2*0.62)+'" y1="'+(y-24*sc)+'" x2="'+(bx+bw2*0.62)+'" y2="'+(y-46*sc)+'" stroke="var(--ink)" stroke-width="1.8"/>';
+  for(var j=0;j<3;j++) b+='<rect x="'+(bx-bw2*0.82+j*bw2*0.30)+'" y="'+(y-13*sc)+'" width="'+(bw2*0.24)+'" height="'+(13*sc)+'" rx="'+(6*sc)+'" fill="var(--amber)" stroke="var(--ink)" stroke-width="1.5" opacity=".85"/>';
+  b+='<path d="M'+(bx-bw2-16)+','+(y+20*sc)+' q 18,7 38,0 q 18,-7 38,0" fill="none" stroke="var(--sea-deep)" stroke-width="2" opacity=".8"/>';
+  s+='<g class="obj" id="obj-brent" data-metric="brent" tabindex="0" role="button" aria-label="Brent crude, '+f(DATA.oil.brent.price)+' dollars, seaborne benchmark">'
+    +'<rect x="'+(bx-bw2-20)+'" y="'+(y-56*sc)+'" width="'+(bw2*2+40)+'" height="'+(96*sc)+'" fill="transparent"/>'+b
+    +'<rect class="focusring" x="'+(bx-bw2-14)+'" y="'+(y-52*sc)+'" width="'+(bw2*2+28)+'" height="'+(88*sc)+'" fill="none" stroke="var(--amber)" stroke-width="2.5" stroke-dasharray="6 5"/>'
+    +'<circle class="linkmark" cx="'+bx+'" cy="'+(y-56*sc)+'" r="7" fill="var(--amber)"/>'
+    +'<text class="lbl" x="'+bx+'" y="'+(y+48*sc)+'" text-anchor="middle" font-size="13">Brent · seaborne</text>'
+    +'<text class="num" x="'+bx+'" y="'+(y+68*sc)+'" text-anchor="middle">$'+f(DATA.oil.brent.price)+'</text></g>';
+
+  /* --- the spread, measured across the water between them --- */
+  var col=D.spread>8?'var(--rust)':'var(--amber)', my=y-120;
+  s+='<g pointer-events="none">'
+    +'<line x1="'+wtiX+'" y1="'+my+'" x2="'+bx+'" y2="'+my+'" stroke="'+col+'" stroke-width="1.5"/>'
+    +'<line x1="'+wtiX+'" y1="'+(my-6)+'" x2="'+wtiX+'" y2="'+(my+6)+'" stroke="'+col+'" stroke-width="1.5"/>'
+    +'<line x1="'+bx+'" y1="'+(my-6)+'" x2="'+bx+'" y2="'+(my+6)+'" stroke="'+col+'" stroke-width="1.5"/>'
+    +'<text class="num" x="'+((wtiX+bx)/2)+'" y="'+(my-9)+'" text-anchor="middle" fill="'+col+'" font-size="12.5">$'+f(D.spread)+' spread</text></g>';
+
+  return s;
+}
+
+/* --- DEBT: an anchor. Chain pays out as debt/GDP rises. --- */
+function anchorDebt(){
+  var x=520, surf=638;
+  var t=Math.max(0,Math.min(1,(DATA.debt.gdp-95)/35));   // 95% shallow · 130% on the bottom
+  var depth=Math.round(30+t*62), ay=surf+depth, deep=t>0.72;   // capped so the flukes stay off the beach
+  var col=deep?'var(--rust)':'var(--ink)';
+
+  var g='';
+  // mooring buoy at the surface
+  g+='<path d="M'+(x-11)+','+surf+' L'+x+','+(surf-17)+' L'+(x+11)+','+surf+' Z" fill="var(--amber)" stroke="var(--ink)" stroke-width="1.8" stroke-linejoin="round"/>';
+  g+='<line x1="'+(x-15)+'" y1="'+surf+'" x2="'+(x+15)+'" y2="'+surf+'" stroke="var(--ink)" stroke-width="1.8"/>';
+  // chain, one link per fathom
+  var links=Math.max(3,Math.round(depth/13));
+  for(var i=0;i<links;i++){
+    var ly=surf+6+i*(depth-10)/links;
+    g+='<ellipse cx="'+x+'" cy="'+f(ly,1)+'" rx="3.4" ry="5.2" fill="none" stroke="'+col+'" stroke-width="1.7"/>';
+  }
+  // depth ticks beside the chain — soundings
+  for(var d=1;d<=4;d++){
+    var dy=surf+d*30; if(dy>ay-6) break;
+    g+='<line x1="'+(x+16)+'" y1="'+dy+'" x2="'+(x+26)+'" y2="'+dy+'" stroke="var(--ink-soft)" stroke-width="1.2" opacity=".55"/>';
+  }
+  // the anchor itself
+  g+='<circle cx="'+x+'" cy="'+f(ay,1)+'" r="4.6" fill="none" stroke="'+col+'" stroke-width="2.2"/>';
+  g+='<line x1="'+x+'" y1="'+f(ay+4.6,1)+'" x2="'+x+'" y2="'+f(ay+44,1)+'" stroke="'+col+'" stroke-width="2.6"/>';
+  g+='<line x1="'+(x-15)+'" y1="'+f(ay+13,1)+'" x2="'+(x+15)+'" y2="'+f(ay+13,1)+'" stroke="'+col+'" stroke-width="2.4" stroke-linecap="round"/>';
+  g+='<path d="M'+(x-23)+','+f(ay+30,1)+' Q'+(x-21)+','+f(ay+47,1)+' '+x+','+f(ay+47,1)+' Q'+(x+21)+','+f(ay+47,1)+' '+(x+23)+','+f(ay+30,1)+'" fill="none" stroke="'+col+'" stroke-width="2.6" stroke-linejoin="round"/>';
+  g+='<path d="M'+(x-29)+','+f(ay+30,1)+' L'+(x-17)+','+f(ay+30,1)+' L'+(x-23)+','+f(ay+20,1)+' Z" fill="'+col+'"/>';
+  g+='<path d="M'+(x+29)+','+f(ay+30,1)+' L'+(x+17)+','+f(ay+30,1)+' L'+(x+23)+','+f(ay+20,1)+' Z" fill="'+col+'"/>';
+
+  return '<g class="obj" id="obj-debt" data-metric="debt" tabindex="0" role="button" aria-label="Federal debt at '+f(DATA.debt.gdp,1)+' percent of GDP">'
+    +'<rect x="'+(x-42)+'" y="'+(surf-46)+'" width="84" height="'+(depth+110)+'" fill="transparent"/>'+g
+    +'<rect class="focusring" x="'+(x-36)+'" y="'+(surf-40)+'" width="72" height="'+(depth+100)+'" fill="none" stroke="'+col+'" stroke-width="2.5" stroke-dasharray="6 5"/>'
+    +'<circle class="linkmark" cx="'+x+'" cy="'+(surf-44)+'" r="7" fill="'+col+'"/>'
+    +'<text class="lbl" x="'+x+'" y="'+(surf-48)+'" text-anchor="middle" font-size="13">Debt</text>'
+    +'<text class="num" x="'+x+'" y="'+f(ay+68,1)+'" text-anchor="middle" fill="'+col+'">'+f(DATA.debt.gdp,1)+'% of GDP</text></g>';
+}
+
+/* --- FISHER: cast off the Fed's own cliff. Waterline is inflation, float is the real rate. --- */
+function fisherRod(){
+  var cliff=NEAR-DATA.fed.upper*34;
+  var bx=138, by=cliff-4, tipX=360, tipY=600, surf=716, scale=22;
+  var fy=surf-D.realPolicy*scale;
+
+  var g='';
+  g+='<line x1="'+(tipX-46)+'" y1="'+surf+'" x2="'+(tipX+44)+'" y2="'+surf+'" stroke="var(--ink)" stroke-width="1.6" opacity=".75"/>';
+  [-2,-1,1,2].forEach(function(v){
+    var ty=surf-v*scale;
+    g+='<line x1="'+(tipX+26)+'" y1="'+f(ty,1)+'" x2="'+(tipX+35)+'" y2="'+f(ty,1)+'" stroke="var(--ink-soft)" stroke-width="1.2" opacity=".5"/>';
+    g+='<text class="sounding" x="'+(tipX+39)+'" y="'+f(ty+3.5,1)+'" fill="var(--ink-soft)">'+(v>0?'+':'')+v+'</text>';
+  });
+  g+='<text class="sounding" x="'+(tipX-50)+'" y="'+(surf+4)+'" text-anchor="end" fill="var(--ink-soft)">inflation '+f(D.cpi,1)+'%</text>';
+  g+='<line x1="'+bx+'" y1="'+f(by,1)+'" x2="'+tipX+'" y2="'+tipY+'" stroke="var(--ink)" stroke-width="2.4" stroke-linecap="round"/>';
+  g+='<line x1="'+(bx+24)+'" y1="'+f(by-8,1)+'" x2="'+(bx+32)+'" y2="'+f(by+4,1)+'" stroke="var(--ink)" stroke-width="1.9" stroke-linecap="round"/>';
+  g+='<circle cx="'+(bx+30)+'" cy="'+f(by+2,1)+'" r="5.4" fill="var(--panel)" stroke="var(--ink)" stroke-width="1.8"/>';
+  g+='<line x1="'+tipX+'" y1="'+tipY+'" x2="'+tipX+'" y2="'+f(fy-6,1)+'" stroke="var(--ink)" stroke-width="1.1" opacity=".8"/>';
+  var r=6;
+  g+='<circle cx="'+tipX+'" cy="'+f(fy,1)+'" r="'+r+'" fill="var(--panel)" stroke="var(--ink)" stroke-width="1.9"/>';
+  g+='<path d="M'+(tipX-r)+','+f(fy,1)+' A'+r+','+r+' 0 0,1 '+(tipX+r)+','+f(fy,1)+' Z" fill="var(--rust)"/>';
+  g+='<line x1="'+tipX+'" y1="'+f(fy+r,1)+'" x2="'+tipX+'" y2="'+f(fy+13,1)+'" stroke="var(--ink)" stroke-width="1.5"/>';
+
+  return '<g class="obj" id="obj-fisher" data-metric="fisher" tabindex="0" role="button" aria-label="Real policy rate, '+sgn(D.realPolicy,2)+' percent — nominal minus inflation">'
+    +'<rect x="'+(bx-14)+'" y="'+(tipY-46)+'" width="'+(tipX-bx+108)+'" height="'+(surf-tipY+96)+'" fill="transparent"/>'+g
+    +'<circle class="focusring" cx="'+tipX+'" cy="'+f(fy,1)+'" r="20" fill="none" stroke="var(--verd)" stroke-width="2.5" stroke-dasharray="6 5"/>'
+    +'<circle class="linkmark" cx="'+tipX+'" cy="'+f(fy-24,1)+'" r="7" fill="var(--verd)"/>'
+    +'<text class="lbl" x="'+tipX+'" y="'+(tipY-14)+'" text-anchor="middle" font-size="12">Real rate · Fisher</text>'
+    +'<text class="num" x="'+tipX+'" y="'+(tipY-32)+'" text-anchor="middle">'+sgn(D.realPolicy,2,"pp")+'</text></g>';
+}
+
+/* --- SATELLITE: the figures, read from orbit --- */
+function satellite(){
+  var x=1010, y=108, g='';
+  g+='<rect x="'+(x-17)+'" y="'+(y-13)+'" width="34" height="30" rx="3" fill="var(--panel)" stroke="var(--ink)" stroke-width="2"/>';
+  [-1,1].forEach(function(d){
+    var wx = d<0 ? x-63 : x+21;
+    g+='<rect x="'+wx+'" y="'+(y-9)+'" width="42" height="22" rx="2" fill="var(--navy)" stroke="var(--ink)" stroke-width="1.9"/>';
+    for(var i=1;i<3;i++) g+='<line x1="'+(wx+i*14)+'" y1="'+(y-9)+'" x2="'+(wx+i*14)+'" y2="'+(y+13)+'" stroke="var(--panel)" stroke-width="1.2" opacity=".7"/>';
+    g+='<line x1="'+(d<0?x-21:x+17)+'" y1="'+(y+2)+'" x2="'+(d<0?x-17:x+21)+'" y2="'+(y+2)+'" stroke="var(--ink)" stroke-width="2"/>';
+  });
+  g+='<line x1="'+x+'" y1="'+(y-13)+'" x2="'+x+'" y2="'+(y-26)+'" stroke="var(--ink)" stroke-width="1.8"/>';
+  g+='<path d="M'+(x-13)+','+(y-30)+' A14,14 0 0,1 '+(x+13)+','+(y-30)+'" fill="var(--panel)" stroke="var(--ink)" stroke-width="1.9"/>';
+  [0,1,2].forEach(function(i){
+    var rr=13+i*9;
+    g+='<path d="M'+f(x-rr*0.7,1)+','+(y+21+i*7)+' A'+rr+','+rr+' 0 0,0 '+f(x+rr*0.7,1)+','+(y+21+i*7)+'" fill="none" stroke="var(--verd)" stroke-width="1.6" opacity="'+(0.55-i*0.14).toFixed(2)+'"/>';
+  });
+  return '<g class="obj" id="obj-satellite" data-metric="satellite" tabindex="0" role="button" aria-label="Open the figures">'
+    +'<rect x="'+(x-76)+'" y="'+(y-46)+'" width="152" height="112" fill="transparent"/>'+g
+    +'<ellipse class="focusring" cx="'+x+'" cy="'+(y+2)+'" rx="80" ry="48" fill="none" stroke="var(--verd)" stroke-width="2.5" stroke-dasharray="6 5"/>'
+    +'<text class="lbl" x="'+x+'" y="'+(y+64)+'" text-anchor="middle" font-size="12">The figures</text></g>';
+}
+
+/* --- AIRFARE --- */
+var planeY;
+function plane(){
+  var yoy=DATA.airfare.yoy, t=Math.max(0,Math.min(1,(yoy+6)/18));
+  var y=340-t*246; planeY=y; var x=1230;
+  var b='<g transform="translate('+x+','+f(y,1)+') rotate(-6)">'
+    +'<path d="M-60,0 L32,0 L54,-4 L60,0 L54,4 L32,0" fill="var(--panel)" stroke="var(--ink)" stroke-width="2" stroke-linejoin="round"/>'
+    +'<polygon points="-6,0 -32,24 -13,24 6,2" fill="var(--panel)" stroke="var(--ink)" stroke-width="1.8" stroke-linejoin="round"/>'
+    +'<polygon points="-6,0 -32,-24 -13,-24 6,-2" fill="var(--panel)" stroke="var(--ink)" stroke-width="1.8" stroke-linejoin="round"/>'
+    +'<polygon points="-54,0 -66,-17 -54,-17 -45,-1" fill="var(--panel)" stroke="var(--ink)" stroke-width="1.6" stroke-linejoin="round"/>'
+    +'<circle cx="19" cy="-1" r="3" fill="var(--ink)"/></g>';
+  var ladder='<g pointer-events="none" opacity=".5">'
+    +'<line x1="1400" y1="94" x2="1400" y2="340" stroke="var(--ink-soft)" stroke-width="1" stroke-dasharray="3 5"/>'
+    +'<line x1="1394" y1="94" x2="1406" y2="94" stroke="var(--ink-soft)" stroke-width="1.5"/>'
+    +'<line x1="1394" y1="340" x2="1406" y2="340" stroke="var(--ink-soft)" stroke-width="1.5"/>'
+    +'<text class="sounding" x="1412" y="98" fill="var(--ink-soft)">+12%</text>'
+    +'<text class="sounding" x="1412" y="344" fill="var(--ink-soft)">−6%</text></g>'
+    +'<line x1="'+(x+66)+'" y1="'+f(y,1)+'" x2="1394" y2="'+f(y,1)+'" stroke="var(--verd)" stroke-width="1.5" stroke-dasharray="4 4" opacity=".75" pointer-events="none"/>';
+  return ladder+'<g class="obj" id="obj-airfare" data-metric="airfare" tabindex="0" role="button" aria-label="Airline fares, '+sgn(yoy,1,"%")+' year over year">'
+    +'<rect x="'+(x-84)+'" y="'+f(y-46,1)+'" width="168" height="94" fill="transparent"/>'+b
+    +'<ellipse class="focusring" cx="'+x+'" cy="'+f(y,1)+'" rx="82" ry="44" fill="none" stroke="var(--verd)" stroke-width="2.5" stroke-dasharray="6 5"/>'
+    +'<circle class="linkmark" cx="'+x+'" cy="'+f(y-48,1)+'" r="7" fill="var(--verd)"/>'
+    +'<text class="lbl" x="'+x+'" y="'+f(y+54,1)+'" text-anchor="middle" font-size="13">Airline fares</text>'
+    +'<text class="num" x="'+x+'" y="'+f(y+74,1)+'" text-anchor="middle">'+sgn(yoy,1,"% y/y")+'</text></g>';
+}
+
+/* --- near shore --- */
+function nearShore(){
+  var p='M0,'+NEAR+' C 200,'+(NEAR-12)+' 430,'+(NEAR+10)+' 690,'+(NEAR-4)+' C 980,'+(NEAR-20)+' 1270,'+(NEAR+4)+' '+W+','+(NEAR-14)+' L '+W+','+H+' L 0,'+H+' Z';
+  return '<path d="'+p+'" fill="var(--land)" stroke="var(--ink)" stroke-width="2"/><path d="'+p+'" fill="url(#hatchLand)"/>';
+}
+
+/* --- FED --- */
+var fedTop;
+function fed(){
+  var cliff=NEAR-DATA.fed.upper*34; fedTop=cliff;
+  var poly='0,'+H+' 0,'+f(cliff,1)+' 126,'+f(cliff,1)+' 172,'+f(cliff+32,1)+' 208,'+NEAR+' 208,'+H;
+  var s='<g><polygon points="'+poly+'" fill="var(--land)" stroke="var(--ink)" stroke-width="2" stroke-linejoin="round"/><polygon points="'+poly+'" fill="url(#hatchLand)"/>';
+  s+='<g pointer-events="none" opacity=".5"><line x1="230" y1="'+f(cliff,1)+'" x2="230" y2="'+NEAR+'" stroke="var(--ink-soft)" stroke-width="1" stroke-dasharray="3 5"/>'
+    +'<line x1="224" y1="'+f(cliff,1)+'" x2="236" y2="'+f(cliff,1)+'" stroke="var(--ink-soft)" stroke-width="1.4"/>'
+    +'<line x1="224" y1="'+NEAR+'" x2="236" y2="'+NEAR+'" stroke="var(--ink-soft)" stroke-width="1.4"/></g>';
+  var bx=24,bw=102,by=cliff-74,bh=74,b='';
+  b+='<rect x="'+bx+'" y="'+f(by,1)+'" width="'+bw+'" height="'+bh+'" fill="var(--panel)" stroke="var(--ink)" stroke-width="2"/>';
+  b+='<polygon points="'+(bx-13)+','+f(by,1)+' '+(bx+bw/2)+','+f(by-33,1)+' '+(bx+bw+13)+','+f(by,1)+'" fill="var(--verd)" stroke="var(--ink)" stroke-width="2" stroke-linejoin="round"/>';
+  // Stars and stripes off the pediment — this is the U.S. economy
+  var px=bx+bw/2, ptop=by-33, ph=58, fx=px+2, fy=ptop-ph+4, fw=38, sh=3.0;
+  b+='<line x1="'+f(px,1)+'" y1="'+f(ptop,1)+'" x2="'+f(px,1)+'" y2="'+f(ptop-ph,1)+'" stroke="var(--ink)" stroke-width="2.2" stroke-linecap="round"/>';
+  b+='<circle cx="'+f(px,1)+'" cy="'+f(ptop-ph-2.5,1)+'" r="2.6" fill="var(--amber)" stroke="var(--ink)" stroke-width="1"/>';
+  for(var st=0;st<7;st++){
+    var sy=fy+st*sh;
+    b+='<path d="M'+f(fx,1)+','+f(sy,1)+' q '+f(fw/4,1)+',-2.1 '+f(fw/2,1)+',0 q '+f(fw/4,1)+',2.1 '+f(fw/2,1)+',0 l 0,'+f(sh,1)
+      +' q -'+f(fw/4,1)+',2.1 -'+f(fw/2,1)+',0 q -'+f(fw/4,1)+',-2.1 -'+f(fw/2,1)+',0 Z" fill="'+(st%2?'var(--panel)':'var(--rust)')+'"/>';
+  }
+  b+='<path d="M'+f(fx,1)+','+f(fy,1)+' q '+f(fw/4,1)+',-2.1 '+f(fw/2,1)+',0 l 0,'+f(sh*4,1)+' q -'+f(fw/4,1)+',2.1 -'+f(fw/2,1)+',0 Z" fill="var(--navy)"/>';
+  for(var sr=0;sr<2;sr++) for(var sc=0;sc<3;sc++){
+    b+='<circle cx="'+f(fx+4+sc*5.2,1)+'" cy="'+f(fy+3.4+sr*5.2,1)+'" r="1.05" fill="#FBF8F0"/>';
+  }
+  b+='<path d="M'+f(fx,1)+','+f(fy,1)+' q '+f(fw/4,1)+',-2.1 '+f(fw/2,1)+',0 q '+f(fw/4,1)+',2.1 '+f(fw/2,1)+',0 l 0,'+f(sh*7,1)
+    +' q -'+f(fw/4,1)+',2.1 -'+f(fw/2,1)+',0 q -'+f(fw/4,1)+',-2.1 -'+f(fw/2,1)+',0 Z" fill="none" stroke="var(--ink)" stroke-width="1.3" stroke-linejoin="round"/>';
+  for(var i=0;i<5;i++){ var cx=bx+13+i*(bw-26)/4; b+='<line x1="'+f(cx,1)+'" y1="'+f(by+9,1)+'" x2="'+f(cx,1)+'" y2="'+f(by+bh-10,1)+'" stroke="var(--ink)" stroke-width="3.5" opacity=".5"/>'; }
+  b+='<rect x="'+(bx+15)+'" y="'+f(by+bh-26,1)+'" width="13" height="16" fill="var(--amber)" stroke="var(--ink)" stroke-width="1.2"/>';
+  b+='<rect x="'+(bx+bw-28)+'" y="'+f(by+bh-26,1)+'" width="13" height="16" fill="var(--amber)" stroke="var(--ink)" stroke-width="1.2"/>';
+  b+='<rect x="'+bx+'" y="'+f(by+bh,1)+'" width="'+bw+'" height="7" fill="var(--panel)" stroke="var(--ink)" stroke-width="1.8"/>';
+  s+='<g class="obj" id="obj-fed" data-metric="fed" tabindex="0" role="button" aria-label="Federal funds target rate, '+f(DATA.fed.lower)+' to '+f(DATA.fed.upper)+' percent">'
+    +'<rect x="4" y="'+f(by-44,1)+'" width="214" height="'+f(NEAR+44-by,1)+'" fill="transparent"/>'+b
+    +'<rect class="focusring" x="'+(bx-20)+'" y="'+f(by-40,1)+'" width="'+(bw+40)+'" height="'+(bh+54)+'" fill="none" stroke="var(--verd)" stroke-width="2.5" stroke-dasharray="6 5"/>'
+    +'<circle class="linkmark" cx="'+(bx+bw/2)+'" cy="'+f(by-44,1)+'" r="7" fill="var(--verd)"/>'
+    +'<text class="lbl" x="'+(bx+bw/2)+'" y="'+f(by-50,1)+'" text-anchor="middle" font-size="13">Federal Reserve</text>'
+    +'<text class="num" x="'+(bx+bw/2+14)+'" y="'+(NEAR+34)+'" text-anchor="middle">'+f(DATA.fed.lower)+'–'+f(DATA.fed.upper)+'%</text></g>';
+  return s+'</g>';
+}
+
+/* --- ROCKET on the ground --- */
+var ROCKET_X=800, ROCKET_BASE=NEAR+18;
+function rocketPad(){
+  var x=ROCKET_X, b=ROCKET_BASE, hgt=104;
+  var g='';
+  g+='<rect x="'+(x-46)+'" y="'+(b-6)+'" width="92" height="10" fill="var(--rock)" stroke="var(--ink)" stroke-width="1.8"/>';
+  g+='<line x1="'+(x+30)+'" y1="'+(b-6)+'" x2="'+(x+30)+'" y2="'+(b-hgt-14)+'" stroke="var(--ink)" stroke-width="2.4"/>';
+  for(var i=0;i<4;i++){ var gy=b-18-i*26; g+='<line x1="'+(x+16)+'" y1="'+gy+'" x2="'+(x+30)+'" y2="'+gy+'" stroke="var(--ink)" stroke-width="1.6" opacity=".65"/>'; }
+  var rx=x-6;
+  g+='<path d="M'+rx+','+(b-hgt)+' q13,21 13,47 q0,17 -5,28 h-16 q-5,-11 -5,-28 q0,-26 13,-47 Z" fill="var(--panel)" stroke="var(--ink)" stroke-width="2" stroke-linejoin="round"/>';
+  g+='<circle cx="'+rx+'" cy="'+(b-hgt+42)+'" r="6" fill="var(--verd)" stroke="var(--ink)" stroke-width="1.8"/>';
+  g+='<path d="M'+(rx-8)+','+(b-31)+' q-10,15 -9,27 q8,-6 13,-8 Z" fill="var(--rust)" stroke="var(--ink)" stroke-width="1.7" stroke-linejoin="round"/>';
+  g+='<path d="M'+(rx+8)+','+(b-31)+' q10,15 9,27 q-8,-6 -13,-8 Z" fill="var(--rust)" stroke="var(--ink)" stroke-width="1.7" stroke-linejoin="round"/>';
+  g+='<rect x="'+(rx-8)+'" y="'+(b-8)+'" width="16" height="8" rx="2" fill="var(--ink)"/>';
+  return '<g class="obj" id="obj-rocket" data-metric="rocket" tabindex="0" role="button" aria-label="Launch: zoom out for the overall read">'
+    +'<rect x="'+(x-58)+'" y="'+(b-hgt-24)+'" width="116" height="'+(hgt+34)+'" fill="transparent"/>'+g
+    +'<rect class="focusring" x="'+(x-52)+'" y="'+(b-hgt-18)+'" width="104" height="'+(hgt+26)+'" fill="none" stroke="var(--verd)" stroke-width="2.5" stroke-dasharray="6 5"/>'
+    +'<text class="lbl" x="'+x+'" y="'+(b-hgt-26)+'" text-anchor="middle" font-size="12">The read ↑</text></g>';
+}
+
+/* ============================================================
+   TOWN — representational buildings
+   width = weight in basket · height = year-over-year
+   ============================================================ */
+var TOWN_X=1080, TOWN_W=470, TOWN_BASE=NEAR+6;
+function townGeometry(mix){
+  var total=0, wts=DATA.components.map(function(c){ var w=c.cpi+(c.pce-c.cpi)*mix; total+=w; return w; });
+  var gap=10, avail=TOWN_W-gap*(DATA.components.length-1), x=TOWN_X, out=[];
+  DATA.components.forEach(function(c,i){
+    var w=Math.max(16, avail*wts[i]/total), h=Math.max(34, 24+(c.yoy+3)*18);
+    out.push({c:c,x:x,w:w,h:h,weight:wts[i]}); x+=w+gap;
+  });
+  return out;
+}
+function win(x,y,w,h){ return '<rect x="'+f(x,1)+'" y="'+f(y,1)+'" width="'+f(w,1)+'" height="'+f(h,1)+'" fill="var(--amber)" stroke="var(--ink)" stroke-width="1.1" opacity=".85"/>'; }
+
+function shapeHouses(x,w,h,y){
+  var n=Math.max(1,Math.min(4,Math.floor(w/40))), uw=w/n, s='';
+  for(var i=0;i<n;i++){
+    var ux=x+i*uw, uh=h-(i%2)*10, uy=TOWN_BASE-uh;
+    s+='<rect x="'+f(ux+1,1)+'" y="'+f(uy,1)+'" width="'+f(uw-2,1)+'" height="'+f(uh,1)+'" fill="var(--panel)" stroke="var(--ink)" stroke-width="1.8"/>';
+    s+='<polygon points="'+f(ux-3,1)+','+f(uy,1)+' '+f(ux+uw/2,1)+','+f(uy-20,1)+' '+f(ux+uw+1,1)+','+f(uy,1)+'" fill="var(--verd)" stroke="var(--ink)" stroke-width="1.8" stroke-linejoin="round"/>';
+    if(uw>26){
+      s+='<rect x="'+f(ux+uw/2-5,1)+'" y="'+f(TOWN_BASE-19,1)+'" width="10" height="19" fill="var(--ink)" opacity=".7"/>';
+      s+=win(ux+5,uy+9,uw*0.24,10);
+      if(uw>40) s+=win(ux+uw-5-uw*0.24,uy+9,uw*0.24,10);
+      if(i===0) s+='<rect x="'+f(ux+uw*0.7,1)+'" y="'+f(uy-30,1)+'" width="7" height="12" fill="var(--rock)" stroke="var(--ink)" stroke-width="1.4"/>';
+    }
+  }
+  return s;
+}
+function shapeMarket(x,w,h,y){
+  // Building body carries the height (= y/y); the stall canopy sits at ground level.
+  var s='<rect x="'+f(x,1)+'" y="'+f(y,1)+'" width="'+f(w,1)+'" height="'+f(h,1)+'" fill="var(--panel)" stroke="var(--ink)" stroke-width="1.8"/>';
+  s+='<rect x="'+f(x-3,1)+'" y="'+f(y-8,1)+'" width="'+f(w+6,1)+'" height="8" fill="var(--verd)" stroke="var(--ink)" stroke-width="1.6"/>';
+  var ay=TOWN_BASE-Math.min(46,h-14);
+  if(w>20){
+    var rows=Math.max(0,Math.min(3,Math.floor((TOWN_BASE-ay===0?0:(ay-y-14))/22)));
+    for(var r=0;r<rows;r++) s+=win(x+5,y+12+r*22,Math.max(5,w-10),11);
+  }
+  // striped stall canopy
+  var stripes=Math.max(2,Math.round(w/13));
+  for(var i=0;i<stripes;i++){
+    var sw=w/stripes, sx=x+i*sw;
+    s+='<rect x="'+f(sx,1)+'" y="'+f(ay,1)+'" width="'+f(sw+0.6,1)+'" height="13" fill="'+(i%2?'var(--panel)':'var(--rust)')+'" stroke="var(--ink)" stroke-width="1.2"/>';
+  }
+  s+='<line x1="'+f(x-5,1)+'" y1="'+f(ay,1)+'" x2="'+f(x+w+5,1)+'" y2="'+f(ay,1)+'" stroke="var(--ink)" stroke-width="1.8"/>';
+  s+='<line x1="'+f(x+3,1)+'" y1="'+f(ay+13,1)+'" x2="'+f(x+3,1)+'" y2="'+f(TOWN_BASE,1)+'" stroke="var(--ink)" stroke-width="1.5" opacity=".6"/>';
+  s+='<line x1="'+f(x+w-3,1)+'" y1="'+f(ay+13,1)+'" x2="'+f(x+w-3,1)+'" y2="'+f(TOWN_BASE,1)+'" stroke="var(--ink)" stroke-width="1.5" opacity=".6"/>';
+  // produce crates with strawberries
+  var crates=Math.max(1,Math.min(3,Math.floor(w/32)));
+  for(var c=0;c<crates;c++){
+    var cw=Math.min(28,(w-10)/crates-4), cx=x+7+c*(cw+6), cy=TOWN_BASE-16;
+    if(cw<8) break;
+    s+='<rect x="'+f(cx,1)+'" y="'+f(cy,1)+'" width="'+f(cw,1)+'" height="16" fill="var(--rock)" stroke="var(--ink)" stroke-width="1.4"/>';
+    var berries=Math.max(2,Math.floor(cw/9));
+    for(var b=0;b<berries;b++){
+      var bx=cx+4+b*(cw-7)/berries, by=cy-3.4;
+      s+='<circle cx="'+f(bx,1)+'" cy="'+f(by,1)+'" r="3.3" fill="var(--rust)" stroke="var(--ink)" stroke-width="0.9"/>';
+      s+='<path d="M'+f(bx-2.7,1)+','+f(by-2.8,1)+' L'+f(bx,1)+','+f(by-5.4,1)+' L'+f(bx+2.7,1)+','+f(by-2.8,1)+' Z" fill="var(--verd)"/>';
+    }
+  }
+  return s;
+}
+function shapeHospital(x,w,h,y){
+  var s='<rect x="'+f(x,1)+'" y="'+f(y,1)+'" width="'+f(w,1)+'" height="'+f(h,1)+'" fill="var(--panel)" stroke="var(--ink)" stroke-width="2"/>';
+  s+='<rect x="'+f(x-4,1)+'" y="'+f(y-11,1)+'" width="'+f(w+8,1)+'" height="11" fill="var(--panel)" stroke="var(--ink)" stroke-width="2"/>';
+  // cross on a mast
+  s+='<line x1="'+f(x+w/2,1)+'" y1="'+f(y-11,1)+'" x2="'+f(x+w/2,1)+'" y2="'+f(y-26,1)+'" stroke="var(--ink)" stroke-width="1.8"/>';
+  var r=5.5, cx=x+w/2, cy=y-32;
+  s+='<rect x="'+f(cx-r*1.9,1)+'" y="'+f(cy-r*1.9,1)+'" width="'+f(r*3.8,1)+'" height="'+f(r*3.8,1)+'" fill="var(--panel)" stroke="var(--ink)" stroke-width="1.5"/>';
+  s+='<line x1="'+f(cx-r,1)+'" y1="'+f(cy,1)+'" x2="'+f(cx+r,1)+'" y2="'+f(cy,1)+'" stroke="var(--rust)" stroke-width="3.4"/>';
+  s+='<line x1="'+f(cx,1)+'" y1="'+f(cy-r,1)+'" x2="'+f(cx,1)+'" y2="'+f(cy+r,1)+'" stroke="var(--rust)" stroke-width="3.4"/>';
+  // window grid
+  var cols=Math.max(1,Math.floor(w/17)), rows=Math.max(1,Math.floor((h-26)/17));
+  for(var i=0;i<cols;i++) for(var j=0;j<rows;j++){
+    var wx=x+5+i*(w-8)/cols, wy=y+8+j*17, ww=Math.max(4,(w-8)/cols-5);
+    if(ww>3) s+=win(wx,wy,ww,9);
+  }
+  // ambulance bay
+  if(w>40) s+='<rect x="'+f(x+w/2-15,1)+'" y="'+f(TOWN_BASE-18,1)+'" width="30" height="18" fill="var(--ink)" opacity=".22" stroke="var(--ink)" stroke-width="1.3"/>';
+  return s;
+}
+function shapeTransit(x,w,h,y){
+  // depot shed
+  var s='<rect x="'+f(x,1)+'" y="'+f(y+14,1)+'" width="'+f(w,1)+'" height="'+f(h-14,1)+'" fill="var(--panel)" stroke="var(--ink)" stroke-width="1.8"/>';
+  s+='<path d="M'+f(x-4,1)+','+f(y+14,1)+' q '+f(w/2+4,1)+',-20 '+f(w+8,1)+',0 Z" fill="var(--rock)" stroke="var(--ink)" stroke-width="1.8" stroke-linejoin="round"/>';
+  // bus in front
+  if(w>36){
+    var bw=Math.min(w-8,52), bx=x+(w-bw)/2, by=TOWN_BASE-26;
+    s+='<rect x="'+f(bx,1)+'" y="'+f(by,1)+'" width="'+f(bw,1)+'" height="21" rx="4" fill="var(--amber)" stroke="var(--ink)" stroke-width="1.8"/>';
+    var nwin=Math.max(2,Math.floor(bw/14));
+    for(var i=0;i<nwin;i++) s+='<rect x="'+f(bx+4+i*(bw-6)/nwin,1)+'" y="'+f(by+4,1)+'" width="'+f((bw-8)/nwin-2,1)+'" height="8" fill="var(--panel)" stroke="var(--ink)" stroke-width="1"/>';
+    s+='<circle cx="'+f(bx+8,1)+'" cy="'+f(by+22,1)+'" r="4" fill="var(--ink)"/>';
+    s+='<circle cx="'+f(bx+bw-8,1)+'" cy="'+f(by+22,1)+'" r="4" fill="var(--ink)"/>';
+  } else {
+    s+='<circle cx="'+f(x+w/2,1)+'" cy="'+f(y+h/2+8,1)+'" r="'+f(Math.min(7,w/3),1)+'" fill="none" stroke="var(--ink)" stroke-width="1.8" opacity=".6"/>';
+  }
+  return s;
+}
+function shapeFuel(x,w,h,y){
+  var s='', neg=h<78;   // h = 24+(yoy+3)*18, so h<78 is exactly a negative y/y
+  // storage tanks
+  var n=Math.max(1,Math.min(3,Math.floor(w/18))), tw=w/n;
+  for(var i=0;i<n;i++){
+    var tx=x+i*tw+1, twid=tw-3, th=h-6;
+    s+='<rect x="'+f(tx,1)+'" y="'+f(TOWN_BASE-th,1)+'" width="'+f(twid,1)+'" height="'+f(th,1)+'" fill="'+(neg?'var(--rust)':'var(--panel)')+'" fill-opacity="'+(neg?'.38':'1')+'" stroke="var(--ink)" stroke-width="1.7"/>';
+    s+='<ellipse cx="'+f(tx+twid/2,1)+'" cy="'+f(TOWN_BASE-th,1)+'" rx="'+f(twid/2,1)+'" ry="'+f(Math.min(6,twid/3),1)+'" fill="var(--amber)" stroke="var(--ink)" stroke-width="1.7"/>';
+    if(twid>14) s+='<line x1="'+f(tx+2,1)+'" y1="'+f(TOWN_BASE-th/2,1)+'" x2="'+f(tx+twid-2,1)+'" y2="'+f(TOWN_BASE-th/2,1)+'" stroke="var(--ink)" stroke-width="1.1" opacity=".45"/>';
+  }
+  // fuel pump
+  if(w>44){
+    var px=x+w-14;
+    s+='<rect x="'+f(px,1)+'" y="'+f(TOWN_BASE-24,1)+'" width="11" height="24" fill="var(--panel)" stroke="var(--ink)" stroke-width="1.5"/>';
+    s+='<rect x="'+f(px+2,1)+'" y="'+f(TOWN_BASE-21,1)+'" width="7" height="6" fill="var(--ink)" opacity=".6"/>';
+  }
+  return s;
+}
+function shapeShops(x,w,h,y){
+  var n=Math.max(1,Math.min(5,Math.floor(w/44))), uw=w/n, s='';
+  for(var i=0;i<n;i++){
+    var ux=x+i*uw+1, uwid=uw-2, uh=h-(i%3)*8, uy=TOWN_BASE-uh;
+    s+='<rect x="'+f(ux,1)+'" y="'+f(uy,1)+'" width="'+f(uwid,1)+'" height="'+f(uh,1)+'" fill="var(--panel)" stroke="var(--ink)" stroke-width="1.8"/>';
+    s+='<rect x="'+f(ux-2,1)+'" y="'+f(uy-8,1)+'" width="'+f(uwid+4,1)+'" height="8" fill="var(--verd)" stroke="var(--ink)" stroke-width="1.6"/>';
+    if(uwid>20){
+      s+='<rect x="'+f(ux+3,1)+'" y="'+f(uy+8,1)+'" width="'+f(uwid-6,1)+'" height="7" fill="var(--ink)" opacity=".22"/>';
+      s+='<rect x="'+f(ux+3,1)+'" y="'+f(TOWN_BASE-20,1)+'" width="'+f(uwid-6,1)+'" height="20" fill="var(--amber)" stroke="var(--ink)" stroke-width="1.3" opacity=".8"/>';
+    }
+  }
+  return s;
+}
+var SHAPES={houses:shapeHouses, market:shapeMarket, hospital:shapeHospital, transit:shapeTransit, fuel:shapeFuel, shops:shapeShops};
+
+function town(mix){
+  var bs=townGeometry(mix===undefined?0:mix), s='<g>';
+  bs.forEach(function(b){
+    var y=TOWN_BASE-b.h, pct=b.weight.toFixed(1);
+    s+='<g class="obj" id="obj-comp-'+b.c.key+'" data-metric="comp-'+b.c.key+'" tabindex="0" role="button" aria-label="'+b.c.name+', '+sgn(b.c.yoy,1,"%")+' year over year, '+pct+' percent of the basket">'
+      +'<rect x="'+f(b.x-5,1)+'" y="'+f(y-40,1)+'" width="'+f(b.w+10,1)+'" height="'+f(b.h+48,1)+'" fill="transparent"/>'
+      +SHAPES[b.c.kind](b.x,b.w,b.h,y)
+      +'<rect class="focusring" x="'+f(b.x-7,1)+'" y="'+f(y-38,1)+'" width="'+f(b.w+14,1)+'" height="'+f(b.h+44,1)+'" fill="none" stroke="var(--verd)" stroke-width="2.5" stroke-dasharray="5 4"/>'
+      +'<circle class="linkmark" cx="'+f(b.x+b.w/2,1)+'" cy="'+f(y-44,1)+'" r="7" fill="var(--verd)"/></g>';
+    if(b.w>42) s+='<text class="sounding" x="'+f(b.x+b.w/2,1)+'" y="'+(TOWN_BASE+20)+'" text-anchor="middle" fill="var(--ink-soft)">'+pct+'%</text>';
+  });
+  s+='<line x1="'+(TOWN_X-24)+'" y1="'+TOWN_BASE+'" x2="'+(TOWN_X+TOWN_W+14)+'" y2="'+TOWN_BASE+'" stroke="var(--ink)" stroke-width="2"/>';
+  s+='<text class="lbl" x="'+(TOWN_X+TOWN_W/2)+'" y="'+(TOWN_BASE+42)+'" text-anchor="middle" font-size="13" id="town-label">The basket</text>';
+  return s+'</g>';
+}
+
+function render(mix){
+  document.getElementById("svg").innerHTML = defs()+grounds()+clouds()+mountains()
+    + '<line x1="0" y1="'+SEA+'" x2="'+W+'" y2="'+SEA+'" stroke="var(--ink)" stroke-width="1.5" opacity=".4"/>'
+    + lighthouse()+island()+satellite()+plane()+anchorDebt()+ships()
+    + nearShore()+fed()+fisherRod()+rocketPad()+town(mix);
+  wire();
+}
+
+/* ============================================================
+   CONNECTIONS + CALLOUTS
+   ============================================================ */
+var LINKS={
+  credit:["peak-10Y"], fed:["peak-3M","peak-2Y"],
+  wti:["comp-energy","brent"], brent:["comp-energy","wti"],
+  airfare:["comp-transport"], ai:["credit"], watch:["fed"], debt:["peak-30Y","fed"], fisher:["peak-10Y","fed"],
+  "peak-10Y":["credit","peak-2Y","fisher"], "peak-2Y":["peak-10Y","fed"],
+  "peak-3M":["fed"], "peak-30Y":["peak-10Y","debt"],
+  "comp-energy":["wti","brent"], "comp-transport":["airfare"]
+};
+
+function copyFor(m2){
+  var m=measure;
+  if(m2==="credit") return {eyebrow:"High yield spread, ICE BofA OAS", big:DATA.credit.oas+" bp",
+    chg:sgn(DATA.credit.chg,0," bp on the week")+(DATA.credit.chg<0?" — tightening":" — widening"), chgUp:DATA.credit.chg>0,
+    body:COPY.credit, tie:"Implied high yield "+f(D.hyYield)+"% = 10Y + "+DATA.credit.oas+"bp"};
+  if(m2==="fed") return {eyebrow:"Federal funds target range", big:f(DATA.fed.lower)+"–"+f(DATA.fed.upper)+"%",
+    chg:sgn(DATA.fed.lastMove,2,"pp on "+DATA.fed.lastDate), chgUp:DATA.fed.lastMove>0,
+    body:COPY.fed, tie:"Real policy rate "+sgn(D.realPolicy,2,"pp")+" · next meeting "+DATA.fed.nextDate};
+  if(m2==="wti") return {eyebrow:"WTI crude, Cushing", big:"$"+f(DATA.oil.wti.price), chg:sgn(DATA.oil.wti.chg,2," on the day"), chgUp:DATA.oil.wti.chg>0,
+    body:COPY.wti, tie:"$"+f(D.spread)+" under Brent"};
+  if(m2==="brent") return {eyebrow:"Brent crude, seaborne", big:"$"+f(DATA.oil.brent.price), chg:sgn(DATA.oil.brent.chg,2," on the day"), chgUp:DATA.oil.brent.chg>0,
+    body:COPY.brent, tie:D.spread>8?"Gap to WTI $"+f(D.spread)+" — wide, supply risk is priced":"Gap to WTI $"+f(D.spread)};
+  if(m2==="airfare") return {eyebrow:"Airline fares, year over year", big:sgn(DATA.airfare.yoy,1,"%"), chg:sgn(DATA.airfare.chg,1,"pp on the month"), chgUp:DATA.airfare.chg>0,
+    body:COPY.airfare, tie:"Feeds the transportation line"};
+  if(m2==="ai") return {eyebrow:"Hyperscaler capital spending", big:"$"+DATA.ai.capex+"bn", chg:sgn(DATA.ai.yoy,1,"% year over year"), chgUp:DATA.ai.yoy>0,
+    body:COPY.ai, tie:"Largest swing factor in business investment"};
+  if(m2==="debt") return {eyebrow:"Debt as a share of GDP", big:f(DATA.debt.gdp,1)+"%", chg:sgn(DATA.debt.chg,1,"pp on the year"), chgUp:DATA.debt.chg>0,
+    body:COPY.debt, tie:"Interest cost is the 30-year against this balance"};
+  if(m2==="fisher") return {eyebrow:"Real policy rate", big:sgn(D.realPolicy,2,"pp"), chg:f(DATA.fed.upper)+"% funds − "+f(D.cpi,1)+"% inflation", chgUp:D.realPolicy<0,
+    body:COPY.fisher, tie:"Market real 10Y "+sgn(D.realMarket,2,"pp")+" · breakeven "+f(DATA.breakeven)+"%"};
+  if(m2==="watch"){
+    var li=DATA.watch.map(function(w){ return '<li><span>'+w.when+'</span>'+w.what+'</li>'; }).join("");
+    return {eyebrow:"Ahead", big:"", chg:"", list:'<ul>'+li+'</ul>', body:"", tie:COPY.watch};
+  }
+  if(m2==="rocket") return {eyebrow:"The read", big:"", chg:"", body:COPY.rocket, tie:"Click to lift off"};
+  if(m2==="satellite") return {eyebrow:"The figures", big:"", chg:"", body:COPY.satellite, tie:"Click to open"};
+  if(m2.indexOf("peak-")===0){
+    var k=m2.slice(5), c=null; DATA.curve.forEach(function(q){ if(q.key===k) c=q; });
+    var tie = k==="10Y" ? "Real = nominal − inflation = "+sgn(D.real10,2,"pp")
+      : k==="2Y" ? "Trading "+sgn(yieldOf("2Y")-DATA.fed.upper,2,"pp")+" against the funds rate"
+      : k==="30Y" ? "2s10s slope "+sgn(D.slope,2,"pp")
+      : "Funds rate is "+f(DATA.fed.lower)+"–"+f(DATA.fed.upper)+"%";
+    return {eyebrow:c.label, big:f(c.yield)+"%", chg:(c.chg!==undefined?sgn(c.chg,2," on the day"):"Peak "+c.key+" on the range"), chgUp:c.chg>0,
+      body:COPY[k], tie:tie};
+  }
+  if(m2.indexOf("comp-")===0){
+    var key=m2.slice(5), cc=null; DATA.components.forEach(function(q){ if(q.key===key) cc=q; });
+    var wNow=cc[m], wOther=(m==="cpi"?cc.pce:cc.cpi), diff=wNow-wOther;
+    var word=Math.abs(diff)<1.5?"Weighted about the same in":(diff>0?"Weighted far more heavily than in":"Weighted much less than in");
+    return {eyebrow:cc.name, big:sgn(cc.yoy,1,"%"), chg:f(wNow,1)+"% of the "+m.toUpperCase()+" basket", chgUp:cc.yoy>0,
+      body:COPY.comp, tie:word+" "+(m==="cpi"?"PCE":"CPI")+" ("+f(wOther,1)+"%)"};
+  }
+  return null;
+}
+
+var scene=document.getElementById("scene"), callout=document.getElementById("callout");
+function show(metric,node){
+  var c=copyFor(metric); if(!c) return;
+  callout.innerHTML='<div class="eyebrow">'+c.eyebrow+'</div>'
+    +(c.big?'<div class="big">'+c.big+'</div>':'')
+    +(c.chg?'<div class="chg '+(c.chgUp?"up":"down")+'">'+c.chg+'</div>':'')
+    +(c.list||'')+(c.body?'<p>'+c.body+'</p>':'')
+    +'<div class="tie">'+c.tie+'</div>';
+  var sb=scene.getBoundingClientRect(), nb=node.getBoundingClientRect();
+  var cw=290, ch=callout.offsetHeight||190;
+  var left=Math.max(10,Math.min(sb.width-cw-10, nb.left-sb.left+nb.width/2-cw/2));
+  var top=nb.top-sb.top-ch-14;
+  if(top<10) top=nb.top-sb.top+nb.height+14;
+  top=Math.max(10,Math.min(sb.height-ch-10,top));
+  callout.style.left=left+"px"; callout.style.top=top+"px"; callout.classList.add("show");
+  scene.classList.add("engaged"); node.classList.add("hot");
+  (LINKS[metric]||[]).forEach(function(id){ var n=document.getElementById("obj-"+id); if(n) n.classList.add("linked"); });
+}
+var clearTimer=null;
+function cancelClear(){ if(clearTimer){ clearTimeout(clearTimer); clearTimer=null; } }
+function scheduleClear(){ cancelClear(); clearTimer=setTimeout(function(){ clearTimer=null; clear(); },70); }
+function clear(){
+  cancelClear();
+  callout.classList.remove("show"); scene.classList.remove("engaged");
+  Array.prototype.forEach.call(scene.querySelectorAll(".obj"),function(n){ n.classList.remove("hot"); n.classList.remove("linked"); });
+}
+function wire(){
+  Array.prototype.forEach.call(document.querySelectorAll(".obj"),function(node){
+    var metric=node.getAttribute("data-metric");
+    node.addEventListener("mouseenter",function(){ cancelClear(); show(metric,node); });
+    node.addEventListener("mouseleave",function(){ scheduleClear(); });
+    node.addEventListener("focus",function(){ cancelClear(); show(metric,node); });
+    node.addEventListener("blur",clear);
+    node.addEventListener("click",function(e){
+      e.stopPropagation();
+      if(metric==="rocket"){ launch(); return; }
+      if(metric==="satellite"){ setPanel(true); return; }
+      cancelClear(); show(metric,node);
+    });
+    node.addEventListener("keydown",function(e){
+      if(e.key!=="Enter" && e.key!==" ") return;
+      if(metric==="rocket"){ e.preventDefault(); launch(); }
+      if(metric==="satellite"){ e.preventDefault(); setPanel(true); }
+    });
+  });
+  // Enter/leave pairing is unreliable across nested SVG hit areas, so the
+  // authority is what is actually under the pointer on every move.
+  scene.addEventListener("mousemove",function(e){
+    var t=e.target, hit=(t && t.closest) ? t.closest(".obj") : null;
+    if(hit) cancelClear(); else scheduleClear();
+  });
+  scene.addEventListener("mouseleave",clear);
+}
+
+/* ============================================================
+   LAUNCH SEQUENCE → SPACE
+   ============================================================ */
+var launchEl=document.getElementById("launch"), timers=[], built=false;
+function reduced(){ return window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches; }
+
+function continents(cloud){
+  // Organic landmasses from a seeded generator, drawn on a 600-wide band
+  // and repeated once so the horizontal scroll wraps seamlessly.
+  function blob(cx,cy,rx,ry,n,seed,jit){
+    var pts=[], sd=seed;
+    function rnd(){ sd=(sd*9301+49297)%233280; return sd/233280; }
+    for(var i=0;i<n;i++){
+      var a=i/n*Math.PI*2, r=1+(rnd()-0.5)*jit;
+      pts.push([cx+Math.cos(a)*rx*r, cy+Math.sin(a)*ry*r]);
+    }
+    var d='M'+pts[0][0].toFixed(1)+','+pts[0][1].toFixed(1);
+    for(var j=0;j<n;j++){
+      var p0=pts[(j-1+n)%n], p1=pts[j], p2=pts[(j+1)%n], p3=pts[(j+2)%n];
+      d+=' C'+(p1[0]+(p2[0]-p0[0])/6).toFixed(1)+','+(p1[1]+(p2[1]-p0[1])/6).toFixed(1)
+        +' '+(p2[0]-(p3[0]-p1[0])/6).toFixed(1)+','+(p2[1]-(p3[1]-p1[1])/6).toFixed(1)
+        +' '+p2[0].toFixed(1)+','+p2[1].toFixed(1);
+    }
+    return d+'Z';
+  }
+  var band='';
+  if(cloud){
+    [[70,90,58,15,11,4001],[210,150,74,17,12,4177],[360,80,62,14,11,4331],
+     [470,190,80,16,12,4507],[140,250,68,15,11,4673],[330,300,88,18,12,4831],
+     [520,330,56,13,10,4993],[250,215,50,12,10,5147]].forEach(function(b){
+      band+='<path d="'+blob(b[0],b[1],b[2],b[3],b[4],b[5],0.45)+'" fill="#FFFFFF"/>';
+    });
+  } else {
+    [[92,118,46,62,16,101,0.52,"#3E7A55"],
+     [136,278,32,66,15,233,0.58,"#43855C"],
+     [318,108,92,52,18,367,0.46,"#3E7A55"],
+     [344,262,40,64,15,499,0.54,"#478A5F"],
+     [489,296,44,32,14,631,0.50,"#3E7A55"],
+     [206,196,20,17,11,769,0.60,"#43855C"],
+     [420,196,15,13,10,881,0.62,"#478A5F"],
+     [548,132,24,20,12,997,0.58,"#43855C"],
+     [258,352,17,12,10,1103,0.64,"#3E7A55"]].forEach(function(b){
+      band+='<path d="'+blob(b[0],b[1],b[2],b[3],b[4],b[5],b[6])+'" fill="'+b[7]+'"/>';
+    });
+  }
+  return '<svg viewBox="0 0 1200 400" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">'
+    + (cloud?'':'<rect x="0" y="0" width="1200" height="400" fill="#123E6E"/>')
+    + '<g>'+band+'</g><g transform="translate(600,0)">'+band+'</g>'
+    + '</svg>';
+}
+function buildLaunch(){
+  if(built) return; built=true;
+  var sf=document.getElementById("launch-stars"), html="";
+  for(var i=0;i<130;i++){
+    var s=(Math.random()*1.9+0.5).toFixed(2);
+    html+='<div class="star" style="left:'+(Math.random()*100).toFixed(2)+'%;top:'+(Math.random()*100).toFixed(2)+'%;width:'+s+'px;height:'+s+'px;opacity:'+(Math.random()*0.65+0.2).toFixed(2)+'"></div>';
+  }
+  sf.innerHTML=html;
+  document.getElementById("earth-map").innerHTML=continents(false);
+  document.getElementById("earth-clouds").innerHTML=continents(true);
+}
+function fillSpaceText(){
+  document.getElementById("thesis").textContent=DATA.summary;
+  document.getElementById("space-date").textContent=DATA.asOf;
+  document.getElementById("space-figs").innerHTML=[
+    "10Y "+f(yieldOf("10Y"))+"%","2s10s "+sgn(D.slope,2),"HY "+DATA.credit.oas+"bp",
+    measure.toUpperCase()+" "+f(measure==="cpi"?D.cpi:D.pce,1)+"%","WTI $"+f(DATA.oil.wti.price),"Funds "+f(DATA.fed.upper)+"%"
+  ].map(function(t){ return "<span>"+t+"</span>"; }).join("");
+}
+function launch(){
+  buildLaunch(); fillSpaceText(); clear();
+  timers.forEach(clearTimeout); timers=[];
+  launchEl.setAttribute("aria-hidden","false");
+  if(reduced()){
+    launchEl.classList.add("show","lift","arrived");
+    document.getElementById("space-close").focus();
+    return;
+  }
+  // 1. zoom into the rocket
+  scene.style.transformOrigin=(ROCKET_X/W*100).toFixed(1)+"% "+(ROCKET_BASE/H*100).toFixed(1)+"%";
+  scene.classList.add("zooming");
+  // 2. lift off
+  timers.push(setTimeout(function(){ launchEl.classList.add("show"); },330));
+  timers.push(setTimeout(function(){ launchEl.classList.add("lift"); },430));
+  // 3. arrive in space
+  timers.push(setTimeout(function(){
+    launchEl.classList.add("arrived");
+    document.getElementById("space-close").focus();
+  },2500));
+}
+function closeSpace(){
+  timers.forEach(clearTimeout); timers=[];
+  launchEl.classList.remove("show","lift","arrived");
+  launchEl.setAttribute("aria-hidden","true");
+  scene.classList.remove("zooming");
+  var r=document.getElementById("obj-rocket"); if(r) r.focus();
+}
+document.getElementById("space-close").addEventListener("click",closeSpace);
+document.addEventListener("keydown",function(e){
+  if(e.key!=="Escape") return;
+  if(launchEl.classList.contains("show")) closeSpace(); else clear();
+});
+
+/* ============================================================
+   READOUT · TOGGLE · LENS
+   ============================================================ */
+function cell(k,v,d,cls){ return '<div class="cell"><div class="k">'+k+'</div><div class="v">'+v+'</div>'+(d?'<div class="d '+(cls||"")+'">'+d+'</div>':'')+'</div>'; }
+function paintReadout(){
+  var h=measure==="cpi"?D.cpi:D.pce, other=measure==="cpi"?D.pce:D.cpi;
+  document.getElementById("readout").innerHTML=
+      cell(measure.toUpperCase()+" headline", f(h,1)+"%", (measure==="cpi"?"PCE":"CPI")+" reads "+f(other,1)+"%")
+    + cell("10-year", f(yieldOf("10Y"))+"%", "30Y at "+f(yieldOf("30Y"))+"%")
+    + cell("Real 10-year", sgn(D.real10,2), "Nominal − inflation", D.real10<0?"up":"down")
+    + cell("Real policy rate", sgn(D.realPolicy,2), "Funds − inflation", D.realPolicy<0?"up":"down")
+    + cell("Real 10Y, market", sgn(D.realMarket,2), "10Y − "+f(DATA.breakeven)+"% breakeven", D.realMarket<0?"up":"down")
+    + cell("2s10s slope", sgn(D.slope,2), D.slope<0?"Inverted":"Positively sloped", D.slope<0?"up":"down")
+    + cell("HY spread", DATA.credit.oas+" bp", sgn(DATA.credit.chg,0," bp")+(DATA.credit.chg<0?" tighter":" wider"), DATA.credit.chg>0?"up":"down")
+    + cell("Debt / GDP", f(DATA.debt.gdp,1)+"%", sgn(DATA.debt.chg,1,"pp on the year"), DATA.debt.chg>0?"up":"down")
+    + cell("WTI", "$"+f(DATA.oil.wti.price), sgn(DATA.oil.wti.chg,2), DATA.oil.wti.chg>0?"up":"down")
+    + cell("Brent", "$"+f(DATA.oil.brent.price), "$"+f(D.spread)+" over WTI", D.spread>8?"up":"")
+    + cell("Funds rate", f(DATA.fed.upper)+"%", "2Y "+sgn(yieldOf("2Y")-DATA.fed.upper,2,"pp")+" vs funds")
+    + cell("AI capex", "$"+DATA.ai.capex+"bn", sgn(DATA.ai.yoy,1,"% y/y"), DATA.ai.yoy>0?"up":"down")
+    + cell("Airline fares", sgn(DATA.airfare.yoy,1,"%"), "Year over year", DATA.airfare.yoy>0?"up":"down");
+}
+function paintNote(){
+  var sh=null,md=null;
+  DATA.components.forEach(function(c){ if(c.key==="shelter") sh=c; if(c.key==="medical") md=c; });
+  var gap=D.pce-D.pceWeighted;
+  document.getElementById("toggle-note").innerHTML = measure==="cpi"
+    ? "Shelter is <strong>"+f(sh.cpi,1)+"%</strong> of CPI &mdash; the single reason the headline runs hot. Switch to PCE and watch the houses shrink."
+    : "Shelter falls to <strong>"+f(sh.pce,1)+"%</strong> and medical care swells to <strong>"+f(md.pce,1)+"%</strong>. Reweighting the same lines gives "
+      +f(D.pceWeighted,1)+"%; published PCE is "+f(D.pce,1)+"%. That "+f(Math.abs(gap),1)+"pp gap is everything that isn't weights &mdash; different scope, different formula.";
+  var tl=document.getElementById("town-label");
+  if(tl) tl.textContent = measure==="cpi" ? "The CPI basket" : "The PCE basket";
+}
+var animating=false;
+function setMeasure(next){
+  if(next===measure||animating) return;
+  var from=measure==="cpi"?0:1, to=next==="cpi"?0:1;
+  measure=next;
+  document.getElementById("btn-cpi").setAttribute("aria-pressed",String(next==="cpi"));
+  document.getElementById("btn-pce").setAttribute("aria-pressed",String(next==="pce"));
+  clear(); paintReadout();
+  if(reduced()){ render(to); paintNote(); return; }
+  animating=true;
+  var t0=performance.now(), dur=680;
+  (function step(now){
+    var p=Math.min(1,(now-t0)/dur), e=p<0.5?4*p*p*p:1-Math.pow(-2*p+2,3)/2;
+    render(from+(to-from)*e);
+    if(p<1) requestAnimationFrame(step); else { animating=false; paintNote(); }
+  })(t0);
+}
+document.getElementById("btn-cpi").addEventListener("click",function(){ setMeasure("cpi"); });
+document.getElementById("btn-pce").addEventListener("click",function(){ setMeasure("pce"); });
+
+/* the satellite opens the figures; the panel closes itself */
+var panel=document.getElementById("panel");
+function setPanel(open){
+  panel.classList.toggle("open",open);
+  panel.setAttribute("aria-hidden",String(!open));
+  if(open) document.getElementById("panel-close").focus();
+  else { var sat=document.getElementById("obj-satellite"); if(sat) sat.focus(); }
+}
+document.getElementById("panel-close").addEventListener("click",function(){ setPanel(false); });
+
+/* fill the screen on wide viewports; letterbox rather than crop on narrow ones */
+function fitWorld(){
+  var ar=window.innerWidth/Math.max(1,window.innerHeight);
+  document.getElementById("svg").setAttribute("preserveAspectRatio", ar<1.25 ? "xMidYMid meet" : "xMidYMid slice");
+}
+window.addEventListener("resize",fitWorld);
+
+document.addEventListener("keydown",function(e){
+  if(e.key!=="Escape") return;
+  if(launchEl.classList.contains("show")) return;      // handled above
+  if(panel.classList.contains("open")){ setPanel(false); return; }
+  clear();
+});
+
+fitWorld(); render(0); paintReadout(); paintNote();
+document.getElementById("mark-date").textContent=DATA.asOf;
+(function(){
+  // NYSE hours, 09:30–16:00 New York, weekdays. Shown, not used to flip the theme.
+  var now=new Date();
+  var ny=new Date(now.toLocaleString("en-US",{timeZone:"America/New_York"}));
+  var day=ny.getDay(), mins=ny.getHours()*60+ny.getMinutes();
+  var open = day>=1 && day<=5 && mins>=570 && mins<960;
+  document.getElementById("session").innerHTML = open
+    ? 'Markets <em>open</em>'
+    : 'Markets closed';
+})();
+document.getElementById("panel-sub").textContent="Soundings as at "+DATA.asOf;
+})();
+</script>

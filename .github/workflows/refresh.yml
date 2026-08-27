@@ -1,0 +1,37 @@
+name: Refresh macro data
+
+on:
+  schedule:
+    # 21:15 UTC on weekdays — after Treasury yields post at 16:15 New York.
+    - cron: "15 21 * * 1-5"
+  workflow_dispatch:        # lets you run it by hand from the Actions tab
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Fetch from FRED and rebuild index.html
+        env:
+          FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
+        run: python3 scripts/fetch_data.py
+
+      - name: Commit if anything moved
+        run: |
+          git config user.name  "macro-soundings-bot"
+          git config user.email "actions@github.com"
+          if git diff --quiet -- index.html; then
+            echo "No change in the numbers today."
+          else
+            git add index.html
+            git commit -m "Data refresh $(date -u +%Y-%m-%d)"
+            git push
+          fi
