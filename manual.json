@@ -1,21 +1,33 @@
 {
   "_comment": "The hand-written half. Edit this daily; fetch-data.mjs merges it with FRED and never overwrites it.",
-
   "summary": "Although 10-year yields are increasing, credit spreads are tightening. Meaning the market isn't risky, companies can pay back their debt. It's the actual Treasury yield making rates seem high. Inflation is still 3.3%, debt is at its highest, and AI capex is strong. Will the Fed hike? Probably, Warsh just spoke today saying inflation is still too high",
-
   "fed": {
     "lastMove": -0.25,
     "lastDate": "29 Jul 2026",
-    "nextDate": "16 Sep 2026"
+    "nextDate": "16 Sep 2026",
+    "stance": "hawkish"
   },
-
-  "ai": { "capex": 648, "yoy": 38.4 },
-
+  "ai": {
+    "capex": 648,
+    "yoy": 38.4
+  },
   "watch": [
-    { "when": "10 Sep", "what": "August CPI" },
-    { "when": "16 Sep", "what": "FOMC — hike or hold" },
-    { "when": "26 Sep", "what": "August PCE" },
-    { "when": "2 Oct",  "what": "Payrolls" }
-  ]
+    {
+      "when": "10 Sep",
+      "what": "August CPI"
+    },
+    {
+      "when": "16 Sep",
+      "what": "FOMC — hike or hold"
+    },
+    {
+      "when": "26 Sep",
+      "what": "August PCE"
+    },
+    {
+      "when": "2 Oct",
+      "what": "Payrolls"
+    }
+  ],
+  "_stance_note": "fed.stance drives the bird on the Federal Reserve: hawkish | dovish | neutral"
 }
-

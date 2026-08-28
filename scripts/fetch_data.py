@@ -14,6 +14,7 @@ If FRED is unreachable this exits non-zero and writes nothing, so the
 previously deployed page stays up with the last good numbers.
 """
 
+import datetime
 import json
 import os
 import ssl
@@ -210,13 +211,19 @@ def build(S, manual):
 
     return {
         "asOf": S["y10y"].date,
+        # FRED publishes Treasury data a day or two behind, so the data's own
+        # date and the day we fetched it are different facts. Show both.
+        "builtAt": datetime.date.today().isoformat(),
         "summary": manual["summary"],
         "curve": [
-            {"key": "3M",  "label": "3-month bill", "yield": r(S["y3m"].value)},
-            {"key": "2Y",  "label": "2-year note",  "yield": r(S["y2y"].value)},
+            {"key": "3M",  "label": "3-month bill", "yield": r(S["y3m"].value),
+             "chg": r(S["y3m"].value - S["y3m"].at(1))},
+            {"key": "2Y",  "label": "2-year note",  "yield": r(S["y2y"].value),
+             "chg": r(S["y2y"].value - S["y2y"].at(1))},
             {"key": "10Y", "label": "10-year note", "yield": r(S["y10y"].value),
              "chg": r(S["y10y"].value - S["y10y"].at(1))},
-            {"key": "30Y", "label": "30-year bond", "yield": r(S["y30y"].value)},
+            {"key": "30Y", "label": "30-year bond", "yield": r(S["y30y"].value),
+             "chg": r(S["y30y"].value - S["y30y"].at(1))},
         ],
         "oil": {
             "wti":   {"price": r(S["wti"].value),   "chg": r(S["wti"].value - S["wti"].at(1))},
@@ -228,6 +235,7 @@ def build(S, manual):
             "lastMove": manual["fed"]["lastMove"],
             "lastDate": manual["fed"]["lastDate"],
             "nextDate": manual["fed"]["nextDate"],
+            "stance": manual["fed"].get("stance", "neutral"),
         },
         "credit": {
             "oas": round(S["hy_oas"].value * 100),
@@ -244,7 +252,11 @@ def build(S, manual):
             "yoy": r(S["airfare"].value, 1),
             "chg": r(S["airfare"].value - S["airfare"].at(1), 1),
         },
-        "inflation": {"cpi": r(headline_cpi, 1), "pce": r(S["pce"].value, 1)},
+        # chg is the move in the year-over-year rate itself: did inflation accelerate?
+        "inflation": {
+            "cpi": r(headline_cpi, 1), "cpiChg": r(headline_cpi - S["cpi"].at(1), 1),
+            "pce": r(S["pce"].value, 1), "pceChg": r(S["pce"].value - S["pce"].at(1), 1),
+        },
         "ai": manual["ai"],
         "watch": manual["watch"],
         "components": components,

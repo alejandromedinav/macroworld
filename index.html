@@ -94,6 +94,12 @@ svg.chart{display:block; width:100%; height:100%}
 .panel-close:hover{background:var(--ink); color:var(--panel)}
 .panel-close:focus-visible{outline:2px solid var(--verd); outline-offset:2px}
 
+.moved{margin-top:16px; padding:13px 15px 14px; border:1px solid var(--rule); background:var(--paper)}
+.moved h3{font-family:"IBM Plex Mono",monospace; font-size:10px; font-weight:600; letter-spacing:.19em; text-transform:uppercase; color:var(--ink-soft); margin:0 0 9px}
+.moved ul{margin:0; padding:0; list-style:none; display:flex; flex-wrap:wrap; gap:6px 26px}
+.moved li{display:flex; align-items:baseline; gap:9px; font-size:15px}
+.moved li b{font-family:"IBM Plex Mono",monospace; font-size:13.5px; font-weight:600; font-variant-numeric:tabular-nums}
+.moved .quiet{color:var(--ink-soft); font-size:15px}
 .readout{display:grid; grid-template-columns:repeat(auto-fit,minmax(148px,1fr)); gap:1px; margin-top:16px; background:var(--rule-soft); border:1px solid var(--rule-soft)}
 .cell{background:var(--panel); padding:12px 14px 13px}
 .cell .k{font-family:"IBM Plex Mono",monospace; font-size:10px; font-weight:500; letter-spacing:.15em; text-transform:uppercase; color:var(--ink-soft)}
@@ -163,6 +169,8 @@ svg.chart{display:block; width:100%; height:100%}
   .space-figs{margin-top:18px; gap:6px 20px; font-size:11.5px}
   .thesis-lbl{margin-bottom:12px}
 }
+@keyframes soar{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+.soar{animation:soar 6.5s ease-in-out infinite; transform-box:fill-box; transform-origin:center}
 @media (prefers-reduced-motion: reduce){
   *{transition-duration:.01ms !important; animation-duration:.01ms !important}
   .scene.zooming{transform:none}
@@ -184,6 +192,7 @@ svg.chart{display:block; width:100%; height:100%}
         <div class="panel-sub" id="panel-sub"></div>
         <button class="panel-close" id="panel-close">Close</button>
       </div>
+      <div class="moved" id="moved"></div>
       <div class="readout" id="readout"></div>
       <div class="controls">
         <div class="toggle" role="group" aria-label="Inflation measure">
@@ -245,17 +254,20 @@ svg.chart{display:block; width:100%; height:100%}
    === edit manual.json for the read, the watch list and AI capex.        === */
 var DATA = {
   "asOf": "2026-08-26",
+  "builtAt": "2026-08-28",
   "summary": "Although 10-year yields are increasing, credit spreads are tightening. Meaning the market isn't risky, companies can pay back their debt. It's the actual Treasury yield making rates seem high. Inflation is still 3.3%, debt is at its highest, and AI capex is strong. Will the Fed hike? Probably, Warsh just spoke today saying inflation is still too high",
   "curve": [
     {
       "key": "3M",
       "label": "3-month bill",
-      "yield": 3.85
+      "yield": 3.85,
+      "chg": -0.01
     },
     {
       "key": "2Y",
       "label": "2-year note",
-      "yield": 4.19
+      "yield": 4.19,
+      "chg": 0.02
     },
     {
       "key": "10Y",
@@ -266,7 +278,8 @@ var DATA = {
     {
       "key": "30Y",
       "label": "30-year bond",
-      "yield": 5.18
+      "yield": 5.18,
+      "chg": 0.01
     }
   ],
   "oil": {
@@ -284,7 +297,8 @@ var DATA = {
     "upper": 3.75,
     "lastMove": -0.25,
     "lastDate": "29 Jul 2026",
-    "nextDate": "16 Sep 2026"
+    "nextDate": "16 Sep 2026",
+    "stance": "hawkish"
   },
   "credit": {
     "oas": 263,
@@ -302,7 +316,9 @@ var DATA = {
   },
   "inflation": {
     "cpi": 3.3,
-    "pce": 3.7
+    "cpiChg": -0.2,
+    "pce": 3.7,
+    "pceChg": -0.0
   },
   "ai": {
     "capex": 648,
@@ -383,7 +399,9 @@ var DATA = {
 /* ============================================================
    COPY — every sentence in the world lives here. Edit freely;
    nothing below reads text from anywhere else.
-   Tokens available: {{v}} value, {{n}} a second number.
+   Live figures: write {{cpi}} {{pce}} {{y2}} {{y10}} {{y30}} {{funds}} {{oas}}
+   {{realPolicy}} {{realPolicyPce}} {{realMarket}} {{debt}} {{spread}} {{wti}} {{brent}}
+   and they are substituted at render, so a sentence never goes stale.
    ============================================================ */
 var COPY = {
   "10Y": "Peaking, and not for one reason. Geopolitical tension pushes oil up, transportation costs follow, and inflation expectations reprice. Add the Fed decision on top of that and you get this.",
@@ -391,13 +409,13 @@ var COPY = {
   "30Y": "Inflation expectations, plus how much paper the Treasury has to sell. With debt where it is, that second part is doing more work than it used to.",
   "3M":  "Effectively today's policy rate, priced in the bill market.",
   credit:"Tightening, not widening. Meaning the market isn't pricing risk — companies can service their debt. So when rates look high, that's the Treasury yield doing it, not credit stress.",
-  fed:   "Cut 25bp in July. Now inflation is 3.5% and the 2-year is trading above the funds rate. Will they hike? Interesting to see.",
+  fed:   "Cut 25bp in July. Now inflation is {{cpi}} and the 2-year is trading above the funds rate. Will they hike? Interesting to see.",
   wti:   "Landlocked at Cushing — no water access, so it prices under the seaborne grade. Up with everything else.",
   brent: "Seaborne, so it moves first when shipping routes are threatened. That is why the gap to WTI is wide right now.",
   airfare:"Jet fuel feeds straight into this. Oil up, fares up, and it lands in the transportation line of the basket.",
   ai:    "Nvidia earnings were strong and the spend keeps climbing. Big enough to move GDP on its own, and the one line here that isn't answering to rates.",
   debt:  "Highest it has been. Rates this high on a balance sheet this size is the part that compounds.",
-  fisher:"Real = nominal − inflation. The waterline is inflation, the float is whatever is left over. Policy is sitting a quarter point above it, which is barely restrictive at all. The market's real 10-year is a different story — the long end is doing more work than the Fed is.",
+  fisher:"Real = nominal − inflation. The waterline is inflation, the float is whatever is left over. Policy is sitting {{realPolicy}} above it on CPI, and only {{realPolicyPce}} on the PCE measure the Fed actually targets. The market's real 10-year is a different story at {{realMarket}} — the long end is doing more work than the Fed is.",
   watch: "What could move this next.",
   rocket:"Launch for the read.",
   satellite:"Every figure on one screen — the readings behind the picture.",
@@ -507,7 +525,7 @@ function lighthouse(){
 
 /* --- AI ISLAND: back-right corner, small --- */
 function island(){
-  var x=1430, base=596, k=0.62;
+  var x=1442, base=574, k=0.62;
   var s='<g>';
   s+='<polygon points="'+(x-84*k)+','+base+' '+(x-52*k)+','+(base-14*k)+' '+(x+50*k)+','+(base-14*k)+' '+(x+84*k)+','+base+'" fill="var(--land)" stroke="var(--ink)" stroke-width="1.5" stroke-linejoin="round"/>';
   var dc='';
@@ -738,13 +756,50 @@ function fed(){
   b+='<rect x="'+(bx+15)+'" y="'+f(by+bh-26,1)+'" width="13" height="16" fill="var(--amber)" stroke="var(--ink)" stroke-width="1.2"/>';
   b+='<rect x="'+(bx+bw-28)+'" y="'+f(by+bh-26,1)+'" width="13" height="16" fill="var(--amber)" stroke="var(--ink)" stroke-width="1.2"/>';
   b+='<rect x="'+bx+'" y="'+f(by+bh,1)+'" width="'+bw+'" height="7" fill="var(--panel)" stroke="var(--ink)" stroke-width="1.8"/>';
+  // Soaring above the building, clear of the flag at the pediment.
+  b+=fedBird(bx+bw/2+6, by-150);
   s+='<g class="obj" id="obj-fed" data-metric="fed" tabindex="0" role="button" aria-label="Federal funds target rate, '+f(DATA.fed.lower)+' to '+f(DATA.fed.upper)+' percent">'
-    +'<rect x="4" y="'+f(by-44,1)+'" width="214" height="'+f(NEAR+44-by,1)+'" fill="transparent"/>'+b
+    +'<rect x="4" y="'+f(by-182,1)+'" width="214" height="'+f(NEAR+182-by,1)+'" fill="transparent"/>'+b
     +'<rect class="focusring" x="'+(bx-20)+'" y="'+f(by-40,1)+'" width="'+(bw+40)+'" height="'+(bh+54)+'" fill="none" stroke="var(--verd)" stroke-width="2.5" stroke-dasharray="6 5"/>'
     +'<circle class="linkmark" cx="'+(bx+bw/2)+'" cy="'+f(by-44,1)+'" r="7" fill="var(--verd)"/>'
-    +'<text class="lbl" x="'+(bx+bw/2)+'" y="'+f(by-50,1)+'" text-anchor="middle" font-size="13">Federal Reserve</text>'
-    +'<text class="num" x="'+(bx+bw/2+14)+'" y="'+(NEAR+34)+'" text-anchor="middle">'+f(DATA.fed.lower)+'–'+f(DATA.fed.upper)+'%</text></g>';
+    +'<text class="lbl" x="'+(bx+bw/2)+'" y="'+(NEAR+34)+'" text-anchor="middle" font-size="13">Federal Reserve</text>'
+    +'<text class="num" x="'+(bx+bw/2)+'" y="'+(NEAR+55)+'" text-anchor="middle">'+f(DATA.fed.lower)+'–'+f(DATA.fed.upper)+'%</text></g>';
   return s+'</g>';
+}
+
+/* --- The bird over the Federal Reserve. Hawkish, dovish or neither. --- */
+function fedBird(px,py){
+  var st=(DATA.fed.stance||"neutral").toLowerCase();
+  if(st!=="hawkish" && st!=="dovish") return "";
+  var hawk=st==="hawkish";
+  var g='<g transform="translate('+f(px,1)+','+f(py,1)+') scale(1.2)"><g class="soar">';
+
+  if(hawk){
+    // Red-tailed hawk seen from below: broad wings, fingered primaries, rust tail.
+    var dark='var(--ink)';
+    g+='<path d="M-7,-2 C-24,-8 -42,-8 -55,-2 L-50,3 L-54,5 L-46,7 L-49,9 L-39,11 C-26,14 -14,12 -7,8 Z" fill="'+dark+'" stroke="'+dark+'" stroke-width="1.4" stroke-linejoin="round"/>';
+    g+='<path d="M7,-2 C24,-8 42,-8 55,-2 L50,3 L54,5 L46,7 L49,9 L39,11 C26,14 14,12 7,8 Z" fill="'+dark+'" stroke="'+dark+'" stroke-width="1.4" stroke-linejoin="round"/>';
+    g+='<path d="M-8,10 L-11,26 L0,22 L11,26 L8,10 Z" fill="var(--rust)" stroke="'+dark+'" stroke-width="1.5" stroke-linejoin="round"/>';
+    g+='<path d="M0,-22 C5,-22 9,-17 9,-10 C10,0 9,7 7,12 L-7,12 C-9,7 -10,0 -9,-10 C-9,-17 -5,-22 0,-22 Z" fill="'+dark+'"/>';
+    g+='<path d="M-4,-19 C-1,-24 4,-24 5,-20 L9,-18 L4,-16 C2,-14 -2,-15 -4,-19 Z" fill="'+dark+'"/>';
+    g+='<path d="M5,-20 L11,-18.5 L5,-17 Z" fill="var(--amber)"/>';
+    g+='<circle cx="2.5" cy="-19.5" r="1.1" fill="var(--amber)"/>';
+    // underwing bands, so it is not a flat blob against the sky
+    g+='<path d="M-14,1 C-26,-1 -38,-1 -47,2" fill="none" stroke="var(--paper)" stroke-width="1.5" opacity=".38"/>';
+    g+='<path d="M14,1 C26,-1 38,-1 47,2" fill="none" stroke="var(--paper)" stroke-width="1.5" opacity=".38"/>';
+  } else {
+    // Dove: paler, rounder wings, no fingers.
+    var pale='var(--panel)';
+    g+='<path d="M-6,-2 C-20,-9 -36,-8 -46,-1 C-36,7 -20,10 -6,7 Z" fill="'+pale+'" stroke="var(--ink)" stroke-width="1.7" stroke-linejoin="round"/>';
+    g+='<path d="M6,-2 C20,-9 36,-8 46,-1 C36,7 20,10 6,7 Z" fill="'+pale+'" stroke="var(--ink)" stroke-width="1.7" stroke-linejoin="round"/>';
+    g+='<path d="M-7,9 L-9,22 L0,19 L9,22 L7,9 Z" fill="'+pale+'" stroke="var(--ink)" stroke-width="1.6" stroke-linejoin="round"/>';
+    g+='<path d="M0,-19 C4,-19 8,-15 8,-9 C9,0 8,6 6,11 L-6,11 C-8,6 -9,0 -8,-9 C-8,-15 -4,-19 0,-19 Z" fill="'+pale+'" stroke="var(--ink)" stroke-width="1.7"/>';
+    g+='<circle cx="1" cy="-18" r="4.6" fill="var(--verd)" stroke="var(--ink)" stroke-width="1.5"/>';
+    g+='<path d="M5,-18 L10,-16.8 L5,-15.6 Z" fill="var(--ink)"/>';
+    g+='<circle cx="2" cy="-19" r="1.1" fill="var(--ink)"/>';
+  }
+  g+='</g></g>';
+  return g;
 }
 
 /* --- ROCKET on the ground --- */
@@ -772,11 +827,18 @@ function rocketPad(){
    width = weight in basket · height = year-over-year
    ============================================================ */
 var TOWN_X=1080, TOWN_W=470, TOWN_BASE=NEAR+6;
+// Energy can print +14% while shelter runs +3, so a raw linear scale sends one
+// building through the roof. Clamp the domain to -4..+16 and map it to a height
+// that always clears the offshore markers.
+function barHeight(yoy){
+  var t=Math.max(-4,Math.min(16,yoy));
+  return 34 + (t+4)/20*156;
+}
 function townGeometry(mix){
   var total=0, wts=DATA.components.map(function(c){ var w=c.cpi+(c.pce-c.cpi)*mix; total+=w; return w; });
   var gap=10, avail=TOWN_W-gap*(DATA.components.length-1), x=TOWN_X, out=[];
   DATA.components.forEach(function(c,i){
-    var w=Math.max(16, avail*wts[i]/total), h=Math.max(34, 24+(yoyOf(c,measure)+3)*18);
+    var w=Math.max(16, avail*wts[i]/total), h=barHeight(yoyOf(c,measure));
     out.push({c:c,x:x,w:w,h:h,weight:wts[i]}); x+=w+gap;
   });
   return out;
@@ -868,7 +930,7 @@ function shapeTransit(x,w,h,y){
   return s;
 }
 function shapeFuel(x,w,h,y){
-  var s='', neg=h<78;   // h = 24+(yoy+3)*18, so h<78 is exactly a negative y/y
+  var s='', neg=h<barHeight(0);   // exactly a negative year-over-year
   // storage tanks
   var n=Math.max(1,Math.min(3,Math.floor(w/18))), tw=w/n;
   for(var i=0;i<n;i++){
@@ -981,14 +1043,33 @@ function copyFor(m2){
   return null;
 }
 
+/* Copy can quote live figures with {{token}} so hand-written sentences never
+   go stale against the data. Unknown tokens are left visible, not silently blanked. */
+function tokens(){
+  return {
+    cpi:f(D.cpi,1)+"%", pce:f(D.pce,1)+"%",
+    y2:f(yieldOf("2Y"))+"%", y10:f(yieldOf("10Y"))+"%", y30:f(yieldOf("30Y"))+"%",
+    funds:f(DATA.fed.upper)+"%", oas:DATA.credit.oas+"bp",
+    realPolicy:sgn(D.realPolicy,2)+"pp", realPolicyPce:sgn(D.realPolicyPce,2)+"pp",
+    realMarket:sgn(D.realMarket,2)+"pp",
+    debt:f(DATA.debt.gdp,1)+"%", spread:"$"+f(D.spread),
+    wti:"$"+f(DATA.oil.wti.price), brent:"$"+f(DATA.oil.brent.price)
+  };
+}
+function fill(t){
+  if(!t) return t;
+  var T=tokens();
+  return t.replace(/\{\{(\w+)\}\}/g, function(m,k){ return T[k]!==undefined ? T[k] : m; });
+}
+
 var scene=document.getElementById("scene"), callout=document.getElementById("callout");
 function show(metric,node){
   var c=copyFor(metric); if(!c) return;
   callout.innerHTML='<div class="eyebrow">'+c.eyebrow+'</div>'
     +(c.big?'<div class="big">'+c.big+'</div>':'')
     +(c.chg?'<div class="chg '+(c.chgUp?"up":"down")+'">'+c.chg+'</div>':'')
-    +(c.list||'')+(c.body?'<p>'+c.body+'</p>':'')
-    +'<div class="tie">'+c.tie+'</div>';
+    +(c.list||'')+(c.body?'<p>'+fill(c.body)+'</p>':'')
+    +'<div class="tie">'+fill(c.tie)+'</div>';
   var sb=scene.getBoundingClientRect(), nb=node.getBoundingClientRect();
   var cw=290, ch=callout.offsetHeight||190;
   var left=Math.max(10,Math.min(sb.width-cw-10, nb.left-sb.left+nb.width/2-cw/2));
@@ -1142,6 +1223,37 @@ document.addEventListener("keydown",function(e){
    READOUT · TOGGLE · LENS
    ============================================================ */
 function cell(k,v,d,cls){ return '<div class="cell"><div class="k">'+k+'</div><div class="v">'+v+'</div>'+(d?'<div class="d '+(cls||"")+'">'+d+'</div>':'')+'</div>'; }
+/* What actually moved since the previous print. Each metric is scored against a
+   typical move for that series, so a 6bp yield tick and a $2 oil move can be ranked
+   against each other honestly. */
+function paintMoved(){
+  var el=document.getElementById("moved"); if(!el) return;
+  var y=function(k){ for(var i=0;i<DATA.curve.length;i++) if(DATA.curve[i].key===k) return DATA.curve[i]; return null; };
+  var rows=[];
+  function add(label,chg,typical,fmt){
+    if(chg===undefined||chg===null||!isFinite(chg)) return;
+    rows.push({label:label, chg:chg, score:Math.abs(chg)/typical, text:fmt(chg)});
+  }
+  DATA.curve.forEach(function(c){
+    add(c.key+" yield", c.chg, 0.05, function(v){ return sgn(v,2,"pp"); });
+  });
+  add("HY spread", DATA.credit.chg, 5, function(v){ return sgn(v,0," bp"); });
+  add("WTI", DATA.oil.wti.chg, 1.0, function(v){ return sgn(v,2); });
+  add("Brent", DATA.oil.brent.chg, 1.0, function(v){ return sgn(v,2); });
+  if(DATA.inflation.cpiChg!==undefined) add("CPI rate", DATA.inflation.cpiChg, 0.1, function(v){ return sgn(v,1,"pp"); });
+  if(DATA.inflation.pceChg!==undefined) add("PCE rate", DATA.inflation.pceChg, 0.1, function(v){ return sgn(v,1,"pp"); });
+  add("Airfares", DATA.airfare.chg, 1.0, function(v){ return sgn(v,1,"pp"); });
+
+  rows = rows.filter(function(r){ return r.score>=0.5; })
+             .sort(function(a,b){ return b.score-a.score; }).slice(0,6);
+
+  var body = rows.length
+    ? '<ul>'+rows.map(function(r){
+        return '<li>'+r.label+' <b class="'+(r.chg>0?"up":"down")+'">'+r.text+'</b></li>'; }).join("")+'</ul>'
+    : '<div class="quiet">Nothing moved much on the last print.</div>';
+  el.innerHTML='<h3>What moved</h3>'+body;
+}
+
 function paintReadout(){
   var h=measure==="cpi"?D.cpi:D.pce, other=measure==="cpi"?D.pce:D.cpi;
   document.getElementById("readout").innerHTML=
@@ -1202,7 +1314,7 @@ document.getElementById("panel-close").addEventListener("click",function(){ setP
 /* fill the screen on wide viewports; letterbox rather than crop on narrow ones */
 function fitWorld(){
   var ar=window.innerWidth/Math.max(1,window.innerHeight);
-  document.getElementById("svg").setAttribute("preserveAspectRatio", ar<1.25 ? "xMidYMid meet" : "xMidYMid slice");
+  document.getElementById("svg").setAttribute("preserveAspectRatio", ar<1.75 ? "xMidYMid meet" : "xMidYMid slice");
 }
 window.addEventListener("resize",fitWorld);
 
@@ -1213,8 +1325,14 @@ document.addEventListener("keydown",function(e){
   clear();
 });
 
-fitWorld(); render(0); paintReadout(); paintNote();
-document.getElementById("mark-date").textContent=DATA.asOf;
+fitWorld(); render(0); paintReadout(); paintMoved(); paintNote();
+(function(){
+  // The data's own date and the day we fetched it are different facts.
+  var el=document.getElementById("mark-date");
+  el.textContent = (DATA.builtAt && DATA.builtAt!==DATA.asOf)
+    ? DATA.asOf+" data · updated "+DATA.builtAt
+    : DATA.asOf;
+})();
 (function(){
   // NYSE hours, 09:30–16:00 New York, weekdays. Shown, not used to flip the theme.
   var now=new Date();
@@ -1225,6 +1343,9 @@ document.getElementById("mark-date").textContent=DATA.asOf;
     ? 'Markets <em>open</em>'
     : 'Markets closed';
 })();
-document.getElementById("panel-sub").textContent="Soundings as at "+DATA.asOf;
+document.getElementById("panel-sub").textContent =
+  (DATA.builtAt && DATA.builtAt!==DATA.asOf)
+    ? "Data as at "+DATA.asOf+" · updated "+DATA.builtAt
+    : "Soundings as at "+DATA.asOf;
 })();
 </script>
