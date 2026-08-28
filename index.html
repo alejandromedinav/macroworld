@@ -98,6 +98,20 @@ svg.chart{display:block; width:100%; height:100%}
 .moved li{display:flex; align-items:baseline; gap:9px; font-size:15px}
 .moved li b{font-family:"IBM Plex Mono",monospace; font-size:13.5px; font-weight:600; font-variant-numeric:tabular-nums}
 .moved .quiet{color:var(--ink-soft); font-size:15px}
+/* The six principal soundings. Ruled like a chart band rather than boxed like
+   a dashboard: hairline columns, no fills, no rounded corners. */
+.now{display:flex; flex-wrap:wrap; margin-top:22px; border-top:2px solid var(--ink); border-bottom:1px solid var(--ink)}
+.nowlbl{font-family:"IBM Plex Mono",monospace; font-size:10px; font-weight:600; letter-spacing:.24em; text-transform:uppercase;
+  color:var(--ink-soft); margin-top:22px; margin-bottom:-14px}
+.now .f{flex:1 1 132px; min-width:0; padding:15px 16px 16px; border-left:1px solid var(--rule-soft)}
+.now .f:first-child{border-left:0; padding-left:0}
+.now .f .k{font-family:"IBM Plex Mono",monospace; font-size:9.5px; letter-spacing:.17em; text-transform:uppercase; color:var(--ink-soft)}
+.now .f .v{font-family:"IBM Plex Mono",monospace; font-size:clamp(24px,2.4vw,32px); font-weight:600; letter-spacing:-.03em;
+  font-variant-numeric:tabular-nums; margin-top:7px; line-height:1}
+.now .f .d{font-family:"IBM Plex Mono",monospace; font-size:11px; margin-top:6px; color:var(--ink-soft)}
+.now .f .d.up{color:var(--rust)} .now .f .d.down{color:var(--verd)}
+.now .f .vin{font-family:"IBM Plex Mono",monospace; font-size:9.5px; letter-spacing:.08em; color:var(--ink-soft); opacity:.6; margin-top:4px}
+
 .group{margin-top:18px}
 .group h4{font-family:"IBM Plex Mono",monospace; font-size:10px; font-weight:600; letter-spacing:.2em; text-transform:uppercase;
   color:var(--ink-soft); margin:0 0 7px; padding-bottom:5px; border-bottom:1px solid var(--rule-soft)}
@@ -111,7 +125,7 @@ svg.chart{display:block; width:100%; height:100%}
 .readout{display:flex; flex-wrap:wrap; gap:1px; margin-top:0; background:var(--rule-soft); border:1px solid var(--rule-soft)}
 .cell{background:var(--panel); padding:12px 14px 13px; flex:1 1 168px; min-width:0}
 .cell .k{font-family:"IBM Plex Mono",monospace; font-size:10px; font-weight:500; letter-spacing:.15em; text-transform:uppercase; color:var(--ink-soft)}
-.cell .v{font-family:"IBM Plex Mono",monospace; font-size:22px; font-weight:600; margin-top:4px; font-variant-numeric:tabular-nums; letter-spacing:-.02em}
+.cell .v{font-family:"IBM Plex Mono",monospace; font-size:18px; font-weight:600; margin-top:4px; font-variant-numeric:tabular-nums; letter-spacing:-.02em}
 .cell .d{font-family:"IBM Plex Mono",monospace; font-size:11.5px; margin-top:3px}
 
 .controls{display:flex; flex-wrap:wrap; align-items:center; gap:16px; margin-top:18px}
@@ -225,6 +239,8 @@ svg.chart{display:block; width:100%; height:100%}
         <button class="panel-close" id="panel-close">Close</button>
       </div>
       <div class="moved" id="moved"></div>
+      <div class="nowlbl">Right now</div>
+      <div class="now" id="now"></div>
       <div id="readout-groups"></div>
       <div class="controls">
         <div class="toggle" role="group" aria-label="Inflation measure">
@@ -359,7 +375,7 @@ var DATA = {
     "lower": 3.5,
     "upper": 3.75,
     "effective": 3.63,
-    "lastMove": -0.25,
+    "lastMove": 0,
     "lastDate": "29 Jul 2026",
     "nextDate": "16 Sep 2026",
     "stance": "hawkish"
@@ -494,7 +510,7 @@ var COPY = {
   "30Y": "Inflation expectations, plus how much paper the Treasury has to sell.",
   "3M":  "Today's policy rate, priced in the bill market.",
   credit:"Tightening, not widening. The market isn't pricing risk — companies can pay back their debt.",
-  fed:   "Cut 25bp in July. Inflation is {{cpi}} and the 2-year is above the funds rate. Will they hike?",
+  fed:   "Held in July. Warsh said today that inflation is still too high, which raises the odds of a hike in September. The 2-year is already above the funds rate.",
   wti:   "Priced inland at Cushing. No water access, so it trades under the seaborne grade.",
   brent: "The seaborne benchmark. Moves first when shipping routes are threatened.",
   airfare:"Tracks jet fuel.",
@@ -1099,7 +1115,7 @@ function copyFor(m2){
     chg:sgn(DATA.credit.chg,0," bp on the week")+(DATA.credit.chg<0?" — tightening":" — widening"), chgUp:DATA.credit.chg>0,
     body:COPY.credit, tie:"Effective yield "+f(D.hyYield)+"%"};
   if(m2==="fed") return {eyebrow:"Federal funds target range", big:f(DATA.fed.lower)+"–"+f(DATA.fed.upper)+"%",
-    chg:sgn(DATA.fed.lastMove,2,"pp on "+DATA.fed.lastDate), chgUp:DATA.fed.lastMove>0,
+    chg:(DATA.fed.lastMove===0 ? "Held on "+DATA.fed.lastDate : sgn(DATA.fed.lastMove,2,"pp on "+DATA.fed.lastDate)), chgUp:DATA.fed.lastMove>0,
     body:COPY.fed, tie:"Real policy rate "+sgn(D.realPolicy,2,"pp")+" · next meeting "+DATA.fed.nextDate};
   if(m2==="wti") return {eyebrow:"WTI crude, Cushing", big:"$"+f(DATA.oil.wti.price), chg:sgn(DATA.oil.wti.chg,2," on the day"), chgUp:DATA.oil.wti.chg>0,
     body:COPY.wti, tie:"$"+f(D.spread)+" under Brent"};
@@ -1113,7 +1129,7 @@ function copyFor(m2){
       ? '<ul>'+parts.map(function(p){ return '<li><span>'+p.value+'</span>'+p.name+'</li>'; }).join("")+'</ul>'
       : '';
     return {eyebrow:(DATA.ai.label||"AI capex")+(DATA.ai.period?" · "+DATA.ai.period:""),
-      big:(DATA.ai.headline||""), chg:"", list:list, body:COPY.ai, tie:"Entered by hand"};
+      big:(DATA.ai.headline||""), chg:"", list:list, body:COPY.ai, tie:""};
   }
   if(m2==="debt") return {eyebrow:"Total federal debt / GDP", big:f(DATA.debt.gdp,1)+"%", chg:sgn(DATA.debt.chg,1,"pp on the year"), chgUp:DATA.debt.chg>0,
     body:COPY.debt, tie:"Interest cost is the 30-year against this balance"};
@@ -1170,7 +1186,7 @@ function show(metric,node){
     +(c.big?'<div class="big">'+c.big+'</div>':'')
     +(c.chg?'<div class="chg '+(c.chgUp?"up":"down")+'">'+c.chg+'</div>':'')
     +(c.list||'')+(c.body?'<p>'+fill(c.body)+'</p>':'')
-    +'<div class="tie">'+fill(c.tie)+'</div>';
+    +(c.tie?'<div class="tie">'+fill(c.tie)+'</div>':'');
   var sb=scene.getBoundingClientRect(), nb=node.getBoundingClientRect();
   var cw=290, ch=callout.offsetHeight||190;
   var left=Math.max(10,Math.min(sb.width-cw-10, nb.left-sb.left+nb.width/2-cw/2));
@@ -1373,6 +1389,25 @@ function group(title, cells){
   return '<div class="group"><h4>'+title+'</h4><div class="readout">'+cells+'</div></div>';
 }
 
+/* Six figures anyone would check first. Everything else is reference below. */
+function paintNow(){
+  var el=document.getElementById("now"); if(!el) return;
+  function f6(k,v,d,cls,vin){
+    return '<div class="f"><div class="k">'+k+'</div><div class="v">'+v+'</div>'
+      + (d?'<div class="d '+(cls||"")+'">'+d+'</div>':'')
+      + (vin?'<div class="vin">'+vin+'</div>':'')+'</div>';
+  }
+  var y10=yieldOf("10Y"), c10=null;
+  DATA.curve.forEach(function(c){ if(c.key==="10Y") c10=c; });
+  el.innerHTML =
+      f6("10-year", f(y10)+"%", (c10&&c10.chg!==undefined?sgn(c10.chg,2,"pp"):""), (c10&&c10.chg>0?"up":"down"), vintage("y10y"))
+    + f6("Real 10Y", sgn(D.realMarket,2), "TIPS", D.realMarket<0?"up":"down", vintage("real_tips"))
+    + f6("HY OAS", DATA.credit.oas+"bp", sgn(DATA.credit.chg,0,"bp"), DATA.credit.chg>0?"up":"down", vintage("hy_oas"))
+    + f6("PCE", f(D.pce,1)+"%", (DATA.inflation.pceChg!==undefined?sgn(DATA.inflation.pceChg,1,"pp"):""), DATA.inflation.pceChg>0?"up":"down", vintage("pce"))
+    + f6("Fed rate", f(DATA.fed.lower)+"–"+f(DATA.fed.upper)+"%", "eff "+f(DATA.fed.effective!==undefined?DATA.fed.effective:DATA.fed.upper)+"%", "", vintage("tgt_hi"))
+    + f6("WTI", "$"+f(DATA.oil.wti.price), sgn(DATA.oil.wti.chg,2), DATA.oil.wti.chg>0?"up":"down", vintage("wti"));
+}
+
 function paintReadout(){
   var h=measure==="cpi"?D.cpi:D.pce, other=measure==="cpi"?D.pce:D.cpi;
   var fundsNow=(DATA.fed.effective!==undefined)?DATA.fed.effective:DATA.fed.upper;
@@ -1444,7 +1479,7 @@ function setMeasure(next){
   measure=next;
   document.getElementById("btn-cpi").setAttribute("aria-pressed",String(next==="cpi"));
   document.getElementById("btn-pce").setAttribute("aria-pressed",String(next==="pce"));
-  clear(); paintReadout();
+  clear(); paintReadout(); paintNow();
   if(reduced()){ render(to); paintNote(); return; }
   animating=true;
   var t0=performance.now(), dur=680;
@@ -1517,7 +1552,7 @@ document.addEventListener("keydown",function(e){
   clear();
 });
 
-fitWorld(); render(0); paintReadout(); paintMoved(); paintNote(); paintSources();
+fitWorld(); render(0); paintReadout(); paintNow(); paintMoved(); paintNote(); paintSources();
 (function(){
   // The data's own date and the day we fetched it are different facts.
   var el=document.getElementById("mark-date");
