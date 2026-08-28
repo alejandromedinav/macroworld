@@ -54,8 +54,6 @@ svg.chart{display:block; width:100%; height:100%}
 /* ---------- discreet corner mark (replaces the masthead) ---------- */
 .mark{position:absolute; top:20px; left:24px; z-index:4; font-family:"IBM Plex Mono",monospace;
   font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:var(--ink-soft); pointer-events:none; line-height:1.9}
-.mark b{font-weight:600; color:var(--ink)}
-.mark s{display:block; text-decoration:none; color:var(--ink-soft)}
 .mark i{display:block; font-style:normal; color:var(--ink-soft)}
 .mark i em{font-style:normal; color:var(--verd); font-weight:600}
 
@@ -109,8 +107,7 @@ svg.chart{display:block; width:100%; height:100%}
 .src td:first-child{white-space:nowrap; font-weight:500}
 .src td:nth-child(2){color:var(--ink-soft)}
 .src code{font-family:"IBM Plex Mono",monospace; font-size:11.5px; color:var(--ink-soft); word-break:break-word}
-.srcnote{margin-top:10px !important; font-size:14px; color:var(--ink-soft); max-width:74ch}
-.panel-notes > div:has(.src){grid-column:1 / -1}
+.srcnote{margin-top:12px; font-size:14px; color:var(--ink-soft); max-width:74ch}
 .readout{display:flex; flex-wrap:wrap; gap:1px; margin-top:0; background:var(--rule-soft); border:1px solid var(--rule-soft)}
 .cell{background:var(--panel); padding:12px 14px 13px; flex:1 1 168px; min-width:0}
 .cell .k{font-family:"IBM Plex Mono",monospace; font-size:10px; font-weight:500; letter-spacing:.15em; text-transform:uppercase; color:var(--ink-soft)}
@@ -129,6 +126,30 @@ svg.chart{display:block; width:100%; height:100%}
 .panel-notes h3{font-family:"IBM Plex Mono",monospace; font-size:10px; font-weight:600; letter-spacing:.19em; text-transform:uppercase; color:var(--ink-soft); margin:0 0 7px}
 .panel-notes p{margin:0; font-size:15px; line-height:1.5}
 .panel-notes code{font-family:"IBM Plex Mono",monospace; font-size:12px}
+
+/* ---------- sources, kept out of the way ---------- */
+.srcbtn{position:absolute; bottom:16px; right:18px; z-index:6; background:transparent; border:0; cursor:pointer;
+  font-family:"IBM Plex Mono",monospace; font-size:10px; letter-spacing:.2em; text-transform:uppercase;
+  color:var(--ink-soft); padding:6px 8px; border-bottom:1px solid var(--rule); transition:color .2s ease, border-color .2s ease}
+.srcbtn:hover{color:var(--ink); border-color:var(--ink)}
+.srcbtn:focus-visible{outline:2px solid var(--verd); outline-offset:3px}
+.srcsheet{position:absolute; bottom:14px; right:14px; z-index:9; width:min(560px, calc(100vw - 28px)); max-height:70vh; overflow-y:auto;
+  background:var(--panel); border:1px solid var(--ink); box-shadow:4px 4px 0 var(--rule-soft); padding:18px 20px 20px;
+  opacity:0; transform:translateY(8px); pointer-events:none; transition:opacity .22s ease, transform .22s ease}
+.srcsheet.open{opacity:1; transform:translateY(0); pointer-events:auto}
+.srcclose{position:absolute; top:8px; right:10px; background:transparent; border:0; cursor:pointer; font-size:22px; line-height:1; color:var(--ink-soft)}
+.srcclose:hover{color:var(--ink)}
+
+/* ---------- first-load affordance ---------- */
+.hint{position:absolute; left:50%; bottom:26px; transform:translateX(-50%) translateY(6px); z-index:6;
+  background:var(--panel); border:1px solid var(--rule); padding:9px 16px; max-width:min(620px, calc(100vw - 40px));
+  font-size:15px; color:var(--ink-soft); text-align:center; opacity:0; pointer-events:none;
+  transition:opacity .5s ease, transform .5s ease}
+.hint b{color:var(--ink); font-weight:600}
+.hint.show{opacity:1; transform:translateX(-50%) translateY(0)}
+@keyframes ping{0%{transform:scale(.84); opacity:.5} 70%{transform:scale(1.16); opacity:0} 100%{opacity:0}}
+.ping{animation:ping 2.8s ease-out infinite; transform-box:fill-box; transform-origin:center}
+.scene.discovered .ping{display:none}
 
 /* ================= LAUNCH + SPACE ================= */
 .launch{position:fixed; inset:0; z-index:70; background:#03080F; opacity:0; pointer-events:none; transition:opacity .35s ease; overflow:hidden}
@@ -194,7 +215,7 @@ svg.chart{display:block; width:100%; height:100%}
     <div class="callout" id="callout" aria-live="polite"></div>
   </div>
 
-  <div class="mark"><b>Macro Soundings</b> · <span id="mark-date"></span><s id="vintage"></s><i id="session"></i></div>
+  <div class="mark"><span id="mark-date"></span><i id="session"></i></div>
 
   <div class="panel" id="panel">
     <div class="panel-in">
@@ -215,9 +236,18 @@ svg.chart{display:block; width:100%; height:100%}
       <div class="panel-notes">
         <div><h3>How to read it</h3><p>Every shape is sized by a number. Peak heights are yields, the gap between the derrick and the tanker is the oil spread, the vessel&rsquo;s draft is debt to GDP, and building widths are basket weights with heights as the year-over-year change.</p></div>
         <div><h3>The connections</h3><p>Hover anything and the objects it drives stay lit while the rest dims — credit to the 10-year, oil to the fuel depot, fares to the transport shed, the funds rate to the short end, debt to the long bond.</p></div>
-        <div id="sources"></div>
       </div>
     </div>
+  </div>
+  <button class="srcbtn" id="srcbtn" aria-expanded="false" aria-controls="srcsheet">Sources</button>
+  <div class="srcsheet" id="srcsheet" aria-hidden="true">
+    <button class="srcclose" id="srcclose" aria-label="Close sources">&times;</button>
+    <div id="sources"></div>
+  </div>
+
+  <div class="hint" id="hint" aria-hidden="true">
+    Explore the world &mdash; hover anything.
+    <b>Satellite</b> opens the figures. <b>Rocket</b> launches today's read.
   </div>
 </div>
 
@@ -714,6 +744,10 @@ function fisherRod(){
 }
 
 /* --- SATELLITE: the figures, read from orbit --- */
+function ping(cx,cy,rx,ry){
+  return '<g transform="translate('+cx+','+cy+')"><g class="ping">'
+    + '<ellipse cx="0" cy="0" rx="'+rx+'" ry="'+ry+'" fill="none" stroke="var(--verd)" stroke-width="2.2"/></g></g>';
+}
 function satellite(){
   var x=1010, y=108, g='';
   g+='<rect x="'+(x-17)+'" y="'+(y-13)+'" width="34" height="30" rx="3" fill="var(--panel)" stroke="var(--ink)" stroke-width="2"/>';
@@ -732,7 +766,8 @@ function satellite(){
   return '<g class="obj" id="obj-satellite" data-metric="satellite" tabindex="0" role="button" aria-label="Open the figures">'
     +'<rect x="'+(x-76)+'" y="'+(y-46)+'" width="152" height="112" fill="transparent"/>'+g
     +'<ellipse class="focusring" cx="'+x+'" cy="'+(y+2)+'" rx="80" ry="48" fill="none" stroke="var(--verd)" stroke-width="2.5" stroke-dasharray="6 5"/>'
-    +'<text class="lbl" x="'+x+'" y="'+(y+64)+'" text-anchor="middle" font-size="12">The figures</text></g>';
+    +ping(x,y+2,84,50)
+    +'<text class="lbl" x="'+x+'" y="'+(y+64)+'" text-anchor="middle" font-size="12">The figures &#9662;</text></g>';
 }
 
 /* --- AIRFARE --- */
@@ -861,7 +896,8 @@ function rocketPad(){
   return '<g class="obj" id="obj-rocket" data-metric="rocket" tabindex="0" role="button" aria-label="Launch: zoom out for the overall read">'
     +'<rect x="'+(x-58)+'" y="'+(b-hgt-24)+'" width="116" height="'+(hgt+34)+'" fill="transparent"/>'+g
     +'<rect class="focusring" x="'+(x-52)+'" y="'+(b-hgt-18)+'" width="104" height="'+(hgt+26)+'" fill="none" stroke="var(--verd)" stroke-width="2.5" stroke-dasharray="6 5"/>'
-    +'<text class="lbl" x="'+x+'" y="'+(b-hgt-26)+'" text-anchor="middle" font-size="12">The read ↑</text></g>';
+    +ping(x,b-hgt/2,56,74)
+    +'<text class="lbl" x="'+x+'" y="'+(b-hgt-26)+'" text-anchor="middle" font-size="12">Today\'s read &#9652;</text></g>';
 }
 
 /* ============================================================
@@ -1147,6 +1183,7 @@ function wire(){
     node.addEventListener("blur",clear);
     node.addEventListener("click",function(e){
       e.stopPropagation();
+      discover();
       if(metric==="rocket"){ launch(); return; }
       if(metric==="satellite"){ setPanel(true); return; }
       cancelClear(); show(metric,node);
@@ -1415,6 +1452,41 @@ function setPanel(open){
 }
 document.getElementById("panel-close").addEventListener("click",function(){ setPanel(false); });
 
+/* Sources live in their own sheet so the figures panel stays readable. */
+var srcSheet=document.getElementById("srcsheet"), srcBtn=document.getElementById("srcbtn");
+function setSources(open){
+  srcSheet.classList.toggle("open",open);
+  srcSheet.setAttribute("aria-hidden",String(!open));
+  srcBtn.setAttribute("aria-expanded",String(open));
+  if(open) document.getElementById("srcclose").focus(); else srcBtn.focus();
+}
+srcBtn.addEventListener("click",function(){ setSources(!srcSheet.classList.contains("open")); });
+document.getElementById("srcclose").addEventListener("click",function(){ setSources(false); });
+
+/* The satellite and the rocket are the only two objects that DO something rather
+   than report something, so they get a ping ring and a one-time hint. Both stop
+   the moment the reader touches anything, and the hint is remembered per browser. */
+var hintEl=document.getElementById("hint"), hintTimer=null, discovered=false;
+function seenHint(){
+  try{ return localStorage.getItem("ms.seen")==="1"; }catch(e){ return false; }
+}
+function markSeen(){
+  try{ localStorage.setItem("ms.seen","1"); }catch(e){}
+}
+function discover(){
+  if(discovered) return; discovered=true;
+  scene.classList.add("discovered");
+  hintEl.classList.remove("show");
+  if(hintTimer){ clearTimeout(hintTimer); hintTimer=null; }
+  markSeen();
+}
+if(!seenHint()){
+  setTimeout(function(){ if(!discovered) hintEl.classList.add("show"); },900);
+  hintTimer=setTimeout(function(){ hintEl.classList.remove("show"); },11000);
+} else {
+  scene.classList.add("discovered");
+}
+
 /* fill the screen on wide viewports; letterbox rather than crop on narrow ones */
 function fitWorld(){
   var ar=window.innerWidth/Math.max(1,window.innerHeight);
@@ -1425,6 +1497,7 @@ window.addEventListener("resize",fitWorld);
 document.addEventListener("keydown",function(e){
   if(e.key!=="Escape") return;
   if(launchEl.classList.contains("show")) return;      // handled above
+  if(srcSheet.classList.contains("open")){ setSources(false); return; }
   if(panel.classList.contains("open")){ setPanel(false); return; }
   clear();
 });
@@ -1446,13 +1519,6 @@ fitWorld(); render(0); paintReadout(); paintMoved(); paintNote(); paintSources()
   document.getElementById("session").innerHTML = open
     ? 'Markets <em>open</em>'
     : 'Markets closed';
-})();
-(function(){
-  var d=DATA.dates||{}, all=Object.keys(d).map(function(k){ return d[k]; }).sort();
-  var el=document.getElementById("vintage");
-  if(el) el.textContent = all.length
-    ? "Live FRED data · vintages "+all[0]+" to "+all[all.length-1]
-    : "Live FRED data";
 })();
 document.getElementById("panel-sub").textContent =
   (DATA.builtAt && DATA.builtAt!==DATA.asOf)
