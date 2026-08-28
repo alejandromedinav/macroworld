@@ -245,7 +245,7 @@ svg.chart{display:block; width:100%; height:100%}
    === edit manual.json for the read, the watch list and AI capex.        === */
 var DATA = {
   "asOf": "2026-08-26",
-  "summary": "Although 10-year yields are increasing, credit spreads are tightening. Meaning the market isn't risky — companies can pay back their debt. It's the actual Treasury yield making rates seem high. Inflation is still 3.5%, debt is at its highest, and AI capex is strong. Will the Fed hike? Fisher says real = nominal − inflation, and real is sitting around zero.",
+  "summary": "Although 10-year yields are increasing, credit spreads are tightening. Meaning the market isn't risky, companies can pay back their debt. It's the actual Treasury yield making rates seem high. Inflation is still 3.3%, debt is at its highest, and AI capex is strong. Will the Fed hike? Probably, Warsh just spoke today saying inflation is still too high",
   "curve": [
     {
       "key": "3M",
@@ -373,7 +373,8 @@ var DATA = {
       "cpi": 20.4,
       "pce": 47.0,
       "yoy": -1.0,
-      "kind": "shops"
+      "kind": "shops",
+      "yoyPce": 3.5
     }
   ]
 };
@@ -415,7 +416,8 @@ var D={ slope:yieldOf("10Y")-yieldOf("2Y"), hyYield:yieldOf("10Y")+DATA.credit.o
         cpi:DATA.inflation.cpi, pce:DATA.inflation.pce,
         cpiWeighted:headline("cpi"), pceWeighted:headline("pce") };
 D.real10 = yieldOf("10Y") - D.cpi;            // Fisher: real = nominal − inflation
-D.realPolicy = DATA.fed.upper - D.cpi;
+D.realPolicy = DATA.fed.upper - D.cpi;           // CPI basis, to match TIPS and breakevens
+D.realPolicyPce = DATA.fed.upper - D.pce;        // PCE basis - the Fed's own target measure
 D.realMarket = (DATA.realTips !== undefined) ? DATA.realTips : yieldOf("10Y") - DATA.breakeven;
 var measure="cpi";
 function f(n,d){ return n.toFixed(d===undefined?2:d); }
@@ -953,7 +955,7 @@ function copyFor(m2){
   if(m2==="debt") return {eyebrow:"Debt as a share of GDP", big:f(DATA.debt.gdp,1)+"%", chg:sgn(DATA.debt.chg,1,"pp on the year"), chgUp:DATA.debt.chg>0,
     body:COPY.debt, tie:"Interest cost is the 30-year against this balance"};
   if(m2==="fisher") return {eyebrow:"Real policy rate", big:sgn(D.realPolicy,2,"pp"), chg:f(DATA.fed.upper)+"% funds − "+f(D.cpi,1)+"% inflation", chgUp:D.realPolicy<0,
-    body:COPY.fisher, tie:"Market real 10Y "+sgn(D.realMarket,2,"pp")+" · breakeven "+f(DATA.breakeven)+"%"};
+    body:COPY.fisher, tie:"CPI basis, matching TIPS · on the Fed's PCE measure it is "+sgn(D.realPolicyPce,2,"pp")};
   if(m2==="watch"){
     var li=DATA.watch.map(function(w){ return '<li><span>'+w.when+'</span>'+w.what+'</li>'; }).join("");
     return {eyebrow:"Ahead", big:"", chg:"", list:'<ul>'+li+'</ul>', body:"", tie:COPY.watch};
@@ -1146,7 +1148,8 @@ function paintReadout(){
       cell(measure.toUpperCase()+" headline", f(h,1)+"%", (measure==="cpi"?"PCE":"CPI")+" reads "+f(other,1)+"%")
     + cell("10-year", f(yieldOf("10Y"))+"%", "30Y at "+f(yieldOf("30Y"))+"%")
     + cell("Real 10-year", sgn(D.real10,2), "Nominal − inflation", D.real10<0?"up":"down")
-    + cell("Real policy rate", sgn(D.realPolicy,2), "Funds − inflation", D.realPolicy<0?"up":"down")
+    + cell("Real policy, CPI", sgn(D.realPolicy,2), "Funds − CPI", D.realPolicy<0?"up":"down")
+    + cell("Real policy, PCE", sgn(D.realPolicyPce,2), "Funds − PCE · Fed target", D.realPolicyPce<0?"up":"down")
     + cell("Real 10Y, market", sgn(D.realMarket,2), "10Y − "+f(DATA.breakeven)+"% breakeven", D.realMarket<0?"up":"down")
     + cell("2s10s slope", sgn(D.slope,2), D.slope<0?"Inverted":"Positively sloped", D.slope<0?"up":"down")
     + cell("HY spread", DATA.credit.oas+" bp", sgn(DATA.credit.chg,0," bp")+(DATA.credit.chg<0?" tighter":" wider"), DATA.credit.chg>0?"up":"down")

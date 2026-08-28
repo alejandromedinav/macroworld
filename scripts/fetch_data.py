@@ -24,6 +24,24 @@ from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
+
+
+def load_dotenv():
+    """Read KEY=VALUE lines from .env if it exists. A real environment
+    variable always wins, so CI is unaffected."""
+    path = ROOT / ".env"
+    if not path.exists():
+        return
+    for line in path.read_text(encoding="utf8").splitlines():
+        line = line.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        k, _, v = line.partition("=")
+        k, v = k.strip(), v.strip().strip('"').strip("'")
+        os.environ.setdefault(k, v)
+
+
+load_dotenv()
 KEY = os.environ.get("FRED_API_KEY")
 
 # macOS Python from python.org ships without a CA bundle, so TLS fails with
@@ -44,7 +62,9 @@ except ImportError:
 if not KEY:
     sys.exit(
         "FRED_API_KEY is not set.\n"
-        "  Local:  export FRED_API_KEY=your_key    (or put it in .env, which is gitignored)\n"
+        "  Local:  create a .env file next to index.html containing\n"
+        "            FRED_API_KEY=your_key\n"
+        "          (.env is gitignored, so it never leaves your machine)\n"
         "  CI:     repo Settings > Secrets and variables > Actions > New repository secret"
     )
 
