@@ -234,8 +234,7 @@ svg.chart{display:block; width:100%; height:100%}
         <div class="toggle-note" id="toggle-note"></div>
       </div>
       <div class="panel-notes">
-        <div><h3>How to read it</h3><p>Every shape is sized by a number. Peak heights are yields, the gap between the derrick and the tanker is the oil spread, the vessel&rsquo;s draft is debt to GDP, and building widths are basket weights with heights as the year-over-year change.</p></div>
-        <div><h3>The connections</h3><p>Hover anything and the objects it drives stay lit while the rest dims — credit to the 10-year, oil to the fuel depot, fares to the transport shed, the funds rate to the short end, debt to the long bond.</p></div>
+        <div><h3>How to read it</h3><p>Every shape is sized by a number. Peak heights are yields, the gap between the derrick and the tanker is the oil spread, the anchor&rsquo;s depth is debt to GDP, and building widths are basket weights.</p></div>
       </div>
     </div>
   </div>
@@ -246,8 +245,7 @@ svg.chart{display:block; width:100%; height:100%}
   </div>
 
   <div class="hint" id="hint" aria-hidden="true">
-    Explore the world &mdash; hover anything.
-    <b>Satellite</b> opens the figures. <b>Rocket</b> launches today's read.
+    Hover anything. <b>Satellite</b> for figures, <b>rocket</b> for the read.
   </div>
 </div>
 
@@ -392,26 +390,24 @@ var DATA = {
     "period": "2026E",
     "headline": ">$700bn",
     "names": "Amazon · Microsoft · Alphabet · Meta",
-    "note": "AI infrastructure spending remains near record levels.",
     "components": [
       {
         "name": "Amazon",
-        "value": "~$220bn"
+        "value": "$220bn"
       },
       {
         "name": "Alphabet",
-        "value": "~$195–205bn"
+        "value": "$195–205bn"
       },
       {
         "name": "Microsoft",
-        "value": "~$175bn"
+        "value": "$175bn"
       },
       {
         "name": "Meta",
-        "value": "~$130–145bn"
+        "value": "$130–145bn"
       }
-    ],
-    "basis": "Company capex guidance for calendar 2026 as reported. Microsoft's figure reflects its accounting and lease update. Entered by hand and not verified against a data feed."
+    ]
   },
   "watch": [
     {
@@ -493,21 +489,21 @@ var DATA = {
    and they are substituted at render, so a sentence never goes stale.
    ============================================================ */
 var COPY = {
-  "10Y": "Peaking, and not for one reason. Geopolitical tension pushes oil up, transportation costs follow, and inflation expectations reprice. Add the Fed decision on top of that and you get this.",
-  "2Y":  "Sitting above the funds rate, which means the market is pricing hikes, not cuts. This is the one to watch into the meeting.",
-  "30Y": "Inflation expectations, plus how much paper the Treasury has to sell. With debt where it is, that second part is doing more work than it used to.",
-  "3M":  "Effectively today's policy rate, priced in the bill market.",
-  credit:"Tightening, not widening. Meaning the market isn't pricing risk — companies can service their debt. So when rates look high, that's the Treasury yield doing it, not credit stress.",
-  fed:   "Cut 25bp in July. Now inflation is {{cpi}} and the 2-year is trading above the funds rate. Will they hike? Interesting to see.",
-  wti:   "Landlocked at Cushing — no water access, so it prices under the seaborne grade. Up with everything else.",
-  brent: "Seaborne, so it moves first when shipping routes are threatened. That is why the gap to WTI is wide right now.",
-  airfare:"Jet fuel feeds straight into this. Oil up, fares up, and it lands in the transportation line of the basket.",
-  ai:    "Big enough to move GDP on its own, and the one line here that isn't answering to rates. This is guidance for the calendar year, not a measured print, so treat it as an intention rather than a fact.",
-  debt:  "Historically elevated at {{debt}} of GDP and rising again, though below the 132.7% peak of mid-2020. Rates this high on a balance sheet this size is the part that compounds.",
-  fisher:"Real = nominal − inflation. The waterline is inflation, the float is whatever is left over. Policy is sitting {{realPolicy}} above it on CPI, and only {{realPolicyPce}} on the PCE measure the Fed actually targets. The market's real 10-year is a different story at {{realMarket}} — the long end is doing more work than the Fed is.",
+  "10Y": "Geopolitical tension pushes oil up, transport costs follow, inflation expectations reprice. Plus whatever the Fed does next.",
+  "2Y":  "Above the funds rate. The market is pricing hikes, not cuts.",
+  "30Y": "Inflation expectations, plus how much paper the Treasury has to sell.",
+  "3M":  "Today's policy rate, priced in the bill market.",
+  credit:"Tightening, not widening. The market isn't pricing risk — companies can pay back their debt.",
+  fed:   "Cut 25bp in July. Inflation is {{cpi}} and the 2-year is above the funds rate. Will they hike?",
+  wti:   "Priced inland at Cushing. No water access, so it trades under the seaborne grade.",
+  brent: "The seaborne benchmark. Moves first when shipping routes are threatened.",
+  airfare:"Tracks jet fuel.",
+  ai:    "There's a lot of spending in capital right now.",
+  debt:  "Below the 132.7% peak of 2020.",
+  fisher:"Real = nominal − inflation. The waterline is inflation, the float is what's left.",
   watch: "What could move this next.",
   rocket:"Launch for the read.",
-  satellite:"Every figure on one screen — the readings behind the picture.",
+  satellite:"Every figure on one screen.",
   comp:  "Width is the weight in the index, height is the year-over-year."
 };
 
@@ -1101,7 +1097,7 @@ function copyFor(m2){
   var m=measure;
   if(m2==="credit") return {eyebrow:"High yield spread, ICE BofA OAS", big:DATA.credit.oas+" bp",
     chg:sgn(DATA.credit.chg,0," bp on the week")+(DATA.credit.chg<0?" — tightening":" — widening"), chgUp:DATA.credit.chg>0,
-    body:COPY.credit, tie:"Effective yield "+f(D.hyYield)+"% · OAS is spread over the whole Treasury curve, not the 10Y"};
+    body:COPY.credit, tie:"Effective yield "+f(D.hyYield)+"%"};
   if(m2==="fed") return {eyebrow:"Federal funds target range", big:f(DATA.fed.lower)+"–"+f(DATA.fed.upper)+"%",
     chg:sgn(DATA.fed.lastMove,2,"pp on "+DATA.fed.lastDate), chgUp:DATA.fed.lastMove>0,
     body:COPY.fed, tie:"Real policy rate "+sgn(D.realPolicy,2,"pp")+" · next meeting "+DATA.fed.nextDate};
@@ -1116,14 +1112,13 @@ function copyFor(m2){
     var list = parts.length
       ? '<ul>'+parts.map(function(p){ return '<li><span>'+p.value+'</span>'+p.name+'</li>'; }).join("")+'</ul>'
       : '';
-    return {eyebrow:(DATA.ai.label||"AI capital spending")+(DATA.ai.period?" · "+DATA.ai.period:""),
-      big:(DATA.ai.headline||("$"+DATA.ai.capex+"bn")), chg:(DATA.ai.note||""), chgUp:false, list:list,
-      body:COPY.ai, tie:"Company guidance, entered by hand — no FRED series covers this"};
+    return {eyebrow:(DATA.ai.label||"AI capex")+(DATA.ai.period?" · "+DATA.ai.period:""),
+      big:(DATA.ai.headline||""), chg:"", list:list, body:COPY.ai, tie:"Entered by hand"};
   }
   if(m2==="debt") return {eyebrow:"Total federal debt / GDP", big:f(DATA.debt.gdp,1)+"%", chg:sgn(DATA.debt.chg,1,"pp on the year"), chgUp:DATA.debt.chg>0,
     body:COPY.debt, tie:"Interest cost is the 30-year against this balance"};
   if(m2==="fisher") return {eyebrow:"Ex-post real policy rate", big:sgn(D.realPolicy,2,"pp"), chg:f(fundsNow)+"% effective funds − "+f(D.cpi,1)+"% CPI", chgUp:D.realPolicy<0,
-    body:COPY.fisher, tie:"Ex-post: realised CPI, not expected · TIPS at "+sgn(D.realMarket,2,"pp")+" is the market's forward-looking real rate"};
+    body:COPY.fisher, tie:"Ex-post · PCE basis "+sgn(D.realPolicyPce,2,"pp")+" · TIPS "+sgn(D.realMarket,2,"pp")};
   if(m2==="watch"){
     var li=DATA.watch.map(function(w){ return '<li><span>'+w.when+'</span>'+w.what+'</li>'; }).join("");
     return {eyebrow:"Ahead", big:"", chg:"", list:'<ul>'+li+'</ul>', body:"", tie:COPY.watch};
@@ -1437,8 +1432,8 @@ function paintNote(){
   var sh=null,md=null;
   DATA.components.forEach(function(c){ if(c.key==="shelter") sh=c; if(c.key==="medical") md=c; });
   document.getElementById("toggle-note").innerHTML = measure==="cpi"
-    ? "Shelter is <strong>"+f(sh.cpi,1)+"%</strong> of CPI &mdash; the single reason the headline runs hot. Switch to PCE and watch the houses shrink."
-    : "Shelter falls to <strong>"+f(sh.pce,1)+"%</strong> and medical care swells to <strong>"+f(md.pce,1)+"%</strong>. CPI component rates reweighted to PCE shares &mdash; the weight effect only. Published PCE differs in scope and formula too.";
+    ? "Shelter is <strong>"+f(sh.cpi,1)+"%</strong> of CPI. Switch to PCE and watch the houses shrink."
+    : "Shelter drops to <strong>"+f(sh.pce,1)+"%</strong>, medical care rises to <strong>"+f(md.pce,1)+"%</strong>. Same lines, different weights.";
   var tl=document.getElementById("town-label");
   if(tl) tl.textContent = measure==="cpi" ? "The CPI basket" : "The PCE basket";
 }

@@ -12,26 +12,24 @@
     "period": "2026E",
     "headline": ">$700bn",
     "names": "Amazon · Microsoft · Alphabet · Meta",
-    "note": "AI infrastructure spending remains near record levels.",
     "components": [
       {
         "name": "Amazon",
-        "value": "~$220bn"
+        "value": "$220bn"
       },
       {
         "name": "Alphabet",
-        "value": "~$195–205bn"
+        "value": "$195–205bn"
       },
       {
         "name": "Microsoft",
-        "value": "~$175bn"
+        "value": "$175bn"
       },
       {
         "name": "Meta",
-        "value": "~$130–145bn"
+        "value": "$130–145bn"
       }
-    ],
-    "basis": "Company capex guidance for calendar 2026 as reported. Microsoft's figure reflects its accounting and lease update. Entered by hand and not verified against a data feed."
+    ]
   },
   "watch": [
     {
@@ -52,5 +50,5 @@
     }
   ],
   "_stance_note": "fed.stance drives the bird on the Federal Reserve: hawkish | dovish | neutral",
-  "_ai_note": "ai is entirely hand-entered - no FRED series covers company capex. Update headline, components and note together so they stay consistent."
+  "_ai_note": "Hand-entered - no FRED series covers company capex. The sentence shown lives in COPY.ai in index.html."
 }
