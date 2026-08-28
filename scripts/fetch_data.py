@@ -89,8 +89,12 @@ SERIES = {
     "y2y":        ("DGS2", None),
     "y10y":       ("DGS10", None),
     "y30y":       ("DGS30", None),
-    "funds":      ("DFF", None),
+    "funds":      ("DFF", None),                    # effective rate actually traded
+    "tgt_lo":     ("DFEDTARL", None),               # published FOMC target range, not derived
+    "tgt_hi":     ("DFEDTARU", None),
     "hy_oas":     ("BAMLH0A0HYM2", None),
+    "hy_yield":   ("BAMLH0A0HYM2EY", None),         # effective yield: OAS is over the whole curve,
+                                                    # so 10Y + OAS is not the borrowing cost
     "wti":        ("DCOILWTICO", None),
     "brent":      ("DCOILBRENTEU", None),
     "cpi":        ("CPIAUCSL", "pc1"),
@@ -206,8 +210,9 @@ def build(S, manual):
             c["yoyPce"] = r(other_pce, 1)   # the residual differs by measure
         components.append(c)
 
-    # DFF is the effective rate; the target range brackets it in 25bp steps.
-    lower = r((S["funds"].value // 0.25) * 0.25)
+    # Frequencies differ wildly - Treasuries daily, CPI monthly, debt quarterly -
+    # so a single "as at" date would misrepresent most of the page.
+    dates = {k: S[k].date for k in S}
 
     return {
         "asOf": S["y10y"].date,
@@ -229,15 +234,18 @@ def build(S, manual):
             "wti":   {"price": r(S["wti"].value),   "chg": r(S["wti"].value - S["wti"].at(1))},
             "brent": {"price": r(S["brent"].value), "chg": r(S["brent"].value - S["brent"].at(1))},
         },
+        "dates": dates,
         "fed": {
-            "lower": lower,
-            "upper": r(lower + 0.25),
+            "lower": r(S["tgt_lo"].value),
+            "upper": r(S["tgt_hi"].value),
+            "effective": r(S["funds"].value),
             "lastMove": manual["fed"]["lastMove"],
             "lastDate": manual["fed"]["lastDate"],
             "nextDate": manual["fed"]["nextDate"],
             "stance": manual["fed"].get("stance", "neutral"),
         },
         "credit": {
+            "effYield": r(S["hy_yield"].value),
             "oas": round(S["hy_oas"].value * 100),
             "chg": round((S["hy_oas"].value - S["hy_oas"].at(5)) * 100),
         },
@@ -289,12 +297,14 @@ def main():
 
     slope = data["curve"][2]["yield"] - data["curve"][1]["yield"]
     spread = data["oil"]["brent"]["price"] - data["oil"]["wti"]["price"]
-    real_policy = data["fed"]["upper"] - data["inflation"]["cpi"]
+    real_policy = data["fed"]["effective"] - data["inflation"]["cpi"]
     print(f"Built for {data['asOf']}")
     print(f"  10Y {data['curve'][2]['yield']}%   2s10s {r(slope)}")
     print(f"  CPI {data['inflation']['cpi']}%   PCE {data['inflation']['pce']}%")
     print(f"  HY {data['credit']['oas']}bp   Brent-WTI ${r(spread)}")
-    print(f"  Debt/GDP {data['debt']['gdp']}%   real policy {r(real_policy)}")
+    print(f"  Debt/GDP {data['debt']['gdp']}% (as at {data['dates']['debt_gdp']})")
+    print(f"  Funds {data['fed']['lower']}-{data['fed']['upper']} (eff {data['fed']['effective']})   ex-post real policy {r(real_policy)}")
+    print(f"  HY effective yield {data['credit']['effYield']}%   OAS {data['credit']['oas']}bp")
     other = data["components"][5]
     print(f"  residual 'other'  CPI {other['yoy']}%   PCE {other['yoyPce']}%  (each ties to its own headline)")
     if abs(other["yoy"]) > 6 or abs(other["yoyPce"]) > 6:

@@ -9,7 +9,10 @@
   },
   "ai": {
     "capex": 648,
-    "yoy": 38.4
+    "yoy": 38.4,
+    "asOf": "Q2 2026, annualised",
+    "basis": "REPLACE ME - state exactly what this counts, e.g. combined annualised capex for Amazon, Microsoft, Alphabet and Meta from the latest reported quarter.",
+    "components": []
   },
   "watch": [
     {
@@ -29,5 +32,6 @@
       "what": "Payrolls"
     }
   ],
-  "_stance_note": "fed.stance drives the bird on the Federal Reserve: hawkish | dovish | neutral"
+  "_stance_note": "fed.stance drives the bird on the Federal Reserve: hawkish | dovish | neutral",
+  "_ai_note": "ai.basis is shown in the callout. Fill ai.components with [{name, value}] to show an auditable breakdown; leave empty to show the basis line only."
 }
