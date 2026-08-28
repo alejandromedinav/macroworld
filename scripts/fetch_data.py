@@ -155,11 +155,19 @@ def build(S, manual):
         "energy":    r(S["c_energy"].value, 1),
     }
     headline_cpi = S["cpi"].value
-    known = sum(WEIGHTS[k]["cpi"] * v for k, v in measured.items())
-    # Solve so the CPI-weighted basket reconciles exactly to the published headline.
-    other_yoy = (headline_cpi * 100 - known) / WEIGHTS["other"]["cpi"]
+    headline_pce = S["pce"].value
 
-    yoy = dict(measured, other=r(other_yoy, 1))
+    # "Other goods and services" is not a single FRED series, so it is solved as
+    # the residual that makes the basket reconcile to the published headline.
+    # It has to be solved SEPARATELY for each measure: the same residual applied
+    # at PCE weights would not tie out, because PCE's 47% "other" bucket covers
+    # very different ground from CPI's 20%. Each basket ties to its own headline.
+    known_cpi = sum(WEIGHTS[k]["cpi"] * v for k, v in measured.items())
+    known_pce = sum(WEIGHTS[k]["pce"] * v for k, v in measured.items())
+    other_cpi = (headline_cpi * 100 - known_cpi) / WEIGHTS["other"]["cpi"]
+    other_pce = (headline_pce * 100 - known_pce) / WEIGHTS["other"]["pce"]
+
+    yoy = dict(measured, other=r(other_cpi, 1))
 
     shapes = [
         ("shelter", "Shelter", "houses"),
@@ -169,11 +177,13 @@ def build(S, manual):
         ("energy", "Energy", "fuel"),
         ("other", "Other goods & services", "shops"),
     ]
-    components = [
-        {"key": k, "name": name, "cpi": WEIGHTS[k]["cpi"], "pce": WEIGHTS[k]["pce"],
-         "yoy": yoy[k], "kind": kind}
-        for k, name, kind in shapes
-    ]
+    components = []
+    for k, name, kind in shapes:
+        c = {"key": k, "name": name, "cpi": WEIGHTS[k]["cpi"], "pce": WEIGHTS[k]["pce"],
+             "yoy": yoy[k], "kind": kind}
+        if k == "other":
+            c["yoyPce"] = r(other_pce, 1)   # the residual differs by measure
+        components.append(c)
 
     # DFF is the effective rate; the target range brackets it in 25bp steps.
     lower = r((S["funds"].value // 0.25) * 0.25)
@@ -253,7 +263,10 @@ def main():
     print(f"  CPI {data['inflation']['cpi']}%   PCE {data['inflation']['pce']}%")
     print(f"  HY {data['credit']['oas']}bp   Brent-WTI ${r(spread)}")
     print(f"  Debt/GDP {data['debt']['gdp']}%   real policy {r(real_policy)}")
-    print(f"  basket residual 'other' {data['components'][5]['yoy']}%  (reconciles to headline CPI)")
+    other = data["components"][5]
+    print(f"  residual 'other'  CPI {other['yoy']}%   PCE {other['yoyPce']}%  (each ties to its own headline)")
+    if abs(other["yoy"]) > 6 or abs(other["yoyPce"]) > 6:
+        print("  NOTE: a large residual usually means the WEIGHTS constants are stale.")
 
 
 if __name__ == "__main__":

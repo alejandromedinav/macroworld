@@ -404,7 +404,9 @@ var COPY = {
 };
 
 function yieldOf(k){ for(var i=0;i<DATA.curve.length;i++) if(DATA.curve[i].key===k) return DATA.curve[i].yield; return 0; }
-function headline(m){ var t=0,w=0; DATA.components.forEach(function(c){ t+=c[m]*c.yoy; w+=c[m]; }); return t/w; }
+// "other" is a solved residual and differs by measure, so read the right one.
+function yoyOf(c,m){ return (m==="pce" && c.yoyPce!==undefined) ? c.yoyPce : c.yoy; }
+function headline(m){ var t=0,w=0; DATA.components.forEach(function(c){ t+=c[m]*yoyOf(c,m); w+=c[m]; }); return t/w; }
 // Published CPI is the number; the CPI-weighted basket reconciles to it by construction.
 // Reweighting those same lines to PCE shares isolates the weight effect — it is not
 // published PCE, because PCE also differs in scope and formula. Both are shown.
@@ -674,7 +676,7 @@ function satellite(){
 /* --- AIRFARE --- */
 var planeY;
 function plane(){
-  var yoy=DATA.airfare.yoy, t=Math.max(0,Math.min(1,(yoy+6)/18));
+  var yoy=DATA.airfare.yoy, t=Math.max(0,Math.min(1,(yoy+10)/40));   // −10% to +30%: fares are volatile
   var y=340-t*246; planeY=y; var x=1230;
   var b='<g transform="translate('+x+','+f(y,1)+') rotate(-6)">'
     +'<path d="M-60,0 L32,0 L54,-4 L60,0 L54,4 L32,0" fill="var(--panel)" stroke="var(--ink)" stroke-width="2" stroke-linejoin="round"/>'
@@ -686,8 +688,8 @@ function plane(){
     +'<line x1="1400" y1="94" x2="1400" y2="340" stroke="var(--ink-soft)" stroke-width="1" stroke-dasharray="3 5"/>'
     +'<line x1="1394" y1="94" x2="1406" y2="94" stroke="var(--ink-soft)" stroke-width="1.5"/>'
     +'<line x1="1394" y1="340" x2="1406" y2="340" stroke="var(--ink-soft)" stroke-width="1.5"/>'
-    +'<text class="sounding" x="1412" y="98" fill="var(--ink-soft)">+12%</text>'
-    +'<text class="sounding" x="1412" y="344" fill="var(--ink-soft)">−6%</text></g>'
+    +'<text class="sounding" x="1412" y="98" fill="var(--ink-soft)">+30%</text>'
+    +'<text class="sounding" x="1412" y="344" fill="var(--ink-soft)">−10%</text></g>'
     +'<line x1="'+(x+66)+'" y1="'+f(y,1)+'" x2="1394" y2="'+f(y,1)+'" stroke="var(--verd)" stroke-width="1.5" stroke-dasharray="4 4" opacity=".75" pointer-events="none"/>';
   return ladder+'<g class="obj" id="obj-airfare" data-metric="airfare" tabindex="0" role="button" aria-label="Airline fares, '+sgn(yoy,1,"%")+' year over year">'
     +'<rect x="'+(x-84)+'" y="'+f(y-46,1)+'" width="168" height="94" fill="transparent"/>'+b
@@ -772,7 +774,7 @@ function townGeometry(mix){
   var total=0, wts=DATA.components.map(function(c){ var w=c.cpi+(c.pce-c.cpi)*mix; total+=w; return w; });
   var gap=10, avail=TOWN_W-gap*(DATA.components.length-1), x=TOWN_X, out=[];
   DATA.components.forEach(function(c,i){
-    var w=Math.max(16, avail*wts[i]/total), h=Math.max(34, 24+(c.yoy+3)*18);
+    var w=Math.max(16, avail*wts[i]/total), h=Math.max(34, 24+(yoyOf(c,measure)+3)*18);
     out.push({c:c,x:x,w:w,h:h,weight:wts[i]}); x+=w+gap;
   });
   return out;
@@ -900,7 +902,7 @@ function town(mix){
   var bs=townGeometry(mix===undefined?0:mix), s='<g>';
   bs.forEach(function(b){
     var y=TOWN_BASE-b.h, pct=b.weight.toFixed(1);
-    s+='<g class="obj" id="obj-comp-'+b.c.key+'" data-metric="comp-'+b.c.key+'" tabindex="0" role="button" aria-label="'+b.c.name+', '+sgn(b.c.yoy,1,"%")+' year over year, '+pct+' percent of the basket">'
+    s+='<g class="obj" id="obj-comp-'+b.c.key+'" data-metric="comp-'+b.c.key+'" tabindex="0" role="button" aria-label="'+b.c.name+', '+sgn(yoyOf(b.c,measure),1,"%")+' year over year, '+pct+' percent of the basket">'
       +'<rect x="'+f(b.x-5,1)+'" y="'+f(y-40,1)+'" width="'+f(b.w+10,1)+'" height="'+f(b.h+48,1)+'" fill="transparent"/>'
       +SHAPES[b.c.kind](b.x,b.w,b.h,y)
       +'<rect class="focusring" x="'+f(b.x-7,1)+'" y="'+f(y-38,1)+'" width="'+f(b.w+14,1)+'" height="'+f(b.h+44,1)+'" fill="none" stroke="var(--verd)" stroke-width="2.5" stroke-dasharray="5 4"/>'
@@ -971,7 +973,7 @@ function copyFor(m2){
     var key=m2.slice(5), cc=null; DATA.components.forEach(function(q){ if(q.key===key) cc=q; });
     var wNow=cc[m], wOther=(m==="cpi"?cc.pce:cc.cpi), diff=wNow-wOther;
     var word=Math.abs(diff)<1.5?"Weighted about the same in":(diff>0?"Weighted far more heavily than in":"Weighted much less than in");
-    return {eyebrow:cc.name, big:sgn(cc.yoy,1,"%"), chg:f(wNow,1)+"% of the "+m.toUpperCase()+" basket", chgUp:cc.yoy>0,
+    return {eyebrow:cc.name, big:sgn(yoyOf(cc,m),1,"%"), chg:f(wNow,1)+"% of the "+m.toUpperCase()+" basket", chgUp:yoyOf(cc,m)>0,
       body:COPY.comp, tie:word+" "+(m==="cpi"?"PCE":"CPI")+" ("+f(wOther,1)+"%)"};
   }
   return null;
@@ -1158,11 +1160,9 @@ function paintReadout(){
 function paintNote(){
   var sh=null,md=null;
   DATA.components.forEach(function(c){ if(c.key==="shelter") sh=c; if(c.key==="medical") md=c; });
-  var gap=D.pce-D.pceWeighted;
   document.getElementById("toggle-note").innerHTML = measure==="cpi"
     ? "Shelter is <strong>"+f(sh.cpi,1)+"%</strong> of CPI &mdash; the single reason the headline runs hot. Switch to PCE and watch the houses shrink."
-    : "Shelter falls to <strong>"+f(sh.pce,1)+"%</strong> and medical care swells to <strong>"+f(md.pce,1)+"%</strong>. Reweighting the same lines gives "
-      +f(D.pceWeighted,1)+"%; published PCE is "+f(D.pce,1)+"%. That "+f(Math.abs(gap),1)+"pp gap is everything that isn't weights &mdash; different scope, different formula.";
+    : "Shelter falls to <strong>"+f(sh.pce,1)+"%</strong> and medical care swells to <strong>"+f(md.pce,1)+"%</strong>. Same measured lines, different weights &mdash; each basket ties to its own published headline.";
   var tl=document.getElementById("town-label");
   if(tl) tl.textContent = measure==="cpi" ? "The CPI basket" : "The PCE basket";
 }

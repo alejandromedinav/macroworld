@@ -1,7 +1,7 @@
 {
   "_comment": "The hand-written half. Edit this daily; fetch-data.mjs merges it with FRED and never overwrites it.",
 
-  "summary": "Although 10-year yields are increasing, credit spreads are tightening. Meaning the market isn't risky — companies can pay back their debt. It's the actual Treasury yield making rates seem high. Inflation is still 3.5%, debt is at its highest, and AI capex is strong. Will the Fed hike? Fisher says real = nominal − inflation, and real is sitting around zero.",
+  "summary": "Although 10-year yields are increasing, credit spreads are tightening. Meaning the market isn't risky, companies can pay back their debt. It's the actual Treasury yield making rates seem high. Inflation is still 3.3%, debt is at its highest, and AI capex is strong. Will the Fed hike? Probably, Warsh just spoke today saying inflation is still too high",
 
   "fed": {
     "lastMove": -0.25,
