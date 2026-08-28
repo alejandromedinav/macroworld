@@ -388,11 +388,30 @@ var DATA = {
     "pceChg": -0.0
   },
   "ai": {
-    "capex": 648,
-    "yoy": 38.4,
-    "asOf": "Q2 2026, annualised",
-    "basis": "REPLACE ME - state exactly what this counts, e.g. combined annualised capex for Amazon, Microsoft, Alphabet and Meta from the latest reported quarter.",
-    "components": []
+    "label": "Big tech AI capex",
+    "period": "2026E",
+    "headline": ">$700bn",
+    "names": "Amazon · Microsoft · Alphabet · Meta",
+    "note": "AI infrastructure spending remains near record levels.",
+    "components": [
+      {
+        "name": "Amazon",
+        "value": "~$220bn"
+      },
+      {
+        "name": "Alphabet",
+        "value": "~$195–205bn"
+      },
+      {
+        "name": "Microsoft",
+        "value": "~$175bn"
+      },
+      {
+        "name": "Meta",
+        "value": "~$130–145bn"
+      }
+    ],
+    "basis": "Company capex guidance for calendar 2026 as reported. Microsoft's figure reflects its accounting and lease update. Entered by hand and not verified against a data feed."
   },
   "watch": [
     {
@@ -483,7 +502,7 @@ var COPY = {
   wti:   "Landlocked at Cushing — no water access, so it prices under the seaborne grade. Up with everything else.",
   brent: "Seaborne, so it moves first when shipping routes are threatened. That is why the gap to WTI is wide right now.",
   airfare:"Jet fuel feeds straight into this. Oil up, fares up, and it lands in the transportation line of the basket.",
-  ai:    "Nvidia earnings were strong and the spend keeps climbing. Big enough to move GDP on its own, and the one line here that isn't answering to rates.",
+  ai:    "Big enough to move GDP on its own, and the one line here that isn't answering to rates. This is guidance for the calendar year, not a measured print, so treat it as an intention rather than a fact.",
   debt:  "Historically elevated at {{debt}} of GDP and rising again, though below the 132.7% peak of mid-2020. Rates this high on a balance sheet this size is the part that compounds.",
   fisher:"Real = nominal − inflation. The waterline is inflation, the float is whatever is left over. Policy is sitting {{realPolicy}} above it on CPI, and only {{realPolicyPce}} on the PCE measure the Fed actually targets. The market's real 10-year is a different story at {{realMarket}} — the long end is doing more work than the Fed is.",
   watch: "What could move this next.",
@@ -597,7 +616,7 @@ function lighthouse(){
 
 /* --- AI ISLAND: back-right corner, small --- */
 function island(){
-  var x=1442, base=574, k=0.62;
+  var x=1442, base=556, k=0.62;   // lifted so the three text lines clear the town
   var s='<g>';
   s+='<polygon points="'+(x-84*k)+','+base+' '+(x-52*k)+','+(base-14*k)+' '+(x+50*k)+','+(base-14*k)+' '+(x+84*k)+','+base+'" fill="var(--land)" stroke="var(--ink)" stroke-width="1.5" stroke-linejoin="round"/>';
   var dc='';
@@ -606,12 +625,14 @@ function island(){
   dc+='<rect x="'+(x-54*k)+'" y="'+(base-66*k)+'" width="'+(108*k)+'" height="'+(9*k)+'" fill="var(--panel)" stroke="var(--ink)" stroke-width="1.6"/>';
   [-26,0,26].forEach(function(o,i){
     dc+='<path d="M'+(x+o*k)+','+(base-68*k)+' q -6,-13 2,-24 q 7,-10 1,-19" fill="none" stroke="var(--ink)" stroke-width="1.4" opacity="'+(0.3-i*0.05).toFixed(2)+'"/>'; });
-  s+='<g class="obj" id="obj-ai" data-metric="ai" tabindex="0" role="button" aria-label="AI capital spending, '+DATA.ai.capex+' billion dollars annualised">'
+  s+='<g class="obj" id="obj-ai" data-metric="ai" tabindex="0" role="button" aria-label="'+(DATA.ai.label||"AI capital spending")+', '+(DATA.ai.headline||"")+'">'
     +'<rect x="'+(x-70)+'" y="'+(base-116)+'" width="140" height="126" fill="transparent"/>'+dc
     +'<rect class="focusring" x="'+(x-58*k)+'" y="'+(base-112*k)+'" width="'+(116*k)+'" height="'+(104*k)+'" fill="none" stroke="var(--verd)" stroke-width="2" stroke-dasharray="5 4"/>'
     +'<circle class="linkmark" cx="'+x+'" cy="'+(base-116*k)+'" r="6" fill="var(--verd)"/>'
-    +'<text class="lbl" x="'+x+'" y="'+(base-120*k)+'" text-anchor="middle" font-size="11">AI capex</text>'
-    +'<text class="num" x="'+x+'" y="'+(base+22)+'" text-anchor="middle" font-size="12.5">$'+DATA.ai.capex+'bn</text></g>';
+    +'<text class="lbl" x="'+x+'" y="'+(base-142*k)+'" text-anchor="middle" font-size="11">'+(DATA.ai.label||"AI capex")+'</text>'
+    +'<text class="lbl" x="'+x+'" y="'+(base-118*k)+'" text-anchor="middle" font-size="10" opacity=".75">'+(DATA.ai.period||"")+'</text>'
+    +'<text class="num" x="'+x+'" y="'+(base+22)+'" text-anchor="middle" font-size="13">'+(DATA.ai.headline||("$"+DATA.ai.capex+"bn"))+'</text>'
+    +'<text class="sounding" x="'+x+'" y="'+(base+38)+'" text-anchor="middle" fill="var(--ink-soft)">'+(DATA.ai.names||"")+'</text></g>';
   return s+'</g>';
 }
 
@@ -1093,12 +1114,11 @@ function copyFor(m2){
   if(m2==="ai"){
     var parts=(DATA.ai.components||[]);
     var list = parts.length
-      ? '<ul>'+parts.map(function(p){ return '<li><span>$'+p.value+'bn</span>'+p.name+'</li>'; }).join("")+'</ul>'
+      ? '<ul>'+parts.map(function(p){ return '<li><span>'+p.value+'</span>'+p.name+'</li>'; }).join("")+'</ul>'
       : '';
-    return {eyebrow:"AI capital spending"+(DATA.ai.asOf?" · "+DATA.ai.asOf:""), big:"$"+DATA.ai.capex+"bn",
-      chg:sgn(DATA.ai.yoy,1,"% year over year"), chgUp:DATA.ai.yoy>0, list:list,
-      body:COPY.ai+(DATA.ai.basis?" "+DATA.ai.basis:""),
-      tie:"Entered by hand from company reports — not FRED"};
+    return {eyebrow:(DATA.ai.label||"AI capital spending")+(DATA.ai.period?" · "+DATA.ai.period:""),
+      big:(DATA.ai.headline||("$"+DATA.ai.capex+"bn")), chg:(DATA.ai.note||""), chgUp:false, list:list,
+      body:COPY.ai, tie:"Company guidance, entered by hand — no FRED series covers this"};
   }
   if(m2==="debt") return {eyebrow:"Total federal debt / GDP", big:f(DATA.debt.gdp,1)+"%", chg:sgn(DATA.debt.chg,1,"pp on the year"), chgUp:DATA.debt.chg>0,
     body:COPY.debt, tie:"Interest cost is the 30-year against this balance"};
@@ -1382,7 +1402,7 @@ function paintReadout(){
       cell("Federal debt / GDP", f(DATA.debt.gdp,1)+"%", "Peak was 132.7% in 2020", DATA.debt.chg>0?"up":"down", vintage("debt_gdp"))
     + cell("WTI", "$"+f(DATA.oil.wti.price), sgn(DATA.oil.wti.chg,2), DATA.oil.wti.chg>0?"up":"down", vintage("wti"))
     + cell("Brent", "$"+f(DATA.oil.brent.price), "$"+f(D.spread)+" over WTI", D.spread>8?"up":"", vintage("brent"))
-    + cell("AI capex", "$"+DATA.ai.capex+"bn", sgn(DATA.ai.yoy,1,"% y/y"), DATA.ai.yoy>0?"up":"down", DATA.ai.asOf||"manual");
+    + cell("Big tech AI capex", (DATA.ai.headline||("$"+DATA.ai.capex+"bn")), (DATA.ai.period||"")+" guidance", "", "hand-entered");
 
   document.getElementById("readout-groups").innerHTML =
     group("Rates", rates) + group("Inflation", infl) + group("Credit", credit) + group("Macro", macro);

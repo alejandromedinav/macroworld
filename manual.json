@@ -8,11 +8,30 @@
     "stance": "hawkish"
   },
   "ai": {
-    "capex": 648,
-    "yoy": 38.4,
-    "asOf": "Q2 2026, annualised",
-    "basis": "REPLACE ME - state exactly what this counts, e.g. combined annualised capex for Amazon, Microsoft, Alphabet and Meta from the latest reported quarter.",
-    "components": []
+    "label": "Big tech AI capex",
+    "period": "2026E",
+    "headline": ">$700bn",
+    "names": "Amazon · Microsoft · Alphabet · Meta",
+    "note": "AI infrastructure spending remains near record levels.",
+    "components": [
+      {
+        "name": "Amazon",
+        "value": "~$220bn"
+      },
+      {
+        "name": "Alphabet",
+        "value": "~$195–205bn"
+      },
+      {
+        "name": "Microsoft",
+        "value": "~$175bn"
+      },
+      {
+        "name": "Meta",
+        "value": "~$130–145bn"
+      }
+    ],
+    "basis": "Company capex guidance for calendar 2026 as reported. Microsoft's figure reflects its accounting and lease update. Entered by hand and not verified against a data feed."
   },
   "watch": [
     {
@@ -33,5 +52,5 @@
     }
   ],
   "_stance_note": "fed.stance drives the bird on the Federal Reserve: hawkish | dovish | neutral",
-  "_ai_note": "ai.basis is shown in the callout. Fill ai.components with [{name, value}] to show an auditable breakdown; leave empty to show the basis line only."
+  "_ai_note": "ai is entirely hand-entered - no FRED series covers company capex. Update headline, components and note together so they stay consistent."
 }

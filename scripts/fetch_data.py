@@ -265,7 +265,7 @@ def build(S, manual):
             "cpi": r(headline_cpi, 1), "cpiChg": r(headline_cpi - S["cpi"].at(1), 1),
             "pce": r(S["pce"].value, 1), "pceChg": r(S["pce"].value - S["pce"].at(1), 1),
         },
-        "ai": manual["ai"],
+        "ai": manual["ai"],   # hand-entered; no FRED equivalent
         "watch": manual["watch"],
         "components": components,
     }
