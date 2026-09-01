@@ -21,6 +21,7 @@ import ssl
 import sys
 import urllib.parse
 import urllib.request
+import time
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
@@ -46,6 +47,7 @@ load_dotenv()
 KEY = os.environ.get("FRED_API_KEY")
 EIA_KEY = os.environ.get("EIA_API_KEY")   # optional; see fetch_eia below
 AV_KEY  = os.environ.get("ALPHAVANTAGE_API_KEY")   # optional; see fetch_alphavantage
+_AV_LAST = 0.0                                    # throttle marker for the 5/min limit
 
 # macOS Python from python.org ships without a CA bundle, so TLS fails with
 # CERTIFICATE_VERIFY_FAILED even though curl works. Prefer certifi's bundle
@@ -197,6 +199,13 @@ def fetch_alphavantage(function):
     """
     if not AV_KEY:
         return None
+    # Free tier allows 5 requests/minute and rejects bursts. Two calls back to
+    # back is enough to trip it, so space them.
+    global _AV_LAST
+    wait = 1.5 - (time.monotonic() - _AV_LAST)
+    if wait > 0:
+        time.sleep(wait)
+    _AV_LAST = time.monotonic()
     params = {"function": function, "interval": "daily", "apikey": AV_KEY}
     url = "https://www.alphavantage.co/query?" + urllib.parse.urlencode(params)
     try:
