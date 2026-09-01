@@ -339,12 +339,10 @@ var DATA = {
   ],
   "oil": {
     "wti": {
-      "price": 83.9,
-      "chg": -2.44
+      "price": 90.68
     },
     "brent": {
-      "price": 88.24,
-      "chg": -4.47
+      "price": 95.22
     }
   },
   "dates": {
@@ -357,8 +355,8 @@ var DATA = {
     "tgt_hi": "2026-09-01",
     "hy_oas": "2026-08-31",
     "hy_yield": "2026-08-31",
-    "wti": "2026-08-25",
-    "brent": "2026-08-25",
+    "wti": "2026-09-01",
+    "brent": "2026-09-01",
     "cpi": "2026-07-01",
     "pce": "2026-07-01",
     "breakeven": "2026-09-01",
@@ -371,7 +369,7 @@ var DATA = {
     "c_transport": "2026-07-01",
     "c_energy": "2026-07-01"
   },
-  "oilSource": "EIA via FRED",
+  "oilSource": "Manual (front-month futures)",
   "fed": {
     "lower": 3.5,
     "upper": 3.75,
@@ -544,6 +542,8 @@ D.realMarket = (DATA.realTips !== undefined) ? DATA.realTips : yieldOf("10Y") - 
 var measure="cpi";
 function f(n,d){ return n.toFixed(d===undefined?2:d); }
 function sgn(n,d,s){ return (n>=0?"+":"−")+f(Math.abs(n),d)+(s||""); }
+// A hand-entered price has no prior print, so its change is absent rather than zero.
+function chgOf(v,d,s){ return (v===undefined||v===null||!isFinite(v)) ? "" : sgn(v,d,s); }
 
 /* ============================================================
    GEOMETRY
@@ -1118,9 +1118,9 @@ function copyFor(m2){
   if(m2==="fed") return {eyebrow:"Federal funds target range", big:f(DATA.fed.lower)+"–"+f(DATA.fed.upper)+"%",
     chg:(DATA.fed.lastMove===0 ? "Held on "+DATA.fed.lastDate : sgn(DATA.fed.lastMove,2,"pp on "+DATA.fed.lastDate)), chgUp:DATA.fed.lastMove>0,
     body:COPY.fed, tie:"Real policy rate "+sgn(D.realPolicy,2,"pp")+" · next meeting "+DATA.fed.nextDate};
-  if(m2==="wti") return {eyebrow:"WTI crude, Cushing", big:"$"+f(DATA.oil.wti.price), chg:sgn(DATA.oil.wti.chg,2," on the day"), chgUp:DATA.oil.wti.chg>0,
+  if(m2==="wti") return {eyebrow:"WTI crude, Cushing", big:"$"+f(DATA.oil.wti.price), chg:chgOf(DATA.oil.wti.chg,2," on the day"), chgUp:DATA.oil.wti.chg>0,
     body:COPY.wti, tie:"$"+f(D.spread)+" under Brent"};
-  if(m2==="brent") return {eyebrow:"Brent crude, seaborne", big:"$"+f(DATA.oil.brent.price), chg:sgn(DATA.oil.brent.chg,2," on the day"), chgUp:DATA.oil.brent.chg>0,
+  if(m2==="brent") return {eyebrow:"Brent crude, seaborne", big:"$"+f(DATA.oil.brent.price), chg:chgOf(DATA.oil.brent.chg,2," on the day"), chgUp:DATA.oil.brent.chg>0,
     body:COPY.brent, tie:D.spread>8?"Gap to WTI $"+f(D.spread)+" — wide, supply risk is priced":"Gap to WTI $"+f(D.spread)};
   if(m2==="airfare") return {eyebrow:"Airline fares, year over year", big:sgn(DATA.airfare.yoy,1,"%"), chg:sgn(DATA.airfare.chg,1,"pp on the month"), chgUp:DATA.airfare.chg>0,
     body:COPY.airfare, tie:"Feeds the transportation line"};
@@ -1406,7 +1406,7 @@ function paintNow(){
     + f6("HY OAS", DATA.credit.oas+"bp", sgn(DATA.credit.chg,0,"bp"), DATA.credit.chg>0?"up":"down", vintage("hy_oas"))
     + f6("PCE", f(D.pce,1)+"%", (DATA.inflation.pceChg!==undefined?sgn(DATA.inflation.pceChg,1,"pp"):""), DATA.inflation.pceChg>0?"up":"down", vintage("pce"))
     + f6("Fed rate", f(DATA.fed.lower)+"–"+f(DATA.fed.upper)+"%", "eff "+f(DATA.fed.effective!==undefined?DATA.fed.effective:DATA.fed.upper)+"%", "", vintage("tgt_hi"))
-    + f6("WTI", "$"+f(DATA.oil.wti.price), sgn(DATA.oil.wti.chg,2), DATA.oil.wti.chg>0?"up":"down", vintage("wti"));
+    + f6("WTI", "$"+f(DATA.oil.wti.price), chgOf(DATA.oil.wti.chg,2), DATA.oil.wti.chg>0?"up":"down", vintage("wti"));
 }
 
 function paintReadout(){
@@ -1431,7 +1431,7 @@ function paintReadout(){
 
   var macro =
       cell("Federal debt / GDP", f(DATA.debt.gdp,1)+"%", "Peak was 132.7% in 2020", DATA.debt.chg>0?"up":"down", vintage("debt_gdp"))
-    + cell("WTI", "$"+f(DATA.oil.wti.price), sgn(DATA.oil.wti.chg,2), DATA.oil.wti.chg>0?"up":"down", vintage("wti"))
+    + cell("WTI", "$"+f(DATA.oil.wti.price), chgOf(DATA.oil.wti.chg,2), DATA.oil.wti.chg>0?"up":"down", vintage("wti"))
     + cell("Brent", "$"+f(DATA.oil.brent.price), "$"+f(D.spread)+" over WTI", D.spread>8?"up":"", vintage("brent"))
     + cell("Big tech AI capex", (DATA.ai.headline||("$"+DATA.ai.capex+"bn")), (DATA.ai.period||"")+" guidance", "", "hand-entered");
 

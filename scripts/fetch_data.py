@@ -134,6 +134,10 @@ class Obs:
         """Value n prints back, or the latest if the history is short."""
         return self.values[n] if n < len(self.values) else self.values[0]
 
+    def change(self, n=1):
+        """Move over n prints, or None when there is no prior value to compare."""
+        return None if len(self.values) <= n else self.values[0] - self.values[n]
+
 
 def fetch(series_id, units=None):
     params = {
@@ -242,6 +246,25 @@ def r(n, d=2):
     return round(n, d)
 
 
+def manual_oil(manual, which):
+    """A price you read and typed in yourself.
+
+    A person reading a published number is not automated collection, so this is
+    the one route to same-day oil with no terms attached. It is used only while
+    it is newer than FRED - stop updating and the build quietly reverts to FRED
+    rather than presenting a stale hand-entry as current.
+    """
+    o = manual.get("oil") or {}
+    val, when = o.get(which), (o.get("asOf") or "").strip()
+    if val is None or not when:
+        return None
+    try:
+        return Obs([float(val)], [when])
+    except (TypeError, ValueError):
+        print(f"  manual oil {which}: '{val}' is not a number; ignoring")
+        return None
+
+
 def freshest(name, fred_obs, candidates):
     """Pick the most recent print among FRED and any optional sources.
 
@@ -303,10 +326,12 @@ def build(S, manual):
         components.append(c)
 
     wti_obs, wti_src = freshest("WTI", S["wti"], [
+        ("Manual (front-month futures)", lambda: manual_oil(manual, "wti")),
         ("Alpha Vantage futures", lambda: fetch_alphavantage("WTI")),
         ("EIA (direct)",          lambda: fetch_eia("RWTC")),
     ])
     brent_obs, brent_src = freshest("Brent", S["brent"], [
+        ("Manual (front-month futures)", lambda: manual_oil(manual, "brent")),
         ("Alpha Vantage futures", lambda: fetch_alphavantage("BRENT")),
         ("EIA (direct)",          lambda: fetch_eia("RBRTE")),
     ])
@@ -333,8 +358,10 @@ def build(S, manual):
              "chg": r(S["y30y"].value - S["y30y"].at(1))},
         ],
         "oil": {
-            "wti":   {"price": r(S["wti"].value),   "chg": r(S["wti"].value - S["wti"].at(1))},
-            "brent": {"price": r(S["brent"].value), "chg": r(S["brent"].value - S["brent"].at(1))},
+            "wti":   dict({"price": r(S["wti"].value)},
+                          **({"chg": r(S["wti"].change())} if S["wti"].change() is not None else {})),
+            "brent": dict({"price": r(S["brent"].value)},
+                          **({"chg": r(S["brent"].change())} if S["brent"].change() is not None else {})),
         },
         "dates": dates,
         "oilSource": wti_src,
@@ -408,6 +435,9 @@ def main():
     print(f"  Debt/GDP {data['debt']['gdp']}% (as at {data['dates']['debt_gdp']})")
     print(f"  Funds {data['fed']['lower']}-{data['fed']['upper']} (eff {data['fed']['effective']})   ex-post real policy {r(real_policy)}")
     print(f"  HY effective yield {data['credit']['effYield']}%   OAS {data['credit']['oas']}bp")
+    print(f"  oil source: {data['oilSource']} (as at {data['dates']['wti']})")
+    if "Manual" not in data["oilSource"] and (manual.get("oil") or {}).get("asOf"):
+        print("  NOTE: your manual oil entry is older than FRED's - update manual.json or leave it blank.")
     other = data["components"][5]
     print(f"  residual 'other'  CPI {other['yoy']}%   PCE {other['yoyPce']}%  (each ties to its own headline)")
     if abs(other["yoy"]) > 6 or abs(other["yoyPce"]) > 6:

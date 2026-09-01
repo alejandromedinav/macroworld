@@ -51,5 +51,12 @@
   ],
   "_stance_note": "fed.stance drives the bird on the Federal Reserve: hawkish | dovish | neutral",
   "_ai_note": "Hand-entered - no FRED series covers company capex. The sentence shown lives in COPY.ai in index.html.",
-  "_fed_note": "lastMove 0 means the FOMC held. Use -0.25 / +0.25 only for an actual move. Hand-entered - nothing validates this."
+  "_fed_note": "lastMove 0 means the FOMC held. Use -0.25 / +0.25 only for an actual move. Hand-entered - nothing validates this.",
+  "oil": {
+    "asOf": "2026-09-01",
+    "wti": 90.68,
+    "brent": 95.22,
+    "note": "Front-month futures, read by hand"
+  },
+  "_oil_note": "Optional daily override. Set asOf to the date you read them and fill wti/brent. Used only while newer than FRED's print - if you stop updating, it falls back to FRED automatically rather than showing an ever-staler number."
 }
