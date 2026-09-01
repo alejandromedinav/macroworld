@@ -2,7 +2,11 @@ name: Refresh macro data
 
 on:
   schedule:
-    # 21:15 UTC on weekdays — after Treasury yields post at 16:15 New York.
+    # FRED publishes day D's H.15 yields on day D+1, around 15:00-16:00 UTC.
+    # Two slots because GitHub's scheduler drifts by hours: if the evening run
+    # slips past midnight it lands BEFORE that day's FRED update and re-commits
+    # stale data, which is exactly what happened on 1 Sep.
+    - cron: "30 17 * * 1-5"
     - cron: "15 21 * * 1-5"
   workflow_dispatch:        # lets you run it by hand from the Actions tab
 
