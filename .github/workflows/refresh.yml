@@ -26,6 +26,10 @@ jobs:
       - name: Fetch from FRED and rebuild index.html
         env:
           FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
+          # Optional. Add these as repo secrets to let the build look for a
+          # fresher oil print; absent, it just uses FRED.
+          EIA_API_KEY: ${{ secrets.EIA_API_KEY }}
+          ALPHAVANTAGE_API_KEY: ${{ secrets.ALPHAVANTAGE_API_KEY }}
         run: python3 scripts/fetch_data.py
 
       - name: Commit if anything moved

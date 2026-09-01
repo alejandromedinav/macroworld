@@ -45,6 +45,7 @@ def load_dotenv():
 load_dotenv()
 KEY = os.environ.get("FRED_API_KEY")
 EIA_KEY = os.environ.get("EIA_API_KEY")   # optional; see fetch_eia below
+AV_KEY  = os.environ.get("ALPHAVANTAGE_API_KEY")   # optional; see fetch_alphavantage
 
 # macOS Python from python.org ships without a CA bundle, so TLS fails with
 # CERTIFICATE_VERIFY_FAILED even though curl works. Prefer certifi's bundle
@@ -187,6 +188,35 @@ def fetch_eia(series):
         return None
 
 
+def fetch_alphavantage(function):
+    """Alpha Vantage's WTI / BRENT series.
+
+    Worth knowing before trusting it: several free "oil price" APIs resell the
+    same EIA spot series, so this is checked against FRED by date like every
+    other candidate rather than assumed to be fresher. Never fatal.
+    """
+    if not AV_KEY:
+        return None
+    params = {"function": function, "interval": "daily", "apikey": AV_KEY}
+    url = "https://www.alphavantage.co/query?" + urllib.parse.urlencode(params)
+    try:
+        req = urllib.request.Request(url, headers={"User-Agent": "macro-soundings"})
+        with urllib.request.urlopen(req, timeout=30, context=SSL_CTX) as resp:
+            body = json.load(resp)
+        # Rate limits and errors come back as prose in Note/Information, not as HTTP errors.
+        for key in ("Note", "Information", "Error Message"):
+            if key in body:
+                print(f"  Alpha Vantage {function}: {str(body[key])[:120]}")
+                return None
+        rows = [r for r in body.get("data", []) if r.get("value") not in (None, ".", "")]
+        if not rows:
+            return None
+        return Obs([float(r["value"]) for r in rows], [r["date"] for r in rows])
+    except Exception as exc:
+        print(f"  Alpha Vantage {function} failed ({exc}); falling back")
+        return None
+
+
 def fetch_all():
     def one(item):
         name, (sid, units) = item
@@ -203,15 +233,24 @@ def r(n, d=2):
     return round(n, d)
 
 
-def freshest(name, fred_obs, eia_series):
-    """Take the more recent of the two. Reports which source supplied the print."""
-    eia = fetch_eia(eia_series)
-    if eia and eia.date > fred_obs.date:
-        print(f"  {name}: EIA is ahead ({eia.date} vs FRED {fred_obs.date}) - using EIA")
-        return eia, "EIA (direct)"
-    if eia:
-        print(f"  {name}: EIA is not ahead ({eia.date} vs FRED {fred_obs.date}) - using FRED")
-    return fred_obs, "EIA via FRED"
+def freshest(name, fred_obs, candidates):
+    """Pick the most recent print among FRED and any optional sources.
+
+    candidates: list of (label, callable) tried in order. A source is only used
+    if its latest observation is genuinely newer than FRED's - otherwise this
+    quietly stays on FRED, so adding a key can never make the data worse.
+    """
+    best, best_label = fred_obs, "EIA via FRED"
+    for label, fetch in candidates:
+        got = fetch()
+        if not got:
+            continue
+        if got.date > best.date:
+            print(f"  {name}: {label} is ahead ({got.date} vs {best.date}) - using it")
+            best, best_label = got, label
+        else:
+            print(f"  {name}: {label} is not ahead ({got.date} vs {best.date})")
+    return best, best_label
 
 
 def build(S, manual):
@@ -254,8 +293,14 @@ def build(S, manual):
             c["yoyPce"] = r(other_pce, 1)   # the residual differs by measure
         components.append(c)
 
-    wti_obs,  wti_src  = freshest("WTI",   S["wti"],   "RWTC")
-    brent_obs, brent_src = freshest("Brent", S["brent"], "RBRTE")
+    wti_obs, wti_src = freshest("WTI", S["wti"], [
+        ("Alpha Vantage futures", lambda: fetch_alphavantage("WTI")),
+        ("EIA (direct)",          lambda: fetch_eia("RWTC")),
+    ])
+    brent_obs, brent_src = freshest("Brent", S["brent"], [
+        ("Alpha Vantage futures", lambda: fetch_alphavantage("BRENT")),
+        ("EIA (direct)",          lambda: fetch_eia("RBRTE")),
+    ])
     S["wti"], S["brent"] = wti_obs, brent_obs
 
     # Frequencies differ wildly - Treasuries daily, CPI monthly, debt quarterly -
