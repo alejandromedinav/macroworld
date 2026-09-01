@@ -246,6 +246,32 @@ def r(n, d=2):
     return round(n, d)
 
 
+def archive_manual_oil(manual):
+    """Roll today's hand-entered prices into a short history.
+
+    You only ever edit asOf/wti/brent. This keeps the previous entries so the
+    build can compute a real day-on-day change instead of showing nothing, and
+    caps the list so manual.json does not grow without bound.
+    """
+    o = manual.get("oil") or {}
+    when, wti, brent = (o.get("asOf") or "").strip(), o.get("wti"), o.get("brent")
+    if not when or wti is None or brent is None:
+        return manual
+    hist = [h for h in (o.get("history") or []) if h.get("asOf") != when]
+    hist.insert(0, {"asOf": when, "wti": wti, "brent": brent})
+    o["history"] = hist[:30]
+    manual["oil"] = o
+    return manual
+
+
+def prior_manual(manual, which, when):
+    """The most recent hand-entered price from a date before `when`."""
+    for h in (manual.get("oil") or {}).get("history") or []:
+        if h.get("asOf", "") < when and h.get(which) is not None:
+            return float(h[which]), h["asOf"]
+    return None, None
+
+
 def manual_oil(manual, which):
     """A price you read and typed in yourself.
 
@@ -259,7 +285,12 @@ def manual_oil(manual, which):
     if val is None or not when:
         return None
     try:
-        return Obs([float(val)], [when])
+        vals, dates = [float(val)], [when]
+        prev, prev_when = prior_manual(manual, which, when)
+        if prev is not None:
+            vals.append(prev)
+            dates.append(prev_when)
+        return Obs(vals, dates)
     except (TypeError, ValueError):
         print(f"  manual oil {which}: '{val}' is not a number; ignoring")
         return None
@@ -283,6 +314,18 @@ def freshest(name, fred_obs, candidates):
         else:
             print(f"  {name}: {label} is not ahead ({got.date} vs {best.date})")
     return best, best_label
+
+
+def _oil_entry(o):
+    """Price, plus the move and percent move when there is a prior print."""
+    out = {"price": r(o.value)}
+    chg = o.change()
+    if chg is not None:
+        out["chg"] = r(chg)
+        prev = o.at(1)
+        if prev:
+            out["pct"] = r(chg / prev * 100, 2)   # standard: change over the OLD price
+    return out
 
 
 def build(S, manual):
@@ -358,10 +401,8 @@ def build(S, manual):
              "chg": r(S["y30y"].value - S["y30y"].at(1))},
         ],
         "oil": {
-            "wti":   dict({"price": r(S["wti"].value)},
-                          **({"chg": r(S["wti"].change())} if S["wti"].change() is not None else {})),
-            "brent": dict({"price": r(S["brent"].value)},
-                          **({"chg": r(S["brent"].change())} if S["brent"].change() is not None else {})),
+            "wti":   _oil_entry(S["wti"]),
+            "brent": _oil_entry(S["brent"]),
         },
         "dates": dates,
         "oilSource": wti_src,
@@ -421,7 +462,12 @@ def inject(data):
 
 def main():
     S = fetch_all()
-    manual = json.loads((ROOT / "manual.json").read_text(encoding="utf8"))
+    manual_path = ROOT / "manual.json"
+    manual = json.loads(manual_path.read_text(encoding="utf8"))
+    before = json.dumps(manual, sort_keys=True)
+    manual = archive_manual_oil(manual)
+    if json.dumps(manual, sort_keys=True) != before:
+        manual_path.write_text(json.dumps(manual, indent=2, ensure_ascii=False) + "\n", encoding="utf8")
     data = build(S, manual)
     inject(data)
 

@@ -56,7 +56,14 @@
     "asOf": "2026-09-01",
     "wti": 90.68,
     "brent": 95.22,
-    "note": "Front-month futures, read by hand"
+    "note": "Front-month futures, read by hand",
+    "history": [
+      {
+        "asOf": "2026-09-01",
+        "wti": 90.68,
+        "brent": 95.22
+      }
+    ]
   },
   "_oil_note": "Optional daily override. Set asOf to the date you read them and fill wti/brent. Used only while newer than FRED's print - if you stop updating, it falls back to FRED automatically rather than showing an ever-staler number."
 }
