@@ -258,18 +258,26 @@ def archive_manual_oil(manual):
     if not when or wti is None or brent is None:
         return manual
     hist = [h for h in (o.get("history") or []) if h.get("asOf") != when]
-    hist.insert(0, {"asOf": when, "wti": wti, "brent": brent})
+    hist.append({"asOf": when, "wti": wti, "brent": brent})
+    hist.sort(key=lambda h: h.get("asOf", ""), reverse=True)
     o["history"] = hist[:30]
     manual["oil"] = o
     return manual
 
 
 def prior_manual(manual, which, when):
-    """The most recent hand-entered price from a date before `when`."""
+    """The most recent hand-entered price from a date before `when`.
+
+    Picks by maximum date rather than list position, so a history that has been
+    hand-edited or reordered by a merge still compares against the right day.
+    """
+    best = None
     for h in (manual.get("oil") or {}).get("history") or []:
-        if h.get("asOf", "") < when and h.get(which) is not None:
-            return float(h[which]), h["asOf"]
-    return None, None
+        stamp = h.get("asOf", "")
+        if stamp < when and h.get(which) is not None:
+            if best is None or stamp > best[1]:
+                best = (float(h[which]), stamp)
+    return best if best else (None, None)
 
 
 def manual_oil(manual, which):
