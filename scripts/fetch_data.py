@@ -44,6 +44,7 @@ def load_dotenv():
 
 load_dotenv()
 KEY = os.environ.get("FRED_API_KEY")
+EIA_KEY = os.environ.get("EIA_API_KEY")   # optional; see fetch_eia below
 
 # macOS Python from python.org ships without a CA bundle, so TLS fails with
 # CERTIFICATE_VERIFY_FAILED even though curl works. Prefer certifi's bundle
@@ -154,6 +155,38 @@ def fetch(series_id, units=None):
     return Obs([float(o["value"]) for o in good], [o["date"] for o in good])
 
 
+def fetch_eia(series):
+    """Spot prices straight from the EIA.
+
+    FRED's DCOILWTICO/DCOILBRENTEU are EIA data re-published, so this exists to
+    answer one question with evidence rather than argument: does EIA post ahead
+    of FRED's ingest? If it does, the fresher print wins. If it doesn't, nothing
+    changes and the build carries on with FRED.
+
+    Never fatal - any failure falls back to FRED.
+    """
+    if not EIA_KEY:
+        return None
+    params = [
+        ("api_key", EIA_KEY), ("frequency", "daily"), ("data[0]", "value"),
+        ("facets[series][]", series),
+        ("sort[0][column]", "period"), ("sort[0][direction]", "desc"),
+        ("length", "12"),
+    ]
+    url = "https://api.eia.gov/v2/petroleum/pri/spt/data/?" + urllib.parse.urlencode(params)
+    try:
+        req = urllib.request.Request(url, headers={"User-Agent": "macro-soundings"})
+        with urllib.request.urlopen(req, timeout=30, context=SSL_CTX) as resp:
+            rows = json.load(resp)["response"]["data"]
+        rows = [r for r in rows if r.get("value") is not None]
+        if not rows:
+            return None
+        return Obs([float(r["value"]) for r in rows], [r["period"] for r in rows])
+    except Exception as exc:
+        print(f"  EIA lookup for {series} failed ({exc}); using FRED instead")
+        return None
+
+
 def fetch_all():
     def one(item):
         name, (sid, units) = item
@@ -168,6 +201,17 @@ def fetch_all():
 
 def r(n, d=2):
     return round(n, d)
+
+
+def freshest(name, fred_obs, eia_series):
+    """Take the more recent of the two. Reports which source supplied the print."""
+    eia = fetch_eia(eia_series)
+    if eia and eia.date > fred_obs.date:
+        print(f"  {name}: EIA is ahead ({eia.date} vs FRED {fred_obs.date}) - using EIA")
+        return eia, "EIA (direct)"
+    if eia:
+        print(f"  {name}: EIA is not ahead ({eia.date} vs FRED {fred_obs.date}) - using FRED")
+    return fred_obs, "EIA via FRED"
 
 
 def build(S, manual):
@@ -210,6 +254,10 @@ def build(S, manual):
             c["yoyPce"] = r(other_pce, 1)   # the residual differs by measure
         components.append(c)
 
+    wti_obs,  wti_src  = freshest("WTI",   S["wti"],   "RWTC")
+    brent_obs, brent_src = freshest("Brent", S["brent"], "RBRTE")
+    S["wti"], S["brent"] = wti_obs, brent_obs
+
     # Frequencies differ wildly - Treasuries daily, CPI monthly, debt quarterly -
     # so a single "as at" date would misrepresent most of the page.
     dates = {k: S[k].date for k in S}
@@ -235,6 +283,7 @@ def build(S, manual):
             "brent": {"price": r(S["brent"].value), "chg": r(S["brent"].value - S["brent"].at(1))},
         },
         "dates": dates,
+        "oilSource": wti_src,
         "fed": {
             "lower": r(S["tgt_lo"].value),
             "upper": r(S["tgt_hi"].value),

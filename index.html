@@ -371,6 +371,7 @@ var DATA = {
     "c_transport": "2026-07-01",
     "c_energy": "2026-07-01"
   },
+  "oilSource": "EIA via FRED",
   "fed": {
     "lower": 3.5,
     "upper": 3.75,
@@ -1450,7 +1451,7 @@ var SOURCES=[
   ["PCE price index","BEA via FRED","PCEPI"],
   ["Airline fares","BLS via FRED","CUSR0000SETG01"],
   ["Federal debt / GDP","Treasury &amp; BEA via FRED","GFDEGDQ188S"],
-  ["Crude oil","EIA via FRED","DCOILWTICO · DCOILBRENTEU"],
+  ["Crude oil", (typeof DATA!=="undefined" && DATA.oilSource) ? DATA.oilSource : "EIA via FRED", "DCOILWTICO · DCOILBRENTEU"],
   ["AI capex","Company reports, entered by hand","manual.json"]
 ];
 function paintSources(){
