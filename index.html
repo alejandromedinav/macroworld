@@ -18,7 +18,7 @@
   --rule:#C4B99F; --rule-soft:#DCD2BB;
   --sky:#D6E9F0; --sea:#8FC2D8; --sea-deep:#5D9BBA; --land:#E3CE99; --rock:#C7B183;
   --verd:#2F7D6C; --amber:#C8841A; --rust:#B24326; --stamp:#B24326;
-  --navy:#1B3E6B;
+  --navy:#1B3E6B; --sky-ink:rgba(72,132,164,.9);
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
@@ -26,7 +26,7 @@
     --rule:#2B4759; --rule-soft:#1B3546;
     --sky:#0C2233; --sea:#0F3247; --sea-deep:#092536; --land:#223B48; --rock:#2C4B5B;
     --verd:#63B8A3; --amber:#E5AC45; --rust:#D96C48; --stamp:#D96C48;
-    --navy:#2E5688;
+    --navy:#2E5688; --sky-ink:rgba(150,180,198,.72);
   }
 }
 :root[data-theme="dark"]{
@@ -34,7 +34,7 @@
   --rule:#2B4759; --rule-soft:#1B3546;
   --sky:#0C2233; --sea:#0F3247; --sea-deep:#092536; --land:#223B48; --rock:#2C4B5B;
   --verd:#63B8A3; --amber:#E5AC45; --rust:#D96C48; --stamp:#D96C48;
-  --navy:#2E5688;
+  --navy:#2E5688; --sky-ink:rgba(150,180,198,.72);
 }
 
 *{box-sizing:border-box}
@@ -153,9 +153,11 @@ svg.chart{display:block; width:100%; height:100%}
 .panel-notes code{font-family:"IBM Plex Mono",monospace; font-size:12px}
 
 /* ---------- sources, kept out of the way ---------- */
-.credit{position:absolute; bottom:16px; left:24px; z-index:6; pointer-events:none;
+/* Top-right, in a sky tone: a mapmaker's mark in the margin, not a byline
+   competing with the Federal Reserve label at the shoreline. */
+.credit{position:absolute; top:20px; right:24px; z-index:6; pointer-events:none; text-align:right;
   font-family:"IBM Plex Mono",monospace; font-size:10px; letter-spacing:.2em; text-transform:uppercase;
-  color:var(--ink-soft); padding-bottom:7px}
+  color:var(--sky-ink); line-height:1.9}
 .srcbtn{position:absolute; bottom:16px; right:18px; z-index:6; background:transparent; border:0; cursor:pointer;
   font-family:"IBM Plex Mono",monospace; font-size:10px; letter-spacing:.2em; text-transform:uppercase;
   color:var(--ink-soft); padding:6px 8px; border-bottom:1px solid var(--rule); transition:color .2s ease, border-color .2s ease}
@@ -1609,7 +1611,7 @@ fitWorld(); render(0); paintReadout(); paintNow(); paintMoved(); paintNote(); pa
 (function(){
   // The data's own date and the day we fetched it are different facts.
   var cr=document.getElementById("credit");
-  if(cr) cr.textContent = DATA.maker || "";
+  if(cr) cr.textContent = DATA.maker ? "Created by "+DATA.maker : "";
   var el=document.getElementById("mark-date");
   el.textContent = (DATA.builtAt && DATA.builtAt!==DATA.asOf)
     ? DATA.asOf+" data · updated "+DATA.builtAt
