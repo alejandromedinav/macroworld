@@ -207,6 +207,8 @@ svg.chart{display:block; width:100%; height:100%}
 .thesis-lbl{font-family:"IBM Plex Mono",monospace; font-size:11px; letter-spacing:.24em; text-transform:uppercase; color:#5FAA99; margin-bottom:18px}
 /* Bodoni is high-contrast: its hairlines thin out badly as light-on-dark. Heavier weight, brighter ink and more line height make it hold up. */
 .thesis{font-family:"Newsreader",Georgia,serif; font-weight:400; font-size:clamp(19px,2.3vw,27px); line-height:1.58; letter-spacing:.005em; color:#FCFAF4; margin:0 auto; text-wrap:pretty; max-width:46ch; text-shadow:0 1px 10px rgba(0,0,0,.5)}
+.byline{font-family:"IBM Plex Mono",monospace; font-size:11px; letter-spacing:.22em; text-transform:uppercase;
+  color:rgba(237,230,210,.55); margin-top:18px}
 .space-figs{display:flex; flex-wrap:wrap; gap:8px 28px; justify-content:center; margin-top:32px; font-family:"IBM Plex Mono",monospace; font-size:12.5px; color:rgba(237,230,210,.6); letter-spacing:.06em}
 .space-close{position:absolute; top:24px; right:24px; z-index:3; background:transparent; border:1.5px solid rgba(237,230,210,.4); color:#EDE6D2; font-family:"Barlow Condensed",sans-serif; font-size:14px; letter-spacing:.16em; text-transform:uppercase; padding:9px 17px; cursor:pointer; opacity:0; transition:opacity .6s ease}
 .launch.arrived .space-close{opacity:1}
@@ -295,6 +297,7 @@ svg.chart{display:block; width:100%; height:100%}
       </div>
       <div class="thesis-lbl">The read, <span id="space-date"></span></div>
       <p class="thesis" id="thesis"></p>
+      <div class="byline" id="byline"></div>
       <div class="space-figs" id="space-figs"></div>
     </div>
   </div>
@@ -314,6 +317,7 @@ var DATA = {
   "asOf": "2026-08-31",
   "builtAt": "2026-09-02",
   "summary": "The US hadn't attacked Iran in over a month. That ended yesterday. Oil prices are back up, or better yet, not going down. Expect inflation expectations to continue increasing, causing the treasury yields to not simmer down. Warsh might (should) hike. Bessent's hands are tied, trying to conduct monetary policy with a fiscal toolbox. Current debt is not sustainable longterm. AI Capex helping economic growth, but lots of data center roadblocks (energy grid + returns). Stagflation on the horizon? Interesting times.",
+  "author": "A.M.",
   "curve": [
     {
       "key": "3M",
@@ -514,7 +518,7 @@ var DATA = {
 /* Numbered points that belong under a description rather than inside it. */
 var POINTS = {
   debt: ["We spend $1.2 trillion on our defense spending.",
-         "On SIPRI's 2025 numbers we spend $954 billion, and the next 6 countries altogether still fall short of it."],
+         "The next 6 countries altogether still fall short of it."],
   ai:   ["Energy-grid infrastructure. Imagine trying to power a mini city that never turns off its lights, and you need it done by yesterday. Pretty challenging.",
          "Returns. You spend so much on building, but it takes time to generate returns (investors get pretty antsy)."]
 };
@@ -1327,6 +1331,8 @@ function buildLaunch(){
 function fillSpaceText(){
   document.getElementById("thesis").textContent=DATA.summary;
   document.getElementById("space-date").textContent=(DATA.builtAt||DATA.asOf);
+  var by=document.getElementById("byline");
+  if(by) by.textContent = DATA.author ? "— "+DATA.author : "";
   document.getElementById("space-figs").innerHTML=[
     "10Y "+f(yieldOf("10Y"))+"%","2s10s "+sgn(D.slope,2),"HY "+DATA.credit.oas+"bp",
     measure.toUpperCase()+" "+f(measure==="cpi"?D.cpi:D.pce,1)+"%","WTI $"+f(DATA.oil.wti.price),"Funds "+f(DATA.fed.upper)+"%"

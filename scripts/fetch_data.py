@@ -456,6 +456,7 @@ def build(S, manual):
         # date and the day we fetched it are different facts. Show both.
         "builtAt": datetime.date.today().isoformat(),
         "summary": manual["summary"],
+        "author": manual.get("author", ""),
         "curve": curve,
         "oil": {
             "wti":   _oil_entry(S["wti"]),

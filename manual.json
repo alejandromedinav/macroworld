@@ -83,5 +83,7 @@
       "10Y"
     ]
   },
-  "_curve_note": "Optional hand entry for a yield FRED has not published yet. Same rule as oil: only used while newer than FRED. notes/alert are display only - alert turns the figure rust."
+  "_curve_note": "Optional hand entry for a yield FRED has not published yet. Same rule as oil: only used while newer than FRED. notes/alert are display only - alert turns the figure rust.",
+  "author": "A.M.",
+  "_author_note": "Shown under the read, so the opinion is signed and separable from the sourced data."
 }
