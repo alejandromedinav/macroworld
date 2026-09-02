@@ -153,6 +153,9 @@ svg.chart{display:block; width:100%; height:100%}
 .panel-notes code{font-family:"IBM Plex Mono",monospace; font-size:12px}
 
 /* ---------- sources, kept out of the way ---------- */
+.credit{position:absolute; bottom:16px; left:24px; z-index:6; pointer-events:none;
+  font-family:"IBM Plex Mono",monospace; font-size:10px; letter-spacing:.2em; text-transform:uppercase;
+  color:var(--ink-soft); padding-bottom:7px}
 .srcbtn{position:absolute; bottom:16px; right:18px; z-index:6; background:transparent; border:0; cursor:pointer;
   font-family:"IBM Plex Mono",monospace; font-size:10px; letter-spacing:.2em; text-transform:uppercase;
   color:var(--ink-soft); padding:6px 8px; border-bottom:1px solid var(--rule); transition:color .2s ease, border-color .2s ease}
@@ -270,6 +273,8 @@ svg.chart{display:block; width:100%; height:100%}
       </div>
     </div>
   </div>
+  <div class="credit" id="credit"></div>
+
   <button class="srcbtn" id="srcbtn" aria-expanded="false" aria-controls="srcsheet">Sources</button>
   <div class="srcsheet" id="srcsheet" aria-hidden="true">
     <button class="srcclose" id="srcclose" aria-label="Close sources">&times;</button>
@@ -329,6 +334,7 @@ var DATA = {
   "builtAt": "2026-09-02",
   "summary": "The US hadn't attacked Iran in over a month. That ended yesterday. Oil prices are back up, or better yet, not going down. Expect inflation expectations to continue increasing, causing the treasury yields to not simmer down. Warsh might (should) hike. Bessent's hands are tied, trying to conduct monetary policy with a fiscal toolbox. Current debt is not sustainable longterm. AI Capex helping economic growth, but lots of data center roadblocks (energy grid + returns). Stagflation on the horizon? Interesting times.",
   "author": "A.M.",
+  "maker": "Alejandro Medina",
   "curve": [
     {
       "key": "3M",
@@ -1602,6 +1608,8 @@ document.addEventListener("keydown",function(e){
 fitWorld(); render(0); paintReadout(); paintNow(); paintMoved(); paintNote(); paintSources();
 (function(){
   // The data's own date and the day we fetched it are different facts.
+  var cr=document.getElementById("credit");
+  if(cr) cr.textContent = DATA.maker || "";
   var el=document.getElementById("mark-date");
   el.textContent = (DATA.builtAt && DATA.builtAt!==DATA.asOf)
     ? DATA.asOf+" data · updated "+DATA.builtAt

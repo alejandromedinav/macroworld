@@ -457,6 +457,7 @@ def build(S, manual):
         "builtAt": datetime.date.today().isoformat(),
         "summary": manual["summary"],
         "author": manual.get("author", ""),
+        "maker": manual.get("credit", ""),   # note: DATA["credit"] is the HY block
         "curve": curve,
         "oil": {
             "wti":   _oil_entry(S["wti"]),
