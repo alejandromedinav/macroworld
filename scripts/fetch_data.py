@@ -280,6 +280,39 @@ def prior_manual(manual, which, when):
     return best if best else (None, None)
 
 
+def apply_curve_override(curve, manual, dates):
+    """Let a yield be entered by hand when it has moved ahead of FRED's publication.
+
+    Same rule as oil: only used while strictly newer than FRED's print, and the
+    per-key vintage is restamped so a mixed-date curve is visible on the page
+    rather than hidden. Optional note and alert ride along for display.
+    """
+    o = manual.get("curve") or {}
+    when = (o.get("asOf") or "").strip()
+    vals = o.get("values") or {}
+    if not when or not vals:
+        return curve
+    notes, alerts = (o.get("notes") or {}), set(o.get("alert") or [])
+    key_to_date = {"3M": "y3m", "2Y": "y2y", "10Y": "y10y", "30Y": "y30y"}
+    for point in curve:
+        k = point["key"]
+        if k not in vals or vals[k] is None:
+            continue
+        fred_date = dates.get(key_to_date[k], "")
+        if when <= fred_date:
+            print(f"  {k}: hand entry {when} is not ahead of FRED {fred_date} - using FRED")
+            continue
+        print(f"  {k}: using your hand entry {vals[k]}% ({when})")
+        point["yield"] = r(float(vals[k]))
+        point.pop("chg", None)          # no prior hand print to compare against
+        dates[key_to_date[k]] = when
+        if notes.get(k):
+            point["note"] = notes[k]
+        if k in alerts:
+            point["alert"] = True
+    return curve
+
+
 def manual_oil(manual, which):
     """A price you read and typed in yourself.
 
@@ -405,22 +438,25 @@ def build(S, manual):
     # so a single "as at" date would misrepresent most of the page.
     dates = {k: S[k].date for k in S}
 
+    curve = [
+        {"key": "3M",  "label": "3-month bill", "yield": r(S["y3m"].value),
+         "chg": r(S["y3m"].value - S["y3m"].at(1))},
+        {"key": "2Y",  "label": "2-year note",  "yield": r(S["y2y"].value),
+         "chg": r(S["y2y"].value - S["y2y"].at(1))},
+        {"key": "10Y", "label": "10-year note", "yield": r(S["y10y"].value),
+         "chg": r(S["y10y"].value - S["y10y"].at(1))},
+        {"key": "30Y", "label": "30-year bond", "yield": r(S["y30y"].value),
+         "chg": r(S["y30y"].value - S["y30y"].at(1))},
+    ]
+    curve = apply_curve_override(curve, manual, dates)
+
     return {
         "asOf": S["y10y"].date,
         # FRED publishes Treasury data a day or two behind, so the data's own
         # date and the day we fetched it are different facts. Show both.
         "builtAt": datetime.date.today().isoformat(),
         "summary": manual["summary"],
-        "curve": [
-            {"key": "3M",  "label": "3-month bill", "yield": r(S["y3m"].value),
-             "chg": r(S["y3m"].value - S["y3m"].at(1))},
-            {"key": "2Y",  "label": "2-year note",  "yield": r(S["y2y"].value),
-             "chg": r(S["y2y"].value - S["y2y"].at(1))},
-            {"key": "10Y", "label": "10-year note", "yield": r(S["y10y"].value),
-             "chg": r(S["y10y"].value - S["y10y"].at(1))},
-            {"key": "30Y", "label": "30-year bond", "yield": r(S["y30y"].value),
-             "chg": r(S["y30y"].value - S["y30y"].at(1))},
-        ],
+        "curve": curve,
         "oil": {
             "wti":   _oil_entry(S["wti"]),
             "brent": _oil_entry(S["brent"]),

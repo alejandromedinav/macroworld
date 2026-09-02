@@ -1,6 +1,6 @@
 {
   "_comment": "The hand-written half. Edit this daily; fetch-data.mjs merges it with FRED and never overwrites it.",
-  "summary": "The US hadn't attacked Iran in over a month. That ended yesterday — they're attacking each other again, which is why oil prices are back up. Or better yet, not going down. Expect inflation expectations to continue increasing, causing the treasury yields to not simmer down. Warsh might (should) hike. Bessent's hands are tied, trying to conduct monetary policy with a fiscal toolbox. Current debt is not sustainable longterm. AI Capex helping economic growth, but lots of data center roadblocks (energy grid + returns). Stagflation in the horizon? Interesting times.",
+  "summary": "The US hadn't attacked Iran in over a month. That ended yesterday. Oil prices are back up, or better yet, not going down. Expect inflation expectations to continue increasing, causing the treasury yields to not simmer down. Warsh might (should) hike. Bessent's hands are tied, trying to conduct monetary policy with a fiscal toolbox. Current debt is not sustainable longterm. AI Capex helping economic growth, but lots of data center roadblocks (energy grid + returns). Stagflation in the horizon? Interesting times.",
   "fed": {
     "lastMove": 0,
     "lastDate": "29 Jul 2026",
@@ -70,5 +70,18 @@
       }
     ]
   },
-  "_oil_note": "Optional daily override. Set asOf to the date you read them and fill wti/brent. Used only while newer than FRED's print - if you stop updating, it falls back to FRED automatically rather than showing an ever-staler number."
+  "_oil_note": "Optional daily override. Set asOf to the date you read them and fill wti/brent. Used only while newer than FRED's print - if you stop updating, it falls back to FRED automatically rather than showing an ever-staler number.",
+  "curve": {
+    "asOf": "2026-09-02",
+    "values": {
+      "10Y": 4.8
+    },
+    "notes": {
+      "10Y": "Highest since 2023"
+    },
+    "alert": [
+      "10Y"
+    ]
+  },
+  "_curve_note": "Optional hand entry for a yield FRED has not published yet. Same rule as oil: only used while newer than FRED. notes/alert are display only - alert turns the figure rust."
 }

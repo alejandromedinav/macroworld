@@ -310,7 +310,7 @@ svg.chart{display:block; width:100%; height:100%}
 var DATA = {
   "asOf": "2026-08-31",
   "builtAt": "2026-09-02",
-  "summary": "The US hadn't attacked Iran in over a month. That ended yesterday — they're attacking each other again, which is why oil prices are back up. Or better yet, not going down. Expect inflation expectations to continue increasing, causing the treasury yields to not simmer down. Warsh might (should) hike. Bessent's hands are tied, trying to conduct monetary policy with a fiscal toolbox. Current debt is not sustainable longterm. AI Capex helping economic growth, but lots of data center roadblocks (energy grid + returns). Stagflation in the horizon? Interesting times.",
+  "summary": "The US hadn't attacked Iran in over a month. That ended yesterday. Oil prices are back up, or better yet, not going down. Expect inflation expectations to continue increasing, causing the treasury yields to not simmer down. Warsh might (should) hike. Bessent's hands are tied, trying to conduct monetary policy with a fiscal toolbox. Current debt is not sustainable longterm. AI Capex helping economic growth, but lots of data center roadblocks (energy grid + returns). Stagflation in the horizon? Interesting times.",
   "curve": [
     {
       "key": "3M",
@@ -327,8 +327,9 @@ var DATA = {
     {
       "key": "10Y",
       "label": "10-year note",
-      "yield": 4.75,
-      "chg": 0.02
+      "yield": 4.8,
+      "note": "Highest since 2023",
+      "alert": true
     },
     {
       "key": "30Y",
@@ -352,7 +353,7 @@ var DATA = {
   "dates": {
     "y3m": "2026-08-31",
     "y2y": "2026-08-31",
-    "y10y": "2026-08-31",
+    "y10y": "2026-09-02",
     "y30y": "2026-08-31",
     "funds": "2026-08-31",
     "tgt_lo": "2026-09-02",
@@ -611,8 +612,10 @@ function mountains(){
       +'<rect x="'+(px-62)+'" y="'+f(py-32,1)+'" width="124" height="'+f(SEA-py+32,1)+'" fill="transparent"/>'
       +'<circle class="focusring" cx="'+px+'" cy="'+f(py,1)+'" r="13" fill="none" stroke="var(--verd)" stroke-width="2.5"/>'
       +'<circle class="linkmark" cx="'+px+'" cy="'+f(py,1)+'" r="7" fill="var(--verd)"/>'
-      +'<text class="num" x="'+px+'" y="'+f(py-22,1)+'" text-anchor="middle">'+f(c.yield)+'%</text>'
-      +'<text class="lbl" x="'+px+'" y="'+f(py-41,1)+'" text-anchor="middle" font-size="13">'+c.key+'</text></g>';
+      +'<text class="num" x="'+px+'" y="'+f(py-22,1)+'" text-anchor="middle"'+(c.alert?' fill="var(--rust)"':'')+'>'+f(c.yield)+'%</text>'
+      +'<text class="lbl" x="'+px+'" y="'+f(py-41,1)+'" text-anchor="middle" font-size="13"'+(c.alert?' fill="var(--rust)"':'')+'>'+c.key+'</text>'
+      +(c.note?'<text class="sounding" x="'+px+'" y="'+f(py-57,1)+'" text-anchor="middle" fill="var(--rust)" opacity="1">'+c.note+'</text>':'')
+      +'</g>';
   });
   return s+'</g>';
 }
@@ -1158,7 +1161,8 @@ function copyFor(m2){
       : k==="2Y" ? "Trading "+sgn(yieldOf("2Y")-DATA.fed.upper,2,"pp")+" against the funds rate"
       : k==="30Y" ? "2s10s slope "+sgn(D.slope,2,"pp")
       : "Funds rate is "+f(DATA.fed.lower)+"–"+f(DATA.fed.upper)+"%";
-    return {eyebrow:c.label, big:f(c.yield)+"%", chg:(c.chg!==undefined?sgn(c.chg,2," on the day"):"Peak "+c.key+" on the range"), chgUp:c.chg>0,
+    return {eyebrow:c.label+(c.note?" · "+c.note:""), big:f(c.yield)+"%",
+      chg:(c.chg!==undefined?sgn(c.chg,2," on the day"):(c.note||"")), chgUp:!!c.alert,
       body:COPY[k], tie:tie};
   }
   if(m2.indexOf("comp-")===0){
@@ -1411,7 +1415,7 @@ function paintNow(){
   var y10=yieldOf("10Y"), c10=null;
   DATA.curve.forEach(function(c){ if(c.key==="10Y") c10=c; });
   el.innerHTML =
-      f6("10-year", f(y10)+"%", (c10&&c10.chg!==undefined?sgn(c10.chg,2,"pp"):""), (c10&&c10.chg>0?"up":"down"), vintage("y10y"))
+      f6("10-year", f(y10)+"%", (c10&&c10.chg!==undefined?sgn(c10.chg,2,"pp"):(c10&&c10.note?c10.note:"")), (c10&&(c10.alert||c10.chg>0)?"up":"down"), vintage("y10y"))
     + f6("Real 10Y", sgn(D.realMarket,2), "TIPS", D.realMarket<0?"up":"down", vintage("real_tips"))
     + f6("HY OAS", DATA.credit.oas+"bp", sgn(DATA.credit.chg,0,"bp"), DATA.credit.chg>0?"up":"down", vintage("hy_oas"))
     + f6("PCE", f(D.pce,1)+"%", (DATA.inflation.pceChg!==undefined?sgn(DATA.inflation.pceChg,1,"pp"):""), DATA.inflation.pceChg>0?"up":"down", vintage("pce"))
