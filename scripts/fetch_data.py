@@ -376,16 +376,29 @@ def build(S, manual):
             c["yoyPce"] = r(other_pce, 1)   # the residual differs by measure
         components.append(c)
 
-    wti_obs, wti_src = freshest("WTI", S["wti"], [
-        ("Manual (front-month futures)", lambda: manual_oil(manual, "wti")),
-        ("Alpha Vantage futures", lambda: fetch_alphavantage("WTI")),
-        ("EIA (direct)",          lambda: fetch_eia("RWTC")),
-    ])
-    brent_obs, brent_src = freshest("Brent", S["brent"], [
-        ("Manual (front-month futures)", lambda: manual_oil(manual, "brent")),
-        ("Alpha Vantage futures", lambda: fetch_alphavantage("BRENT")),
-        ("EIA (direct)",          lambda: fetch_eia("RBRTE")),
-    ])
+    def pick_oil(name, which, fred_obs):
+        """Front-month futures are the chosen series, so a hand entry always wins.
+
+        Falling back to EIA spot when an entry goes stale would silently swap the
+        instrument - spot and futures are different prices - and would make the
+        day-on-day change compare two unlike things. Better to show a dated
+        futures print, stamped with its real date, and complain loudly.
+        """
+        m = manual_oil(manual, which)
+        if m:
+            age = (datetime.date.today() - datetime.date.fromisoformat(m.date)).days
+            if age > 4:
+                print(f"  {name}: hand entry is {age} days old ({m.date}) - update manual.json")
+            else:
+                print(f"  {name}: using your futures entry ({m.date})")
+            return m, "Manual (front-month futures)"
+        return freshest(name, fred_obs, [
+            ("Alpha Vantage futures", lambda: fetch_alphavantage("WTI" if which == "wti" else "BRENT")),
+            ("EIA (direct)",          lambda: fetch_eia("RWTC" if which == "wti" else "RBRTE")),
+        ])
+
+    wti_obs, wti_src = pick_oil("WTI", "wti", S["wti"])
+    brent_obs, brent_src = pick_oil("Brent", "brent", S["brent"])
     S["wti"], S["brent"] = wti_obs, brent_obs
 
     # Frequencies differ wildly - Treasuries daily, CPI monthly, debt quarterly -
@@ -490,8 +503,8 @@ def main():
     print(f"  Funds {data['fed']['lower']}-{data['fed']['upper']} (eff {data['fed']['effective']})   ex-post real policy {r(real_policy)}")
     print(f"  HY effective yield {data['credit']['effYield']}%   OAS {data['credit']['oas']}bp")
     print(f"  oil source: {data['oilSource']} (as at {data['dates']['wti']})")
-    if "Manual" not in data["oilSource"] and (manual.get("oil") or {}).get("asOf"):
-        print("  NOTE: your manual oil entry is older than FRED's - update manual.json or leave it blank.")
+    if "Manual" not in data["oilSource"]:
+        print("  NOTE: no hand entry found - falling back to EIA spot, which is a different instrument.")
     other = data["components"][5]
     print(f"  residual 'other'  CPI {other['yoy']}%   PCE {other['yoyPce']}%  (each ties to its own headline)")
     if abs(other["yoy"]) > 6 or abs(other["yoyPce"]) > 6:

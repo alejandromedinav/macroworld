@@ -1,6 +1,6 @@
 {
   "_comment": "The hand-written half. Edit this daily; fetch-data.mjs merges it with FRED and never overwrites it.",
-  "summary": "Although 10-year yields are increasing, credit spreads are tightening. Meaning the market isn't risky, companies can pay back their debt. It's the actual Treasury yield making rates seem high. Inflation is still 3.3%, debt is at its highest, and AI capex is strong. Will the Fed hike? Probably.",
+  "summary": "Oil prices are back up after a month of no attacks with Iran end. Expect inflation expectations to continue increasing, causing the treasury yields to not simmer down. Warsh might (should) hike. Bessent's hands are tied, trying to conduct monetary policy with a fiscal toolbox. Current debt is not sustainable longterm. AI Capex helping economic growth, but lots of data center roadblocks (energy grid + returns). Stagflation in the horizon? Interesting times.",
   "fed": {
     "lastMove": 0,
     "lastDate": "29 Jul 2026",
@@ -53,11 +53,16 @@
   "_ai_note": "Hand-entered - no FRED series covers company capex. The sentence shown lives in COPY.ai in index.html.",
   "_fed_note": "lastMove 0 means the FOMC held. Use -0.25 / +0.25 only for an actual move. Hand-entered - nothing validates this.",
   "oil": {
-    "asOf": "2026-09-01",
-    "wti": 90.68,
-    "brent": 95.22,
+    "asOf": "2026-09-02",
+    "wti": 91.18,
+    "brent": 95.83,
     "note": "Front-month futures, read by hand",
     "history": [
+      {
+        "asOf": "2026-09-02",
+        "wti": 91.18,
+        "brent": 95.83
+      },
       {
         "asOf": "2026-09-01",
         "wti": 90.68,
