@@ -66,6 +66,8 @@ svg.chart{display:block; width:100%; height:100%}
 .callout p{margin:9px 0 0; font-size:15px; line-height:1.45; color:var(--ink-soft)}
 .callout .tie{margin-top:10px; padding-top:9px; border-top:1px solid var(--rule-soft); font-size:13px; letter-spacing:.05em; text-transform:uppercase; color:var(--verd); font-weight:600}
 .callout ul{margin:8px 0 0; padding:0; list-style:none}
+.callout ol.points{margin:8px 0 0; padding-left:18px; font-size:15px; line-height:1.45; color:var(--ink-soft)}
+.callout ol.points li{padding:3px 0}
 .callout li{display:flex; gap:10px; font-size:14px; padding:4px 0; border-bottom:1px solid var(--rule-soft)}
 .callout li:last-child{border-bottom:0}
 .callout li span{font-family:"IBM Plex Mono",monospace; font-size:11.5px; color:var(--ink-soft); flex:0 0 92px}
@@ -203,7 +205,8 @@ svg.chart{display:block; width:100%; height:100%}
 .earth-poles{position:absolute; inset:0; width:100%; height:100%}
 .earth-shade{position:absolute; inset:0; border-radius:50%; background:radial-gradient(circle at 32% 28%, rgba(255,255,255,.20) 0%, rgba(255,255,255,0) 42%, rgba(0,0,0,.30) 70%, rgba(0,0,0,.80) 100%)}
 .thesis-lbl{font-family:"IBM Plex Mono",monospace; font-size:11px; letter-spacing:.24em; text-transform:uppercase; color:#5FAA99; margin-bottom:18px}
-.thesis{font-family:"Bodoni Moda",Georgia,serif; font-size:clamp(17px,2.1vw,25px); line-height:1.44; color:#EDE6D2; margin:0 auto; text-wrap:pretty; max-width:44ch}
+/* Bodoni is high-contrast: its hairlines thin out badly as light-on-dark. Heavier weight, brighter ink and more line height make it hold up. */
+.thesis{font-family:"Bodoni Moda",Georgia,serif; font-weight:600; font-size:clamp(19px,2.4vw,29px); line-height:1.5; color:#FBF8F0; margin:0 auto; text-wrap:pretty; max-width:42ch; text-shadow:0 1px 12px rgba(0,0,0,.55)}
 .space-figs{display:flex; flex-wrap:wrap; gap:8px 28px; justify-content:center; margin-top:32px; font-family:"IBM Plex Mono",monospace; font-size:12.5px; color:rgba(237,230,210,.6); letter-spacing:.06em}
 .space-close{position:absolute; top:24px; right:24px; z-index:3; background:transparent; border:1.5px solid rgba(237,230,210,.4); color:#EDE6D2; font-family:"Barlow Condensed",sans-serif; font-size:14px; letter-spacing:.16em; text-transform:uppercase; padding:9px 17px; cursor:pointer; opacity:0; transition:opacity .6s ease}
 .launch.arrived .space-close{opacity:1}
@@ -211,7 +214,7 @@ svg.chart{display:block; width:100%; height:100%}
 
 @media (max-height:600px){
   .earth{width:clamp(120px,19vmin,170px); height:clamp(120px,19vmin,170px); margin-bottom:20px}
-  .thesis{font-size:clamp(14px,1.7vw,18px)}
+  .thesis{font-size:clamp(16px,1.9vw,21px)}
   .space-figs{margin-top:18px; gap:6px 20px; font-size:11.5px}
   .thesis-lbl{margin-bottom:12px}
 }
@@ -310,7 +313,7 @@ svg.chart{display:block; width:100%; height:100%}
 var DATA = {
   "asOf": "2026-08-31",
   "builtAt": "2026-09-02",
-  "summary": "The US hadn't attacked Iran in over a month. That ended yesterday. Oil prices are back up, or better yet, not going down. Expect inflation expectations to continue increasing, causing the treasury yields to not simmer down. Warsh might (should) hike. Bessent's hands are tied, trying to conduct monetary policy with a fiscal toolbox. Current debt is not sustainable longterm. AI Capex helping economic growth, but lots of data center roadblocks (energy grid + returns). Stagflation in the horizon? Interesting times.",
+  "summary": "The US hadn't attacked Iran in over a month. That ended yesterday. Oil prices are back up, or better yet, not going down. Expect inflation expectations to continue increasing, causing the treasury yields to not simmer down. Warsh might (should) hike. Bessent's hands are tied, trying to conduct monetary policy with a fiscal toolbox. Current debt is not sustainable longterm. AI Capex helping economic growth, but lots of data center roadblocks (energy grid + returns). Stagflation on the horizon? Interesting times.",
   "curve": [
     {
       "key": "3M",
@@ -508,18 +511,27 @@ var DATA = {
    {{realPolicy}} {{realPolicyPce}} {{realMarket}} {{debt}} {{spread}} {{wti}} {{brent}}
    and they are substituted at render, so a sentence never goes stale.
    ============================================================ */
+/* Numbered points that belong under a description rather than inside it. */
+var POINTS = {
+  debt: ["We spend $916 billion on our defence spending.",
+         "The next 9 countries on the list altogether still fall short of that number."],
+  ai:   ["Energy-grid infrastructure. Imagine trying to power a mini city that never turns off its lights, and you need it done by yesterday. Pretty challenging.",
+         "Returns. You spend so much on building, but it takes time to generate returns (investors get pretty antsy)."]
+};
+
 var COPY = {
   "10Y": "Geopolitical tension pushes oil up, transport costs follow, inflation expectations reprice. Plus whatever the Fed does next.",
   "2Y":  "Above the funds rate. The market is pricing hikes, not cuts.",
   "30Y": "Inflation expectations, plus how much paper the Treasury has to sell.",
   "3M":  "Today's policy rate, priced in the bill market.",
-  credit:"Tightening, not widening. The market is seeing strong economic growth plus large borrowing, thanks to AI capex. So risk is being priced low, and companies are accepting a high rate because of the treasury yield floor.",
-  fed:   "Warsh recently spoke at Jackson Hole, hinting at a hike. They held rates in July, possibly (very likely) because the incumbent administration doesn't want high rates — makes things more expensive, approval rating falls. So will Warsh hike in 2 weeks? It's live on Kalshi. (This website does not promote gambling. Sorry, sports betting?)",
+  credit:"Tightening, not widening. The market is seeing current strong economic growth + large borrowing (thanks to AI Capex). So risk is being priced low, companies are accepting a high rate (due to the treasury yield floor).",
+  fed:   "Warsh recently spoke at Jackson Hole, hinting at a hike. They held rates in July, possibly (very likely) due to the incumbent administration not wanting high rates (makes things more expensive → approval rating falls). So will Warsh hike in 2 weeks? It's live on Kalshi (this website does not promote gambling, sorry sports betting?).",
   wti:   "Priced inland at Cushing. No water access, so it trades under the seaborne grade.",
   brent: "The seaborne benchmark. Moves first when shipping routes are threatened. Pretty relevant to today, if you open up the news.",
   airfare:"Thinking about going on that trip? Forget about it, throw your Hokas on or pick up some overtime.",
-  ai:    "Lots of capex spending. Problems: energy-grid infrastructure. Imagine trying to power a mini city that never turns off its lights, and you need it done by yesterday. Pretty challenging. Also returns — you spend so much on building, but it takes time to generate them, and investors get pretty antsy.",
-  debt:  "Remember the argument about why we spend so much on defense over other programs, like healthcare? We now spend more on yearly interest payments than on defense. Some fun facts: we spend $916 billion on defense, and the next 9 countries combined still fall short of that. So this record debt should grab our attention. Long term, it is not sustainable.",
+  ai:    "Lots of Capex spending. Problems:",
+  debt:  "Remember the argument being why we spend so much on our defence budget over other programs (like healthcare)? Well, we currently spend more on yearly interest payments for our debt than on defence spending. Some fun facts:",
+  debtAfter:"So, this record debt should grab our attention. Long term, it's not sustainable.",
   fisher:"Real = nominal − inflation. The waterline is inflation, the float is what's left.",
   watch: "What could move this next.",
   rocket:"Launch for the read.",
@@ -1143,10 +1155,10 @@ function copyFor(m2){
       ? '<ul>'+parts.map(function(p){ return '<li><span>'+p.value+'</span>'+p.name+'</li>'; }).join("")+'</ul>'
       : '';
     return {eyebrow:(DATA.ai.label||"AI capex")+(DATA.ai.period?" · "+DATA.ai.period:""),
-      big:(DATA.ai.headline||""), chg:"", list:list, body:COPY.ai, tie:""};
+      big:(DATA.ai.headline||""), chg:"", list:list, body:COPY.ai, points:POINTS.ai, tie:""};
   }
   if(m2==="debt") return {eyebrow:"Total federal debt / GDP", big:f(DATA.debt.gdp,1)+"%", chg:sgn(DATA.debt.chg,1,"pp on the year"), chgUp:DATA.debt.chg>0,
-    body:COPY.debt, tie:"Interest cost is the 30-year against this balance"};
+    body:COPY.debt, points:POINTS.debt, after:COPY.debtAfter, tie:"Interest cost is the 30-year against this balance"};
   if(m2==="fisher") return {eyebrow:"Ex-post real policy rate", big:sgn(D.realPolicy,2,"pp"), chg:f(fundsNow)+"% effective funds − "+f(D.cpi,1)+"% CPI", chgUp:D.realPolicy<0,
     body:COPY.fisher, tie:"Ex-post · PCE basis "+sgn(D.realPolicyPce,2,"pp")+" · TIPS "+sgn(D.realMarket,2,"pp")};
   if(m2==="watch"){
@@ -1201,6 +1213,8 @@ function show(metric,node){
     +(c.big?'<div class="big">'+c.big+'</div>':'')
     +(c.chg?'<div class="chg '+(c.chgUp?"up":"down")+'">'+c.chg+'</div>':'')
     +(c.list||'')+(c.body?'<p>'+fill(c.body)+'</p>':'')
+    +(c.points?'<ol class="points">'+c.points.map(function(t){ return '<li>'+fill(t)+'</li>'; }).join('')+'</ol>':'')
+    +(c.after?'<p>'+fill(c.after)+'</p>':'')
     +(c.tie?'<div class="tie">'+fill(c.tie)+'</div>':'');
   var sb=scene.getBoundingClientRect(), nb=node.getBoundingClientRect();
   var cw=290, ch=callout.offsetHeight||190;
