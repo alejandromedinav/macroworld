@@ -1,3 +1,8 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Macro Soundings</title>
 <meta name="description" content="A live map of the U.S. economy. Treasury yields are a mountain range, the waterline is inflation, an anchor is federal debt. Built on FRED data, rebuilt daily.">
 <meta property="og:type" content="website">
@@ -248,7 +253,8 @@ svg.chart{display:block; width:100%; height:100%}
   .scene.zooming{transform:none}
 }
 </style>
-
+</head>
+<body>
 <div class="world">
   <div class="scene" id="scene">
     <svg class="chart" id="svg" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" role="img" aria-label="An illustrated nautical chart of the United States economy filling the screen: a mountain range is the Treasury yield curve, an island derrick and a tanker are the two oil benchmarks, a shoreline town is the inflation basket, a headland flying the American flag carries the Federal Reserve, cloud cover is the credit spread, a distant lighthouse marks upcoming events, an island datacentre is AI capital spending, and a rocket on the shore launches to the overall read."></svg>
@@ -1638,3 +1644,5 @@ document.getElementById("panel-sub").textContent =
     : "Soundings as at "+DATA.asOf;
 })();
 </script>
+</body>
+</html>
