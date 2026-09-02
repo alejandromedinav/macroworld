@@ -508,6 +508,11 @@ END = "/* === DATA:END === */"
 
 
 def inject(data):
+    """Rewrites only the DATA block between the markers.
+
+    META GUARD: everything above the markers - title, description, Open Graph
+    tags - is untouched by the build, so link previews survive a refresh.
+    """
     path = ROOT / "index.html"
     html = path.read_text(encoding="utf8")
     a = html.find("/* === DATA:START")
