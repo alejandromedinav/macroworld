@@ -623,8 +623,11 @@ var DATA = {
    ============================================================ */
 /* Numbered points that belong under a description rather than inside it. */
 var POINTS = {
-  debt: ["We spend $1.2 trillion on our defense spending.",
-         "The next 6 countries altogether still fall short of it."],
+  // FY2025 actual outlays for the budget comparison, so interest and defense
+  // come from one dataset on one accounting basis; SIPRI for the country
+  // comparison, since that is the only measure defined the same way abroad.
+  debt: ["$970 billion went to net interest in FY2025, more than the $917 billion we spent on national defense.",
+         "$954 billion of military expenditure in 2025. The next 6 countries altogether still fall short of it."],
   ai:   ["Energy-grid infrastructure. Imagine trying to power a mini city that never turns off its lights, and you need it done by yesterday. Pretty challenging.",
          "Returns. You spend so much on building, but it takes time to generate returns (investors get pretty antsy)."]
 };
@@ -1655,7 +1658,7 @@ var SOURCES=[
   ["Airline fares","BLS via FRED","CUSR0000SETG01"],
   ["Federal debt / GDP","Treasury &amp; BEA via FRED","GFDEGDQ188S"],
   ["Crude oil", (typeof DATA!=="undefined" && DATA.oilSource) ? DATA.oilSource : "EIA via FRED", "DCOILWTICO · DCOILBRENTEU"],
-  ["Defense spending","BEA via FRED · and SIPRI for the country comparison","FDEFX · SIPRI Table 1, 2025"],
+  ["Interest and defense","OMB fiscal-year outlays · SIPRI for the country comparison","FYOINT · FY2025 · SIPRI Table 1, 2025"],
   ["AI capex","Company reports, entered by hand","manual.json"]
 ];
 function paintSources(){
