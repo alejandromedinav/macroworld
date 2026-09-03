@@ -77,6 +77,9 @@ svg.chart{display:block; width:100%; height:100%}
 .mark i em{font-style:normal; color:var(--verd); font-weight:600}
 
 /* ---------- callout ---------- */
+.zoombtn{display:none; position:fixed; z-index:7; right:20px; top:22px; -webkit-appearance:none;
+  background:var(--panel); color:var(--ink); border:1px solid var(--ink); cursor:pointer;
+  font-family:inherit; font-size:11px; letter-spacing:.16em; text-transform:uppercase; padding:7px 12px}
 .callout{position:absolute; z-index:5; width:290px; pointer-events:none; background:var(--panel); border:1px solid var(--ink); padding:13px 15px 14px; opacity:0; transform:translateY(4px); transition:opacity .18s ease, transform .18s ease; box-shadow:3px 3px 0 var(--rule-soft)}
 .callout.show{opacity:1; transform:translateY(0)}
 .callout .eyebrow{font-size:11px; letter-spacing:.18em; text-transform:uppercase; color:var(--ink-soft); font-family:"IBM Plex Mono",monospace; font-weight:500}
@@ -246,17 +249,43 @@ svg.chart{display:block; width:100%; height:100%}
    scroll sideways, which is how any wide graphic works on a phone. The overlays
    go fixed so they stay put while the world moves under them. */
 @media (max-width: 760px){
-  .world{overflow-x:auto; overflow-y:hidden; -webkit-overflow-scrolling:touch}
-  .scene{position:relative; height:100dvh; width:calc(100dvh * 1.7778); min-width:100%}
+  /* Overview is the default, because seeing the whole world at once is the
+     point of the thing. The letterbox bands are painted sky above and beach
+     below so the strip reads as a wide vista rather than a band of dead paper.
+     Tapping an object answers in a bottom sheet, so the 4px SVG labels are
+     decoration here and nothing needs to be read at this scale. */
+  .world{overflow:hidden; background:linear-gradient(to bottom,var(--sky) 0 50%,var(--land) 50% 100%)}
+  /* Centred with calc rather than a transform on purpose: a transformed
+     ancestor becomes the containing block for position:fixed children, which
+     would re-anchor every callout to the strip instead of the viewport. */
+  .scene{position:absolute; left:0; right:auto; bottom:auto;
+         top:calc(50% - (100vw / 1.7778) / 2);
+         width:100vw; height:calc(100vw / 1.7778)}
   .scene.zooming{transform:scale(1.6)}
+
+  /* Detail: full height, swipe sideways, for anyone who wants to inspect. */
+  .world.zoomed{overflow-x:auto; overflow-y:hidden; -webkit-overflow-scrolling:touch; background:var(--paper)}
+  .world.zoomed .scene{position:relative; top:auto; transform:none;
+         height:100dvh; width:calc(100dvh * 1.7778); min-width:100%}
+  .world.zoomed .scene.zooming{transform:scale(1.6)}
+
+  /* Overlays hold still while the world moves under them. */
   .mark{position:fixed; font-size:9px; letter-spacing:.14em; line-height:1.8}
   .credit{position:fixed; top:58px; left:24px; right:auto; text-align:left; font-size:9px; letter-spacing:.14em}
   .srcbtn{position:fixed}
+  .zoombtn{display:block}
   .hint{position:fixed; left:12px; right:12px; bottom:14px; transform:none; max-width:none; font-size:14px; padding:8px 12px}
   .hint.show{transform:none}
   .panel{position:fixed; max-height:78dvh}
   .panel-in{padding:16px 16px 22px}
-  .callout{width:min(280px, calc(100vw - 28px))}
+
+  /* A callout anchored to a 20px object would hang outside the strip and clip,
+     so on a phone every answer arrives in the same place instead. */
+  .callout{position:fixed !important; left:12px !important; right:12px !important;
+           width:auto !important; bottom:auto !important;
+           top:calc(50% + (100vw / 1.7778) / 2 + 12px) !important;
+           max-height:calc(50% - (100vw / 1.7778) / 2 - 70px); overflow-y:auto}
+
   .now .f{flex:1 1 44%; padding:12px 12px 13px}
   .now .f .v{font-size:22px}
   .cell{flex:1 1 44%}
@@ -310,6 +339,7 @@ svg.chart{display:block; width:100%; height:100%}
   </div>
   <div class="credit" id="credit"></div>
 
+  <button class="zoombtn" id="zoombtn" aria-pressed="false">Zoom in</button>
   <button class="srcbtn" id="srcbtn" aria-expanded="false" aria-controls="srcsheet">Sources</button>
   <div class="srcsheet" id="srcsheet" aria-hidden="true">
     <button class="srcclose" id="srcclose" aria-label="Close sources">&times;</button>
@@ -1626,12 +1656,35 @@ if(!seenHint()){
 }
 
 /* fill the screen on wide viewports; letterbox rather than crop on narrow ones */
+function isPhone(){ return window.matchMedia("(max-width: 760px)").matches; }
+
 function phoneHint(){
   var h=document.getElementById("hint"); if(!h) return;
-  h.innerHTML = window.matchMedia("(max-width: 760px)").matches
-    ? 'Swipe across the world. Tap anything. <b>Satellite</b> for figures, <b>rocket</b> for the read.'
-    : 'Hover anything. <b>Satellite</b> for figures, <b>rocket</b> for the read.';
+  // Keyed off pointer, not width: a phone held sideways is 844px across and
+  // would otherwise be told to hover.
+  var touch = window.matchMedia("(hover: none)").matches;
+  h.innerHTML = (touch ? 'Tap anything. ' : 'Hover anything. ')
+    + '<b>Satellite</b> for figures, <b>rocket</b> for the read.';
 }
+
+// Overview by default; zoom is opt-in, and lands you in the middle of the
+// world rather than at the far left edge.
+(function(){
+  var zb=document.getElementById("zoombtn"), wr=document.querySelector(".world");
+  if(!zb||!wr) return;
+  zb.addEventListener("click",function(){
+    var on=wr.classList.toggle("zoomed");
+    zb.textContent = on ? "Fit" : "Zoom in";
+    zb.setAttribute("aria-pressed", on ? "true" : "false");
+    wr.scrollLeft = on ? (wr.scrollWidth - wr.clientWidth)/2 : 0;
+    fitWorld();
+  });
+  window.addEventListener("resize",function(){
+    if(!isPhone() && wr.classList.contains("zoomed")){
+      wr.classList.remove("zoomed"); zb.textContent="Zoom in"; zb.setAttribute("aria-pressed","false");
+    }
+  });
+})();
 
 function fitWorld(){
   // On phones the scene element is already exactly 16:9, so slice and meet agree
