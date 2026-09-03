@@ -77,15 +77,33 @@ svg.chart{display:block; width:100%; height:100%}
 .mark i em{font-style:normal; color:var(--verd); font-weight:600}
 
 /* ---------- callout ---------- */
-.zoombtn{display:none; position:fixed; z-index:7; right:20px; top:22px; -webkit-appearance:none;
-  background:var(--panel); color:var(--ink); border:1px solid var(--ink); cursor:pointer;
-  font-family:inherit; font-size:11px; letter-spacing:.16em; text-transform:uppercase; padding:7px 12px}
-.callout{position:absolute; z-index:5; width:290px; pointer-events:none; background:var(--panel); border:1px solid var(--ink); padding:13px 15px 14px; opacity:0; transform:translateY(4px); transition:opacity .18s ease, transform .18s ease; box-shadow:3px 3px 0 var(--rule-soft)}
+.zoombtn{display:none; position:fixed; z-index:7; right:16px; top:18px; -webkit-appearance:none;
+  background:var(--ink); color:var(--panel); border:1px solid var(--ink); cursor:pointer;
+  font-family:inherit; font-size:12.5px; font-weight:600; letter-spacing:.18em;
+  text-transform:uppercase; padding:10px 15px; box-shadow:2px 2px 0 var(--rule)}
+.zoombtn:active{transform:translate(1px,1px); box-shadow:1px 1px 0 var(--rule)}
+.callout{position:absolute; z-index:5; width:290px; pointer-events:none;
+  overscroll-behavior:contain; background:var(--panel); border:1px solid var(--ink); padding:13px 15px 14px; opacity:0; transform:translateY(4px); transition:opacity .18s ease, transform .18s ease; box-shadow:3px 3px 0 var(--rule-soft)}
 .callout.show{opacity:1; transform:translateY(0)}
 .callout .eyebrow{font-size:11px; letter-spacing:.18em; text-transform:uppercase; color:var(--ink-soft); font-family:"IBM Plex Mono",monospace; font-weight:500}
 .callout .big{font-family:"IBM Plex Mono",monospace; font-size:27px; font-weight:600; margin:5px 0 2px; font-variant-numeric:tabular-nums; letter-spacing:-.02em}
 .callout .chg{font-family:"IBM Plex Mono",monospace; font-size:12.5px; font-weight:500}
 .callout p{margin:9px 0 0; font-size:15px; line-height:1.45; color:var(--ink-soft)}
+/* A callout that ignores the pointer cannot be scrolled, and on a phone the
+   long ones have to be scrolled. Touch has no hover to steal, so this is safe. */
+@media (hover: none){
+  .callout{pointer-events:auto; overflow-y:auto; -webkit-overflow-scrolling:touch}
+}
+
+/* Phone held sideways: the world fills the screen, so the answer overlays it. */
+@media (hover: none) and (min-width: 761px){
+  .world{background:linear-gradient(to bottom,var(--sky) 0 34%,var(--sea) 34% 69%,var(--land) 69% 100%)}
+  .callout{position:fixed !important; left:14px !important; right:auto !important;
+           top:auto !important; bottom:14px !important;
+           width:min(430px, 52vw) !important; max-height:76dvh}
+  .hint{font-size:13px}
+}
+
 .callout .tie{margin-top:10px; padding-top:9px; border-top:1px solid var(--rule-soft); font-size:13px; letter-spacing:.05em; text-transform:uppercase; color:var(--verd); font-weight:600}
 .callout ul{margin:8px 0 0; padding:0; list-style:none}
 .callout ol.points{margin:8px 0 0; padding-left:18px; font-size:15px; line-height:1.45; color:var(--ink-soft)}
@@ -281,10 +299,12 @@ svg.chart{display:block; width:100%; height:100%}
 
   /* A callout anchored to a 20px object would hang outside the strip and clip,
      so on a phone every answer arrives in the same place instead. */
+  /* Anchored to the bottom rather than to the strip: short answers sit in the
+     beach band, long ones (Fed, capex, debt, credit weather) grow upward over
+     the map instead of being clipped. */
   .callout{position:fixed !important; left:12px !important; right:12px !important;
-           width:auto !important; bottom:auto !important;
-           top:calc(50% + (100vw / 1.7778) / 2 + 12px) !important;
-           max-height:calc(50% - (100vw / 1.7778) / 2 - 70px); overflow-y:auto}
+           width:auto !important; top:auto !important; bottom:56px !important;
+           max-height:62dvh}
 
   .now .f{flex:1 1 44%; padding:12px 12px 13px}
   .now .f .v{font-size:22px}
@@ -1663,8 +1683,11 @@ function phoneHint(){
   // Keyed off pointer, not width: a phone held sideways is 844px across and
   // would otherwise be told to hover.
   var touch = window.matchMedia("(hover: none)").matches;
-  h.innerHTML = (touch ? 'Tap anything. ' : 'Hover anything. ')
-    + '<b>Satellite</b> for figures, <b>rocket</b> for the read.';
+  var portrait = window.matchMedia("(max-width: 760px)").matches;
+  h.innerHTML = touch
+    ? 'Tap anything. ' + (portrait ? 'Hit <b>Zoom in</b> or turn your phone sideways for a closer look. ' : '')
+      + '<b>Satellite</b> for figures, <b>rocket</b> for the read.'
+    : 'Hover anything. <b>Satellite</b> for figures, <b>rocket</b> for the read.';
 }
 
 // Overview by default; zoom is opt-in, and lands you in the middle of the
@@ -1687,14 +1710,13 @@ function phoneHint(){
 })();
 
 function fitWorld(){
-  // On phones the scene element is already exactly 16:9, so slice and meet agree
-  // and the world simply fills the height while the container scrolls sideways.
-  if(window.matchMedia("(max-width: 760px)").matches){
-    document.getElementById("svg").setAttribute("preserveAspectRatio","xMidYMid slice");
-    return;
-  }
   var ar=window.innerWidth/Math.max(1,window.innerHeight);
-  document.getElementById("svg").setAttribute("preserveAspectRatio", ar<1.75 ? "xMidYMid meet" : "xMidYMid slice");
+  // The world is 16:9. Slicing it into a phone held sideways (about 2.16) ate
+  // the top and bottom of the map, so a touch screen never crops, and neither
+  // does anything wide enough to lose a meaningful band.
+  var noCrop = window.matchMedia("(hover: none)").matches || ar < 1.75 || ar > 1.93;
+  document.getElementById("svg").setAttribute("preserveAspectRatio",
+    noCrop ? "xMidYMid meet" : "xMidYMid slice");
 }
 window.addEventListener("resize",fitWorld);
 window.addEventListener("resize",phoneHint);
