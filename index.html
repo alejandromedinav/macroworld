@@ -1353,12 +1353,20 @@ function clear(){
   Array.prototype.forEach.call(scene.querySelectorAll(".obj"),function(n){ n.classList.remove("hot"); n.classList.remove("linked"); });
 }
 function wire(){
+  // A touch screen has no hover to track. It still emits mouseenter/leave/move
+  // at the point you tapped, and those are stale the instant a callout opens
+  // over that point, which read as "the pointer left" and dismissed it. Only
+  // bind the hover machinery where a pointer genuinely hovers.
+  var canHover = window.matchMedia("(hover: hover)").matches;
+
   Array.prototype.forEach.call(document.querySelectorAll(".obj"),function(node){
     var metric=node.getAttribute("data-metric");
-    node.addEventListener("mouseenter",function(){ cancelClear(); show(metric,node); });
-    node.addEventListener("mouseleave",function(){ scheduleClear(); });
+    if(canHover){
+      node.addEventListener("mouseenter",function(){ cancelClear(); show(metric,node); });
+      node.addEventListener("mouseleave",function(){ scheduleClear(); });
+      node.addEventListener("blur",clear);
+    }
     node.addEventListener("focus",function(){ cancelClear(); show(metric,node); });
-    node.addEventListener("blur",clear);
     node.addEventListener("click",function(e){
       e.stopPropagation();
       discover();
@@ -1372,13 +1380,16 @@ function wire(){
       if(metric==="satellite"){ e.preventDefault(); setPanel(true); }
     });
   });
-  // Enter/leave pairing is unreliable across nested SVG hit areas, so the
-  // authority is what is actually under the pointer on every move.
-  scene.addEventListener("mousemove",function(e){
-    var t=e.target, hit=(t && t.closest) ? t.closest(".obj") : null;
-    if(hit) cancelClear(); else scheduleClear();
-  });
-  scene.addEventListener("mouseleave",clear);
+  // Enter/leave pairing is unreliable across nested SVG hit areas, so on a
+  // hovering pointer the authority is what is actually under it on every move.
+  // On touch the document handler below does the dismissing instead.
+  if(canHover){
+    scene.addEventListener("mousemove",function(e){
+      var t=e.target, hit=(t && t.closest) ? t.closest(".obj") : null;
+      if(hit) cancelClear(); else scheduleClear();
+    });
+    scene.addEventListener("mouseleave",clear);
+  }
 
   // A tap that is not on an object and not on a control dismisses. This lives
   // on the document rather than the scene because on a phone most of the
