@@ -1379,6 +1379,24 @@ function wire(){
     if(hit) cancelClear(); else scheduleClear();
   });
   scene.addEventListener("mouseleave",clear);
+
+  // A tap that is not on an object and not on a control dismisses. This lives
+  // on the document rather than the scene because on a phone most of the
+  // screen is the sky and beach *outside* the scene, and those taps have to
+  // count too; capture so an object's stopPropagation cannot hide them.
+  document.addEventListener("pointerdown",function(e){
+    var t=e.target; if(!t||!t.closest) return;
+    if(t.closest(".obj")) return;
+    if(t.closest(".callout,.panel,.srcsheet,.srcbtn,.zoombtn,.hint,.space")) return;
+    clear();
+  },true);
+
+  // Rotating changes which layout owns the callout, so anything left showing
+  // is positioned for the orientation you just left and, if it was scrollable,
+  // is still holding the pointer over a map it no longer matches.
+  function resetForLayout(){ clear(); callout.classList.remove("scrollable"); }
+  window.addEventListener("orientationchange",resetForLayout);
+  window.addEventListener("resize",resetForLayout);
 }
 
 /* ============================================================
