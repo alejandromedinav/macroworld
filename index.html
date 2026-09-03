@@ -110,10 +110,12 @@ svg.chart{display:block; width:100%; height:100%}
 .callout .tie{margin-top:10px; padding-top:9px; border-top:1px solid var(--rule-soft); font-size:13px; letter-spacing:.05em; text-transform:uppercase; color:var(--verd); font-weight:600}
 .callout ul{margin:8px 0 0; padding:0; list-style:none}
 .callout ol.points{margin:8px 0 0; padding-left:18px; font-size:15px; line-height:1.45; color:var(--ink)}
-.callout ol.points li{padding:3px 0}
 .callout li{display:flex; gap:10px; font-size:14px; padding:4px 0; border-bottom:1px solid var(--rule-soft)}
 .callout li:last-child{border-bottom:0}
 .callout li span{font-family:"IBM Plex Mono",monospace; font-size:11.5px; color:var(--ink-soft); flex:0 0 92px}
+/* The generic row style above is display:flex, and a flex box is not a list
+   item, so the decimal markers had nothing to render on. */
+.callout ol.points li{display:list-item; border-bottom:0; font-size:15px; padding:3px 0}
 .up{color:var(--rust)} .down{color:var(--verd)}
 
 /* ---------- the one control ---------- */
