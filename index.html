@@ -113,6 +113,7 @@ svg.chart{display:block; width:100%; height:100%}
 .callout li{display:flex; gap:10px; font-size:14px; padding:4px 0; border-bottom:1px solid var(--rule-soft)}
 .callout li:last-child{border-bottom:0}
 .callout li span{font-family:"IBM Plex Mono",monospace; font-size:11.5px; color:var(--ink-soft); flex:0 0 92px}
+.callout li.key, .callout li.key span{color:var(--rust); font-weight:600}
 /* The generic row style above is display:flex, and a flex box is not a list
    item, so the decimal markers had nothing to render on. */
 .callout ol.points li{display:list-item; font-size:15px; padding:7px 0;
@@ -425,7 +426,7 @@ svg.chart{display:block; width:100%; height:100%}
 var DATA = {
   "asOf": "2026-09-01",
   "builtAt": "2026-09-03",
-  "summary": "The US hadn't attacked Iran in over a month. That ended on Tuesday. Oil prices are back up, or better yet, not going down. Expect inflation expectations to continue increasing, causing the treasury yields to not simmer down. Warsh might (should) hike. Bessent's hands are tied, trying to conduct monetary policy with a fiscal toolbox. Current debt is not sustainable longterm. AI Capex helping economic growth, but lots of data center roadblocks (energy grid + returns). Stagflation on the horizon? Interesting times.",
+  "summary": "The US hadn't attacked Iran in over a month. That ended on Tuesday. Oil prices are back up, or better yet, not going down. Expect inflation expectations to continue increasing, causing the treasury yields to not simmer down. Warsh might (should) hike. Bessent's hands are tied, trying to conduct monetary policy with a fiscal toolbox. Current debt is not sustainable longterm. AI Capex helping economic growth, but lots of data center roadblocks (energy grid + returns).",
   "author": "A.M.",
   "maker": "Alejandro Medina",
   "curve": [
@@ -548,11 +549,12 @@ var DATA = {
   "watch": [
     {
       "when": "10 Sep",
-      "what": "August CPI"
+      "what": "August CPI",
+      "key": true
     },
     {
       "when": "16 Sep",
-      "what": "FOMC — hike or hold"
+      "what": "FOMC (hike or hold)"
     },
     {
       "when": "26 Sep",
@@ -642,7 +644,7 @@ var COPY = {
   "30Y": "Long-term inflation expectations + concerns about government debt and borrowing.",
   "3M":  "Usually anchored to the Fed's current policy rate.",
   credit:"Tightening, not widening. The market is seeing current strong economic growth + large borrowing (thanks to AI Capex). So risk is being priced low, companies are accepting a high rate (due to the treasury yield floor).",
-  fed:   "Warsh recently spoke at Jackson Hole, hinting at a hike. They held rates in July, possibly (very likely) due to the incumbent administration not wanting high rates (makes things more expensive → approval rating falls). So will Warsh hike in 2 weeks? It's live on Kalshi! (this website does not promote gambling, sorry sports betting?)",
+  fed:   "Warsh recently spoke at Jackson Hole, hinting at a hike. They held rates in July, possibly (very likely) due to the incumbent administration not wanting high rates (makes things more expensive → approval rating falls). Fed governor Waller spoke today, saying he will vote not to hike rates, unless conditions change and force him to (media-trained response). So will Warsh hike in 2 weeks? It's live on Kalshi! (this website does not promote gambling, sorry sports betting?)",
   wti:   "U.S. oil benchmark. More sensitive to U.S. supply, inventories, and production.",
   brent: "Global oil benchmark. More sensitive to worldwide supply and geopolitical risk. U.S.-Iran conflict and disruption in the Strait of Hormuz are directly affecting this.",
   airfare:"Thinking about going on that trip? Forget about it, throw your Hokas on or pick up some overtime.",
@@ -758,6 +760,9 @@ function mountains(){
 /* --- LIGHTHOUSE: back-left corner, small and far off --- */
 function lighthouse(){
   var x=1200, base=590, k=0.55;
+  // The one event flagged key in manual.json gets named on the map and brightens
+  // the beam, so the thing that matters most is legible without tapping.
+  var keyEv=(DATA.watch||[]).filter(function(w){ return w.key; })[0];
   var s='<g>';
   s+='<polygon points="'+(x-46*k)+','+base+' '+(x-26*k)+','+(base-16*k)+' '+(x+26*k)+','+(base-16*k)+' '+(x+46*k)+','+base+'" fill="var(--rock)" stroke="var(--ink)" stroke-width="1.5" stroke-linejoin="round"/>';
   var t='';
@@ -765,13 +770,16 @@ function lighthouse(){
   t+='<rect x="'+(x-12*k)+'" y="'+(base-52*k)+'" width="'+(24*k)+'" height="'+(12*k)+'" fill="var(--rust)" opacity=".8"/>';
   t+='<rect x="'+(x-12*k)+'" y="'+(base-98*k)+'" width="'+(24*k)+'" height="'+(12*k)+'" fill="var(--panel)" stroke="var(--ink)" stroke-width="1.6"/>';
   t+='<circle cx="'+x+'" cy="'+(base-92*k)+'" r="'+(4*k)+'" fill="var(--amber)"/>';
+  if(keyEv) t+='<circle cx="'+x+'" cy="'+(base-92*k)+'" r="'+(11*k)+'" fill="var(--amber)" opacity=".3"/>';
   t+='<polygon points="'+(x-15*k)+','+(base-102*k)+' '+x+','+(base-116*k)+' '+(x+15*k)+','+(base-102*k)+'" fill="var(--verd)" stroke="var(--ink)" stroke-width="1.6" stroke-linejoin="round"/>';
-  t+='<polygon points="'+(x+6*k)+','+(base-96*k)+' '+(x+126)+','+(base-124*k)+' '+(x+126)+','+(base-62*k)+'" fill="var(--amber)" opacity=".17"/>';
+  t+='<polygon points="'+(x+6*k)+','+(base-96*k)+' '+(x+126)+','+(base-124*k)+' '+(x+126)+','+(base-62*k)+'" fill="var(--amber)" opacity="'+(keyEv?".30":".17")+'"/>';
   s+='<g class="obj" id="obj-watch" data-metric="watch" tabindex="0" role="button" aria-label="What to watch: '+DATA.watch.length+' upcoming events">'
     +'<rect x="'+(x-48)+'" y="'+(base-124)+'" width="180" height="130" fill="transparent"/>'+t
     +'<rect class="focusring" x="'+(x-22)+'" y="'+(base-120*k)+'" width="44" height="'+(112*k)+'" fill="none" stroke="var(--amber)" stroke-width="2" stroke-dasharray="5 4"/>'
     +'<circle class="linkmark" cx="'+x+'" cy="'+(base-124*k)+'" r="6" fill="var(--amber)"/>'
-    +'<text class="lbl" x="'+x+'" y="'+(base-128*k)+'" text-anchor="middle" font-size="11">Ahead</text></g>';
+    +'<text class="lbl" x="'+x+'" y="'+(base-128*k)+'" text-anchor="middle" font-size="11">Ahead</text>'
+    +(keyEv ? '<text class="num" x="'+x+'" y="'+(base-150*k)+'" text-anchor="middle" font-size="12" fill="var(--rust)">'+keyEv.when+' · '+keyEv.what+'</text>' : '')
+    +'</g>';
   return s+'</g>';
 }
 
@@ -1285,7 +1293,7 @@ function copyFor(m2){
   if(m2==="fisher") return {eyebrow:"Ex-post real policy rate", big:sgn(D.realPolicy,2,"pp"), chg:f(fundsNow)+"% effective funds − "+f(D.cpi,1)+"% CPI", chgUp:D.realPolicy<0,
     body:COPY.fisher, tie:"Ex-post · PCE basis "+sgn(D.realPolicyPce,2,"pp")+" · TIPS "+sgn(D.realMarket,2,"pp")};
   if(m2==="watch"){
-    var li=DATA.watch.map(function(w){ return '<li><span>'+w.when+'</span>'+w.what+'</li>'; }).join("");
+    var li=DATA.watch.map(function(w){ return '<li'+(w.key?' class="key"':'')+'><span>'+w.when+'</span>'+w.what+'</li>'; }).join("");
     return {eyebrow:"Ahead", big:"", chg:"", list:'<ul>'+li+'</ul>', body:"", tie:COPY.watch};
   }
   if(m2==="rocket") return {eyebrow:"The read", big:"", chg:"", body:COPY.rocket, tie:"Click to lift off"};

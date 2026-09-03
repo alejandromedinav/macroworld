@@ -1,6 +1,6 @@
 {
   "_comment": "The hand-written half. Edit this daily; fetch-data.mjs merges it with FRED and never overwrites it.",
-  "summary": "The US hadn't attacked Iran in over a month. That ended on Tuesday. Oil prices are back up, or better yet, not going down. Expect inflation expectations to continue increasing, causing the treasury yields to not simmer down. Warsh might (should) hike. Bessent's hands are tied, trying to conduct monetary policy with a fiscal toolbox. Current debt is not sustainable longterm. AI Capex helping economic growth, but lots of data center roadblocks (energy grid + returns). Stagflation on the horizon? Interesting times.",
+  "summary": "The US hadn't attacked Iran in over a month. That ended on Tuesday. Oil prices are back up, or better yet, not going down. Expect inflation expectations to continue increasing, causing the treasury yields to not simmer down. Warsh might (should) hike. Bessent's hands are tied, trying to conduct monetary policy with a fiscal toolbox. Current debt is not sustainable longterm. AI Capex helping economic growth, but lots of data center roadblocks (energy grid + returns).",
   "fed": {
     "lastMove": 0,
     "lastDate": "29 Jul 2026",
@@ -34,11 +34,12 @@
   "watch": [
     {
       "when": "10 Sep",
-      "what": "August CPI"
+      "what": "August CPI",
+      "key": true
     },
     {
       "when": "16 Sep",
-      "what": "FOMC — hike or hold"
+      "what": "FOMC (hike or hold)"
     },
     {
       "when": "26 Sep",
@@ -89,5 +90,6 @@
   "author": "A.M.",
   "_author_note": "Shown under the read, so the opinion is signed and separable from the sourced data.",
   "credit": "Alejandro Medina",
-  "_credit_note": "Shown bottom-left on the world. 'author' (A.M.) signs the read; this names the maker."
+  "_credit_note": "Shown bottom-left on the world. 'author' (A.M.) signs the read; this names the maker.",
+  "_watch_note": "Set key:true on the one event that matters most; the lighthouse names it and lights its lamp."
 }
