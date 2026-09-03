@@ -1,6 +1,6 @@
 {
   "_comment": "The hand-written half. Edit this daily; fetch-data.mjs merges it with FRED and never overwrites it.",
-  "summary": "The US hadn't attacked Iran in over a month. That ended yesterday. Oil prices are back up, or better yet, not going down. Expect inflation expectations to continue increasing, causing the treasury yields to not simmer down. Warsh might (should) hike. Bessent's hands are tied, trying to conduct monetary policy with a fiscal toolbox. Current debt is not sustainable longterm. AI Capex helping economic growth, but lots of data center roadblocks (energy grid + returns). Stagflation on the horizon? Interesting times.",
+  "summary": "The US hadn't attacked Iran in over a month. That ended on Tuesday. Oil prices are back up, or better yet, not going down. Expect inflation expectations to continue increasing, causing the treasury yields to not simmer down. Warsh might (should) hike. Bessent's hands are tied, trying to conduct monetary policy with a fiscal toolbox. Current debt is not sustainable longterm. AI Capex helping economic growth, but lots of data center roadblocks (energy grid + returns). Stagflation on the horizon? Interesting times.",
   "fed": {
     "lastMove": 0,
     "lastDate": "29 Jul 2026",
@@ -53,11 +53,16 @@
   "_ai_note": "Hand-entered - no FRED series covers company capex. The sentence shown lives in COPY.ai in index.html.",
   "_fed_note": "lastMove 0 means the FOMC held. Use -0.25 / +0.25 only for an actual move. Hand-entered - nothing validates this.",
   "oil": {
-    "asOf": "2026-09-02",
-    "wti": 91.18,
-    "brent": 95.83,
+    "asOf": "2026-09-03",
+    "wti": 91.7,
+    "brent": 95.7,
     "note": "Front-month futures, read by hand",
     "history": [
+      {
+        "asOf": "2026-09-03",
+        "wti": 91.7,
+        "brent": 95.7
+      },
       {
         "asOf": "2026-09-02",
         "wti": 91.18,
@@ -72,16 +77,13 @@
   },
   "_oil_note": "Optional daily override. Set asOf to the date you read them and fill wti/brent. Used only while newer than FRED's print - if you stop updating, it falls back to FRED automatically rather than showing an ever-staler number.",
   "curve": {
-    "asOf": "2026-09-02",
+    "asOf": "2026-09-03",
     "values": {
-      "10Y": 4.8
+      "10Y": 4.75
     },
     "notes": {
-      "10Y": "Highest since 2023"
-    },
-    "alert": [
-      "10Y"
-    ]
+      "10Y": "Yesterday 4.80%, highest since 2023"
+    }
   },
   "_curve_note": "Optional hand entry for a yield FRED has not published yet. Same rule as oil: only used while newer than FRED. notes/alert are display only - alert turns the figure rust.",
   "author": "A.M.",
