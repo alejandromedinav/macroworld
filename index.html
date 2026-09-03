@@ -1658,7 +1658,11 @@ var SOURCES=[
   ["Airline fares","BLS via FRED","CUSR0000SETG01"],
   ["Federal debt / GDP","Treasury &amp; BEA via FRED","GFDEGDQ188S"],
   ["Crude oil", (typeof DATA!=="undefined" && DATA.oilSource) ? DATA.oilSource : "EIA via FRED", "DCOILWTICO · DCOILBRENTEU"],
-  ["Interest and defense","OMB fiscal-year outlays · SIPRI for the country comparison","FYOINT · FY2025 · SIPRI Table 1, 2025"],
+  // Table 9 is the budget-function view, so both figures are total National
+  // Defense and Net Interest on one basis. Not discretionary defense (about
+  // $893bn, CBO) and not budget authority (about $895bn, which is permission
+  // to spend rather than money actually spent).
+  ["Interest and defense","Treasury Monthly Treasury Statement, FY2025 · SIPRI for the country comparison","MTS Table 9 · SIPRI Table 1, 2025"],
   ["AI capex","Company reports, entered by hand","manual.json"]
 ];
 function paintSources(){
