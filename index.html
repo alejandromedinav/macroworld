@@ -92,7 +92,10 @@ svg.chart{display:block; width:100%; height:100%}
 /* A callout that ignores the pointer cannot be scrolled, and on a phone the
    long ones have to be scrolled. Touch has no hover to steal, so this is safe. */
 @media (hover: none){
-  .callout{pointer-events:auto; overflow-y:auto; -webkit-overflow-scrolling:touch}
+  .callout{overflow-y:auto; -webkit-overflow-scrolling:touch}
+  /* Only a sheet that actually overflows takes the finger. Giving every
+     callout pointer events made it swallow taps meant for the map beneath. */
+  .callout.scrollable{pointer-events:auto}
 }
 
 /* Phone held sideways: the world fills the screen, so the answer overlays it. */
@@ -292,7 +295,8 @@ svg.chart{display:block; width:100%; height:100%}
   .credit{position:fixed; top:58px; left:24px; right:auto; text-align:left; font-size:9px; letter-spacing:.14em}
   .srcbtn{position:fixed}
   .zoombtn{display:block}
-  .hint{position:fixed; left:12px; right:12px; bottom:14px; transform:none; max-width:none; font-size:14px; padding:8px 12px}
+  /* clears the Sources button, which the longer touch copy was running under */
+  .hint{position:fixed; left:12px; right:12px; bottom:48px; transform:none; max-width:none; font-size:14px; padding:8px 12px}
   .hint.show{transform:none}
   .panel{position:fixed; max-height:78dvh}
   .panel-in{padding:16px 16px 22px}
@@ -688,10 +692,16 @@ function defs(){
   + '</defs>';
 }
 function grounds(){
-  var s='<rect x="0" y="0" width="'+W+'" height="'+SEA+'" fill="var(--sky)"/>'
-       +'<rect x="0" y="'+SEA+'" width="'+W+'" height="'+(H-SEA)+'" fill="var(--sea)"/>';
+  // Sky, sea and shore run well past the viewBox. A screen that letterboxes the
+  // world (a phone held sideways) then shows more ocean in the side bands
+  // instead of a hard border where the drawing stops.
+  var BL=900, BW=W+BL*2;
+  var s='<rect x="'+(-BL)+'" y="'+(-BL)+'" width="'+BW+'" height="'+(SEA+BL)+'" fill="var(--sky)"/>'
+       +'<rect x="'+(-BL)+'" y="'+SEA+'" width="'+BW+'" height="'+(H-SEA+BL)+'" fill="var(--sea)"/>'
+       +'<rect x="'+(-BL)+'" y="'+NEAR+'" width="'+BL+'" height="'+(H-NEAR+BL)+'" fill="var(--land)"/>'
+       +'<rect x="'+W+'" y="'+(NEAR-14)+'" width="'+BL+'" height="'+(H-NEAR+14+BL)+'" fill="var(--land)"/>';
   for(var i=0;i<9;i++){ var y=SEA+26+i*31;
-    s+='<line x1="0" y1="'+y+'" x2="'+W+'" y2="'+y+'" stroke="var(--sea-deep)" stroke-width="1" opacity="'+(0.12+i*0.028).toFixed(3)+'"/>'; }
+    s+='<line x1="'+(-BL)+'" y1="'+y+'" x2="'+(W+BL)+'" y2="'+y+'" stroke="var(--sea-deep)" stroke-width="1" opacity="'+(0.12+i*0.028).toFixed(3)+'"/>'; }
   [[720,620,"18"],[1000,660,"24"],[560,700,"27"],[1240,610,"12"],[860,760,"31"]].forEach(function(p){
     s+='<text class="sounding" x="'+p[0]+'" y="'+p[1]+'">'+p[2]+'</text>'; });
   return s;
@@ -1329,6 +1339,8 @@ function show(metric,node){
   if(top<10) top=nb.top-sb.top+nb.height+14;
   top=Math.max(10,Math.min(sb.height-ch-10,top));
   callout.style.left=left+"px"; callout.style.top=top+"px"; callout.classList.add("show");
+  callout.scrollTop=0;
+  callout.classList.toggle("scrollable", callout.scrollHeight > callout.clientHeight + 1);
   scene.classList.add("engaged"); node.classList.add("hot");
   (LINKS[metric]||[]).forEach(function(id){ var n=document.getElementById("obj-"+id); if(n) n.classList.add("linked"); });
 }
