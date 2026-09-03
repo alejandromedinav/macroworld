@@ -426,7 +426,7 @@ svg.chart{display:block; width:100%; height:100%}
 var DATA = {
   "asOf": "2026-09-01",
   "builtAt": "2026-09-03",
-  "summary": "The US hadn't attacked Iran in over a month. That ended on Tuesday. Oil prices are back up, or better yet, not going down. Expect inflation expectations to continue increasing, causing the treasury yields to not simmer down. Warsh might (should) hike. Bessent's hands are tied, trying to conduct monetary policy with a fiscal toolbox. Current debt is not sustainable longterm. AI Capex helping economic growth, but lots of data center roadblocks (energy grid + returns).",
+  "summary": "The US hadn't attacked Iran in over a month. That ended on Tuesday. Oil prices are back up, or better yet, not going down. Expect inflation expectations to continue increasing, causing the treasury yields to not simmer down. Warsh might (should) hike. Bessent's hands are tied, trying to conduct monetary policy with a fiscal toolbox. Current debt is not sustainable longterm. AI Capex helping economic growth, but lots of data center roadblocks (energy grid + returns). Stagflation on the horizon? Interesting times.",
   "author": "A.M.",
   "maker": "Alejandro Medina",
   "curve": [
@@ -778,7 +778,6 @@ function lighthouse(){
     +'<rect class="focusring" x="'+(x-22)+'" y="'+(base-120*k)+'" width="44" height="'+(112*k)+'" fill="none" stroke="var(--amber)" stroke-width="2" stroke-dasharray="5 4"/>'
     +'<circle class="linkmark" cx="'+x+'" cy="'+(base-124*k)+'" r="6" fill="var(--amber)"/>'
     +'<text class="lbl" x="'+x+'" y="'+(base-128*k)+'" text-anchor="middle" font-size="11">Ahead</text>'
-    +(keyEv ? '<text class="num" x="'+x+'" y="'+(base-150*k)+'" text-anchor="middle" font-size="12" fill="var(--rust)">'+keyEv.when+' · '+keyEv.what+'</text>' : '')
     +'</g>';
   return s+'</g>';
 }
