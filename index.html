@@ -24,7 +24,7 @@
 
 <style>
 :root{
-  --paper:#F4EFE3; --panel:#FCFAF3; --ink:#12242F; --ink-soft:#4F6673;
+  --paper:#F4EFE3; --panel:#FCFAF3; --ink:#12242F; --ink-soft:#4F6673; --ink-label:#354C5C;
   --rule:#C4B99F; --rule-soft:#DCD2BB;
   --sky:#D6E9F0; --sea:#8FC2D8; --sea-deep:#5D9BBA; --land:#E3CE99; --rock:#C7B183;
   --verd:#2F7D6C; --amber:#C8841A; --rust:#B24326; --stamp:#B24326;
@@ -32,7 +32,7 @@
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
-    --paper:#081722; --panel:#102431; --ink:#EFE6CC; --ink-soft:#8FA8B5;
+    --paper:#081722; --panel:#102431; --ink:#EFE6CC; --ink-soft:#8FA8B5; --ink-label:#9CB5C1;
     --rule:#2B4759; --rule-soft:#1B3546;
     --sky:#0C2233; --sea:#0F3247; --sea-deep:#092536; --land:#223B48; --rock:#2C4B5B;
     --verd:#63B8A3; --amber:#E5AC45; --rust:#D96C48; --stamp:#D96C48;
@@ -40,7 +40,7 @@
   }
 }
 :root[data-theme="dark"]{
-  --paper:#081722; --panel:#102431; --ink:#EFE6CC; --ink-soft:#8FA8B5;
+  --paper:#081722; --panel:#102431; --ink:#EFE6CC; --ink-soft:#8FA8B5; --ink-label:#9CB5C1;
   --rule:#2B4759; --rule-soft:#1B3546;
   --sky:#0C2233; --sea:#0F3247; --sea-deep:#092536; --land:#223B48; --rock:#2C4B5B;
   --verd:#63B8A3; --amber:#E5AC45; --rust:#D96C48; --stamp:#D96C48;
@@ -65,7 +65,7 @@ svg.chart{display:block; width:100%; height:100%}
 .scene.engaged .obj:not(.hot):not(.linked){opacity:.3}
 .linked .linkmark{opacity:1}
 .linkmark{opacity:0; transition:opacity .25s ease}
-.lbl{font-family:"Barlow Condensed",sans-serif; font-size:15px; font-weight:600; letter-spacing:.13em; text-transform:uppercase; fill:var(--ink-soft); pointer-events:none; user-select:none}
+.lbl{font-family:"Barlow Condensed",sans-serif; font-size:15px; font-weight:600; letter-spacing:.13em; text-transform:uppercase; fill:var(--ink-label); pointer-events:none; user-select:none}
 .num{font-family:"IBM Plex Mono",monospace; font-size:14px; font-weight:500; fill:var(--ink); pointer-events:none; user-select:none}
 .sounding{font-family:"IBM Plex Mono",monospace; font-size:11px; fill:var(--sea-deep); opacity:.75; pointer-events:none}
 .annot{font-family:"IBM Plex Mono",monospace; font-size:12px; fill:var(--verd); pointer-events:none}
@@ -88,7 +88,7 @@ svg.chart{display:block; width:100%; height:100%}
 .callout .eyebrow{font-size:11px; letter-spacing:.18em; text-transform:uppercase; color:var(--ink-soft); font-family:"IBM Plex Mono",monospace; font-weight:500}
 .callout .big{font-family:"IBM Plex Mono",monospace; font-size:27px; font-weight:600; margin:5px 0 2px; font-variant-numeric:tabular-nums; letter-spacing:-.02em}
 .callout .chg{font-family:"IBM Plex Mono",monospace; font-size:12.5px; font-weight:500}
-.callout p{margin:9px 0 0; font-size:15px; line-height:1.45; color:var(--ink-soft)}
+.callout p{margin:9px 0 0; font-size:15px; line-height:1.45; color:var(--ink)}
 /* A callout that ignores the pointer cannot be scrolled, and on a phone the
    long ones have to be scrolled. Touch has no hover to steal, so this is safe. */
 @media (hover: none){
@@ -109,7 +109,7 @@ svg.chart{display:block; width:100%; height:100%}
 
 .callout .tie{margin-top:10px; padding-top:9px; border-top:1px solid var(--rule-soft); font-size:13px; letter-spacing:.05em; text-transform:uppercase; color:var(--verd); font-weight:600}
 .callout ul{margin:8px 0 0; padding:0; list-style:none}
-.callout ol.points{margin:8px 0 0; padding-left:18px; font-size:15px; line-height:1.45; color:var(--ink-soft)}
+.callout ol.points{margin:8px 0 0; padding-left:18px; font-size:15px; line-height:1.45; color:var(--ink)}
 .callout ol.points li{padding:3px 0}
 .callout li{display:flex; gap:10px; font-size:14px; padding:4px 0; border-bottom:1px solid var(--rule-soft)}
 .callout li:last-child{border-bottom:0}
