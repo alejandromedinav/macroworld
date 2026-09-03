@@ -240,6 +240,28 @@ svg.chart{display:block; width:100%; height:100%}
 .launch.arrived .space-close{opacity:1}
 .space-close:hover{border-color:#EDE6D2}
 
+/* ---------- phones ----------
+   Letterboxing a 16:9 world into a portrait screen leaves it at a quarter of
+   the height and unreadable. Instead give the world the full height and let it
+   scroll sideways, which is how any wide graphic works on a phone. The overlays
+   go fixed so they stay put while the world moves under them. */
+@media (max-width: 760px){
+  .world{overflow-x:auto; overflow-y:hidden; -webkit-overflow-scrolling:touch}
+  .scene{position:relative; height:100dvh; width:calc(100dvh * 1.7778); min-width:100%}
+  .scene.zooming{transform:scale(1.6)}
+  .mark{position:fixed; font-size:9px; letter-spacing:.14em; line-height:1.8}
+  .credit{position:fixed; top:58px; left:24px; right:auto; text-align:left; font-size:9px; letter-spacing:.14em}
+  .srcbtn{position:fixed}
+  .hint{position:fixed; left:12px; right:12px; bottom:14px; transform:none; max-width:none; font-size:14px; padding:8px 12px}
+  .hint.show{transform:none}
+  .panel{position:fixed; max-height:78dvh}
+  .panel-in{padding:16px 16px 22px}
+  .callout{width:min(280px, calc(100vw - 28px))}
+  .now .f{flex:1 1 44%; padding:12px 12px 13px}
+  .now .f .v{font-size:22px}
+  .cell{flex:1 1 44%}
+}
+
 @media (max-height:600px){
   .earth{width:clamp(120px,19vmin,170px); height:clamp(120px,19vmin,170px); margin-bottom:20px}
   .thesis{font-size:clamp(16px,1.9vw,21px)}
@@ -559,7 +581,7 @@ var COPY = {
   "30Y": "Inflation expectations, plus how much paper the Treasury has to sell.",
   "3M":  "Today's policy rate, priced in the bill market.",
   credit:"Tightening, not widening. The market is seeing current strong economic growth + large borrowing (thanks to AI Capex). So risk is being priced low, companies are accepting a high rate (due to the treasury yield floor).",
-  fed:   "Warsh recently spoke at Jackson Hole, hinting at a hike. They held rates in July, possibly (very likely) due to the incumbent administration not wanting high rates (makes things more expensive → approval rating falls). So will Warsh hike in 2 weeks? It's live on Kalshi (this website does not promote gambling, sorry sports betting?).",
+  fed:   "Warsh recently spoke at Jackson Hole, hinting at a hike. They held rates in July, possibly (very likely) due to the incumbent administration not wanting high rates (makes things more expensive → approval rating falls). So will Warsh hike in 2 weeks? It's live on Kalshi! (this website does not promote gambling, sorry sports betting?)",
   wti:   "Priced inland at Cushing. No water access, so it trades under the seaborne grade.",
   brent: "The seaborne benchmark. Moves first when shipping routes are threatened. Pretty relevant to today, if you open up the news.",
   airfare:"Thinking about going on that trip? Forget about it, throw your Hokas on or pick up some overtime.",
@@ -1604,11 +1626,26 @@ if(!seenHint()){
 }
 
 /* fill the screen on wide viewports; letterbox rather than crop on narrow ones */
+function phoneHint(){
+  var h=document.getElementById("hint"); if(!h) return;
+  h.innerHTML = window.matchMedia("(max-width: 760px)").matches
+    ? 'Swipe across the world. Tap anything. <b>Satellite</b> for figures, <b>rocket</b> for the read.'
+    : 'Hover anything. <b>Satellite</b> for figures, <b>rocket</b> for the read.';
+}
+
 function fitWorld(){
+  // On phones the scene element is already exactly 16:9, so slice and meet agree
+  // and the world simply fills the height while the container scrolls sideways.
+  if(window.matchMedia("(max-width: 760px)").matches){
+    document.getElementById("svg").setAttribute("preserveAspectRatio","xMidYMid slice");
+    return;
+  }
   var ar=window.innerWidth/Math.max(1,window.innerHeight);
   document.getElementById("svg").setAttribute("preserveAspectRatio", ar<1.75 ? "xMidYMid meet" : "xMidYMid slice");
 }
 window.addEventListener("resize",fitWorld);
+window.addEventListener("resize",phoneHint);
+phoneHint();
 
 document.addEventListener("keydown",function(e){
   if(e.key!=="Escape") return;
