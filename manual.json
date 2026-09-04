@@ -83,7 +83,7 @@
       "10Y": 4.75
     },
     "notes": {
-      "10Y": "Yesterday 4.80%, highest since 2023"
+      "10Y": "4.80% on 2 Sep, highest since 2023"
     }
   },
   "_curve_note": "Optional hand entry for a yield FRED has not published yet. Same rule as oil: only used while newer than FRED. notes/alert are display only - alert turns the figure rust.",
