@@ -3645,9 +3645,9 @@ function ships(){
 
 /* --- DEBT: an anchor. Chain pays out as debt/GDP rises. --- */
 function anchorDebt(){
-  var x=520, surf=638;
+  var x=520, surf=614;   // lifted so two label lines fit between the flukes and the beach
   var t=Math.max(0,Math.min(1,(DATA.debt.gdp-95)/35));   // 95% shallow · 130% on the bottom
-  var depth=Math.round(30+t*62), ay=surf+depth, deep=t>0.72;   // capped so the flukes stay off the beach
+  var depth=Math.round(30+t*56), ay=surf+depth, deep=t>0.72;   // capped so the flukes stay off the beach
   var col=deep?'var(--rust)':'var(--ink)';
 
   var g='';
@@ -3678,9 +3678,9 @@ function anchorDebt(){
     +'<rect class="focusring" x="'+(x-36)+'" y="'+(surf-40)+'" width="72" height="'+(depth+100)+'" fill="none" stroke="'+col+'" stroke-width="2.5" stroke-dasharray="6 5"/>'
     +'<circle class="linkmark" cx="'+x+'" cy="'+(surf-44)+'" r="7" fill="'+col+'"/>'
     +'<text class="lbl" x="'+x+'" y="'+(surf-48)+'" text-anchor="middle" style="font-size:13px">Federal debt</text>'
-    +'<text class="num" x="'+x+'" y="'+f(ay+48,1)+'" text-anchor="middle" fill="'+col+'">'+f(DATA.debt.gdp,1)+'% of GDP</text>'
+    +'<text class="num" x="'+x+'" y="'+f(ay+74,1)+'" text-anchor="middle" fill="'+col+'">'+f(DATA.debt.gdp,1)+'% of GDP</text>'
     +(DATA.debt.level!==undefined
-        ? '<text class="lbl" x="'+x+'" y="'+f(ay+70,1)+'" text-anchor="middle" style="font-size:12px">$'+f(DATA.debt.level,1)+' trillion</text>' : '')
+        ? '<text class="lbl" x="'+x+'" y="'+f(ay+96,1)+'" text-anchor="middle" style="font-size:12px">$'+f(DATA.debt.level,1)+' trillion</text>' : '')
     +'</g>';
 }
 
