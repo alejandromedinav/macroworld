@@ -524,6 +524,99 @@ def inject(data):
     path.write_text(html[:a] + block + html[b:], encoding="utf8")
 
 
+# ---------------------------------------------------------------- history ----
+# The map is a snapshot; this is what lets you drag it back through time. Two
+# years sampled weekly is smooth enough to scrub and small enough to inline:
+# roughly 2,300 numbers, a few KB once gzipped. Daily would be seven times that
+# for no visible gain at this scale.
+
+HISTORY_WEEKS = 104
+
+HISTORY_KEYS = [
+    "y3m", "y2y", "y10y", "y30y", "funds", "tgt_lo", "tgt_hi",
+    "hy_oas", "hy_yield", "wti", "brent", "cpi", "pce",
+    "breakeven", "real_tips", "debt_gdp", "airfare",
+    "c_shelter", "c_food", "c_medical", "c_transport", "c_energy",
+]
+
+
+def fetch_series_history(series_id, units, start):
+    """Every observation since `start`, oldest first."""
+    params = {
+        "series_id": series_id,
+        "api_key": KEY,
+        "file_type": "json",
+        "sort_order": "asc",
+        "observation_start": start,
+        "limit": "3000",
+    }
+    if units:
+        params["units"] = units
+    url = "https://api.stlouisfed.org/fred/series/observations?" + urllib.parse.urlencode(params)
+    req = urllib.request.Request(url, headers={"User-Agent": "macro-soundings"})
+    with urllib.request.urlopen(req, timeout=45, context=SSL_CTX) as resp:
+        body = json.load(resp)
+    return [(o["date"], float(o["value"]))
+            for o in body.get("observations", []) if o["value"] != "."]
+
+
+def weekly_axis(end_iso, weeks):
+    end = datetime.date.fromisoformat(end_iso)
+    return [(end - datetime.timedelta(days=7 * i)).isoformat()
+            for i in range(weeks - 1, -1, -1)]
+
+
+def sample_onto(pairs, axis):
+    """Last known value on or before each axis date, carried forward.
+
+    Monthly and quarterly series step rather than glide, which is honest: the
+    number really did not change between prints.
+    """
+    if not pairs:
+        return None
+    out, i, cur = [], 0, None
+    for d in axis:
+        while i < len(pairs) and pairs[i][0] <= d:
+            cur = pairs[i][1]
+            i += 1
+        out.append(cur)
+    first = next((v for v in out if v is not None), None)
+    if first is None:
+        return None
+    return [round(v if v is not None else first, 2) for v in out]
+
+
+def build_history(as_of):
+    """Weekly history for the scrubber.
+
+    A failure here degrades the feature rather than the build: the site is
+    perfectly usable without the time slider, so one flaky series should not
+    cost the day's refresh.
+    """
+    axis = weekly_axis(as_of, HISTORY_WEEKS)
+    start = (datetime.date.fromisoformat(axis[0]) - datetime.timedelta(days=400)).isoformat()
+    series, missing = {}, []
+    for key in HISTORY_KEYS:
+        series_id, units = SERIES[key]
+        got = None
+        for attempt in (1, 2):
+            try:
+                got = sample_onto(fetch_series_history(series_id, units, start), axis)
+                break
+            except Exception as exc:
+                if attempt == 2:
+                    print(f"  history: {key} ({series_id}) unavailable - {exc}")
+                else:
+                    time.sleep(1.5)
+        if got:
+            series[key] = got
+        else:
+            missing.append(key)
+    if missing:
+        print(f"  history: skipping {', '.join(missing)}; the slider will hold these flat")
+    return {"weeks": axis, "series": series}
+
+
 def main():
     S = fetch_all()
     manual_path = ROOT / "manual.json"
@@ -533,6 +626,7 @@ def main():
     if json.dumps(manual, sort_keys=True) != before:
         manual_path.write_text(json.dumps(manual, indent=2, ensure_ascii=False) + "\n", encoding="utf8")
     data = build(S, manual)
+    data["history"] = build_history(data["asOf"])
     inject(data)
 
     slope = data["curve"][2]["yield"] - data["curve"][1]["yield"]
