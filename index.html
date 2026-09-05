@@ -3476,6 +3476,7 @@ function computeD(){
   // Ex-post: realised inflation, not expected. An ex-ante real rate would need
   // expected inflation - that is what TIPS and breakevens give you further down.
   var fundsNow = (DATA.fed.effective!==undefined) ? DATA.fed.effective : DATA.fed.upper;
+  d.fundsNow = fundsNow;          // the fisher card needs it too, and D is what travels
   d.realPolicy = fundsNow - d.cpi;
   d.realPolicyPce = fundsNow - d.pce;
   d.realMarket = (DATA.realTips !== undefined) ? DATA.realTips : yieldOf("10Y") - DATA.breakeven;
@@ -4133,7 +4134,7 @@ function copyForToday(m2){
       +(DATA.debt.level!==undefined?(DATA.debt.chg!==undefined?" · ":"")+"$"+f(DATA.debt.level,2)+" trillion outstanding":""),
     chgUp:DATA.debt.chg>0,
     body:COPY.debt, points:POINTS.debt, after:COPY.debtAfter, tie:"Interest cost is the 30-year against this balance"};
-  if(m2==="fisher") return {eyebrow:"Ex-post real policy rate", big:sgn(D.realPolicy,2,"pp"), chg:f(fundsNow)+"% effective funds − "+f(D.cpi,1)+"% CPI", chgUp:D.realPolicy<0,
+  if(m2==="fisher") return {eyebrow:"Ex-post real policy rate", big:sgn(D.realPolicy,2,"pp"), chg:f(D.fundsNow)+"% effective funds − "+f(D.cpi,1)+"% CPI", chgUp:D.realPolicy<0,
     body:COPY.fisher, tie:"Ex-post · PCE basis "+sgn(D.realPolicyPce,2,"pp")+" · TIPS "+sgn(D.realMarket,2,"pp")};
   if(m2==="watch"){
     var li=DATA.watch.map(function(w){ return '<li'+(w.key?' class="key"':'')+'><span>'+w.when+'</span>'+w.what+'</li>'; }).join("");
