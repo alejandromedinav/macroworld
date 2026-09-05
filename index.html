@@ -4762,10 +4762,13 @@ function applyFrame(i){
              chg: hDelta(CURVE_KEY[c.key], i) };
   });
 
+  // BAMLH0A0HYM2 is published in percent, so it needs the same x100 the build
+  // applies to today's print. Without it every frame rounded 2.65% to 3bp and
+  // the cloud cover never moved.
   var oas=hAt("hy_oas",i), oasD=hDelta("hy_oas",i);
-  DATA.credit = { oas:(oas!==undefined?Math.round(oas):LIVE.credit.oas),
+  DATA.credit = { oas:(oas!==undefined?Math.round(oas*100):LIVE.credit.oas),
                   effYield:(hAt("hy_yield",i)!==undefined?hAt("hy_yield",i):LIVE.credit.effYield),
-                  chg:(oasD!==undefined?Math.round(oasD):undefined) };
+                  chg:(oasD!==undefined?Math.round(oasD*100):undefined) };
 
   function leg(k){
     var v=hAt(k,i); if(v===undefined) return null;
