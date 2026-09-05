@@ -63,6 +63,9 @@ svg.chart{display:block; width:100%; height:100%}
 .obj:focus-visible .focusring, .obj.hot .focusring{opacity:1}
 .focusring{opacity:0; transition:opacity .2s ease}
 .scene.engaged .obj:not(.hot):not(.linked){opacity:.3}
+/* Looking back: dimmed, and not offering a callout it cannot honour. */
+.stood-down{opacity:.22; pointer-events:none}
+.stood-down .linkmark{opacity:0}
 .linked .linkmark{opacity:1}
 .linkmark{opacity:0; transition:opacity .25s ease}
 .lbl{font-family:"Barlow Condensed",sans-serif; font-size:15px; font-weight:600; letter-spacing:.13em; text-transform:uppercase; fill:var(--ink-label); pointer-events:none; user-select:none}
@@ -3814,7 +3817,7 @@ function fed(){
   b+='<rect x="'+(bx+bw-28)+'" y="'+f(by+bh-26,1)+'" width="13" height="16" fill="var(--amber)" stroke="var(--ink)" stroke-width="1.2"/>';
   b+='<rect x="'+bx+'" y="'+f(by+bh,1)+'" width="'+bw+'" height="7" fill="var(--panel)" stroke="var(--ink)" stroke-width="1.8"/>';
   // Soaring above the building, clear of the flag at the pediment.
-  b+=fedBird(bx+bw/2+6, by-150);
+  b+='<g id="obj-hawk">'+fedBird(bx+bw/2+6, by-150)+'</g>';
   s+='<g class="obj" id="obj-fed" data-metric="fed" tabindex="0" role="button" aria-label="Federal funds target rate, '+f(DATA.fed.lower)+' to '+f(DATA.fed.upper)+' percent">'
     +'<rect x="4" y="'+f(by-182,1)+'" width="214" height="'+f(NEAR+182-by,1)+'" fill="transparent"/>'+b
     +'<rect class="focusring" x="'+(bx-20)+'" y="'+f(by-40,1)+'" width="'+(bw+40)+'" height="'+(bh+54)+'" fill="none" stroke="var(--verd)" stroke-width="2.5" stroke-dasharray="6 5"/>'
@@ -4424,7 +4427,22 @@ function cell(k,v,d,cls,vintage){
    A single "as at" date would imply quarterly debt was measured yesterday. */
 var MONTHS=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 var QUARTERLY={debt_gdp:1}, MONTHLY={cpi:1,pce:1,airfare:1,c_shelter:1,c_food:1,c_medical:1,c_transport:1,c_energy:1};
+// The island's capex is a 2026 estimate, the lighthouse lists events still to
+// come, and the hawk is today's stance. None of them have a past to show, so
+// rather than vanish and make the coastline lurch, they stand down.
+var STATIC_OBJECTS = ["obj-ai","obj-watch","obj-hawk"];
+function markStatic(){
+  STATIC_OBJECTS.forEach(function(id){
+    var el=document.getElementById(id); if(!el) return;
+    el.classList.toggle("stood-down", frame!==null);
+  });
+}
+
 function vintage(key){
+  // DATA.dates is the build's vintage and does not travel, so on any other
+  // frame it would date every figure to today. The panel states the week
+  // instead, which is true of all six at once.
+  if(frame!==null) return "";
   var iso=(DATA.dates||{})[key]; if(!iso) return "";
   var p=iso.split("-"), y=+p[0], m=+p[1], d=+p[2];
   if(QUARTERLY[key]) return "Q"+(Math.floor((m-1)/3)+1)+" "+y;
@@ -4844,7 +4862,7 @@ function repaintWorld(){
   D=computeD();
   clear();
   render(measure==="cpi"?0:1);
-  paintReadout(); paintNow(); paintMoved(); paintNote(); paintMark();
+  paintReadout(); paintNow(); paintMoved(); paintNote(); paintMark(); paintPanelSub(); markStatic();
   var tl=document.getElementById("timeline");
   var lab=document.getElementById("timeline-label");
   var now=document.getElementById("timeline-now");
@@ -4896,10 +4914,15 @@ fitWorld(); render(0); paintReadout(); paintNow(); paintMoved(); paintNote(); pa
     ? 'Markets <em>open</em>'
     : 'Markets closed';
 })();
-document.getElementById("panel-sub").textContent =
-  (DATA.builtAt && DATA.builtAt!==DATA.asOf)
-    ? "Data as at "+DATA.asOf+" · updated "+DATA.builtAt
-    : "Soundings as at "+DATA.asOf;
+function paintPanelSub(){
+  document.getElementById("panel-sub").textContent =
+    frame!==null
+      ? "Week of "+fmtWeek(HIST.weeks[frame])+" · looking back"
+      : ((DATA.builtAt && DATA.builtAt!==DATA.asOf)
+          ? "Data as at "+DATA.asOf+" · updated "+DATA.builtAt
+          : "Soundings as at "+DATA.asOf);
+}
+paintPanelSub();
 })();
 </script>
 </body>
