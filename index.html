@@ -3530,7 +3530,7 @@ function mountains(){
       +'<circle class="focusring" cx="'+px+'" cy="'+f(py,1)+'" r="13" fill="none" stroke="var(--verd)" stroke-width="2.5"/>'
       +'<circle class="linkmark" cx="'+px+'" cy="'+f(py,1)+'" r="7" fill="var(--verd)"/>'
       +'<text class="num'+(c.alert?' alert':'')+'" x="'+px+'" y="'+f(py-22,1)+'" text-anchor="middle">'+f(c.yield)+'%</text>'
-      +'<text class="lbl'+(c.alert?' alert':'')+'" x="'+px+'" y="'+f(py-41,1)+'" text-anchor="middle" font-size="13">'+c.key+'</text>'
+      +'<text class="lbl'+(c.alert?' alert':'')+'" x="'+px+'" y="'+f(py-41,1)+'" text-anchor="middle" style="font-size:13px">'+c.key+'</text>'
       +(c.note?'<text class="sounding" x="'+px+'" y="'+f(py-57,1)+'" text-anchor="middle" fill="var(--rust)" opacity="1">'+c.note+'</text>':'')
       +'</g>';
   });
@@ -3557,7 +3557,7 @@ function lighthouse(){
     +'<rect x="'+(x-48)+'" y="'+(base-124)+'" width="180" height="130" fill="transparent"/>'+t
     +'<rect class="focusring" x="'+(x-22)+'" y="'+(base-120*k)+'" width="44" height="'+(112*k)+'" fill="none" stroke="var(--amber)" stroke-width="2" stroke-dasharray="5 4"/>'
     +'<circle class="linkmark" cx="'+x+'" cy="'+(base-124*k)+'" r="6" fill="var(--amber)"/>'
-    +'<text class="lbl" x="'+x+'" y="'+(base-128*k)+'" text-anchor="middle" font-size="11">Ahead</text>'
+    +'<text class="lbl" x="'+x+'" y="'+(base-128*k)+'" text-anchor="middle" style="font-size:11px">Ahead</text>'
     +'</g>';
   return s+'</g>';
 }
@@ -3577,9 +3577,9 @@ function island(){
     +'<rect x="'+(x-70)+'" y="'+(base-116)+'" width="140" height="126" fill="transparent"/>'+dc
     +'<rect class="focusring" x="'+(x-58*k)+'" y="'+(base-112*k)+'" width="'+(116*k)+'" height="'+(104*k)+'" fill="none" stroke="var(--verd)" stroke-width="2" stroke-dasharray="5 4"/>'
     +'<circle class="linkmark" cx="'+x+'" cy="'+(base-116*k)+'" r="6" fill="var(--verd)"/>'
-    +'<text class="lbl" x="'+x+'" y="'+(base-142*k)+'" text-anchor="middle" font-size="11">'+(DATA.ai.label||"AI capex")+'</text>'
-    +'<text class="lbl" x="'+x+'" y="'+(base-118*k)+'" text-anchor="middle" font-size="10" opacity=".75">'+(DATA.ai.period||"")+'</text>'
-    +'<text class="num" x="'+x+'" y="'+(base+22)+'" text-anchor="middle" font-size="13">'+(DATA.ai.headline||("$"+DATA.ai.capex+"bn"))+'</text>'
+    +'<text class="lbl" x="'+x+'" y="'+(base-142*k)+'" text-anchor="middle" style="font-size:11px">'+(DATA.ai.label||"AI capex")+'</text>'
+    +'<text class="lbl" x="'+x+'" y="'+(base-118*k)+'" text-anchor="middle" style="font-size:10px" opacity=".75">'+(DATA.ai.period||"")+'</text>'
+    +'<text class="num" x="'+x+'" y="'+(base+22)+'" text-anchor="middle" style="font-size:13px">'+(DATA.ai.headline||("$"+DATA.ai.capex+"bn"))+'</text>'
     +'<text class="sounding" x="'+x+'" y="'+(base+38)+'" text-anchor="middle" fill="var(--ink-soft)">'+(DATA.ai.names||"")+'</text></g>';
   return s+'</g>';
 }
@@ -3615,7 +3615,7 @@ function ships(){
     +'<rect x="'+(wtiX-rw-14)+'" y="'+(base-rh-58)+'" width="'+(rw*2+28)+'" height="'+(rh+96)+'" fill="transparent"/>'+w
     +'<rect class="focusring" x="'+(wtiX-rw-8)+'" y="'+(base-rh-54)+'" width="'+(rw*2+16)+'" height="'+(rh+86)+'" fill="none" stroke="var(--amber)" stroke-width="2.5" stroke-dasharray="6 5"/>'
     +'<circle class="linkmark" cx="'+wtiX+'" cy="'+(base-rh-58)+'" r="7" fill="var(--amber)"/>'
-    +'<text class="lbl" x="'+wtiX+'" y="'+(base+30)+'" text-anchor="middle" font-size="13">WTI · landlocked</text>'
+    +'<text class="lbl" x="'+wtiX+'" y="'+(base+30)+'" text-anchor="middle" style="font-size:13px">WTI · landlocked</text>'
     +'<text class="num" x="'+wtiX+'" y="'+(base+50)+'" text-anchor="middle">$'+f(DATA.oil.wti.price)+'</text></g>';
 
   /* --- Brent: already at sea --- */
@@ -3629,8 +3629,8 @@ function ships(){
     +'<rect x="'+(bx-bw2-20)+'" y="'+(y-56*sc)+'" width="'+(bw2*2+40)+'" height="'+(96*sc)+'" fill="transparent"/>'+b
     +'<rect class="focusring" x="'+(bx-bw2-14)+'" y="'+(y-52*sc)+'" width="'+(bw2*2+28)+'" height="'+(88*sc)+'" fill="none" stroke="var(--amber)" stroke-width="2.5" stroke-dasharray="6 5"/>'
     +'<circle class="linkmark" cx="'+bx+'" cy="'+(y-56*sc)+'" r="7" fill="var(--amber)"/>'
-    +'<text class="lbl" x="'+bx+'" y="'+(y+48*sc)+'" text-anchor="middle" font-size="13">Brent · seaborne</text>'
-    +'<text class="num" x="'+bx+'" y="'+(y+68*sc)+'" text-anchor="middle">$'+f(DATA.oil.brent.price)+'</text></g>';
+    +'<text class="lbl" x="'+bx+'" y="'+(y+48*sc)+'" text-anchor="middle" style="font-size:13px">Brent · seaborne</text>'
+    +'<text class="num" x="'+bx+'" y="'+(y+52)+'" text-anchor="middle">$'+f(DATA.oil.brent.price)+'</text></g>';
 
   /* --- the spread, measured across the water between them --- */
   var col=D.spread>8?'var(--rust)':'var(--amber)', my=y-120;
@@ -3638,7 +3638,7 @@ function ships(){
     +'<line x1="'+wtiX+'" y1="'+my+'" x2="'+bx+'" y2="'+my+'" stroke="'+col+'" stroke-width="1.5"/>'
     +'<line x1="'+wtiX+'" y1="'+(my-6)+'" x2="'+wtiX+'" y2="'+(my+6)+'" stroke="'+col+'" stroke-width="1.5"/>'
     +'<line x1="'+bx+'" y1="'+(my-6)+'" x2="'+bx+'" y2="'+(my+6)+'" stroke="'+col+'" stroke-width="1.5"/>'
-    +'<text class="num" x="'+((wtiX+bx)/2)+'" y="'+(my-9)+'" text-anchor="middle" fill="'+col+'" font-size="12.5">$'+f(D.spread)+' spread</text></g>';
+    +'<text class="num" x="'+((wtiX+bx)/2)+'" y="'+(my-9)+'" text-anchor="middle" fill="'+col+'" style="font-size:12.5px">$'+f(D.spread)+' spread</text></g>';
 
   return s;
 }
@@ -3677,10 +3677,10 @@ function anchorDebt(){
     +'<rect x="'+(x-42)+'" y="'+(surf-46)+'" width="84" height="'+(depth+110)+'" fill="transparent"/>'+g
     +'<rect class="focusring" x="'+(x-36)+'" y="'+(surf-40)+'" width="72" height="'+(depth+100)+'" fill="none" stroke="'+col+'" stroke-width="2.5" stroke-dasharray="6 5"/>'
     +'<circle class="linkmark" cx="'+x+'" cy="'+(surf-44)+'" r="7" fill="'+col+'"/>'
-    +'<text class="lbl" x="'+x+'" y="'+(surf-48)+'" text-anchor="middle" font-size="13">Federal debt</text>'
+    +'<text class="lbl" x="'+x+'" y="'+(surf-48)+'" text-anchor="middle" style="font-size:13px">Federal debt</text>'
     +'<text class="num" x="'+x+'" y="'+f(ay+48,1)+'" text-anchor="middle" fill="'+col+'">'+f(DATA.debt.gdp,1)+'% of GDP</text>'
     +(DATA.debt.level!==undefined
-        ? '<text class="lbl" x="'+x+'" y="'+f(ay+66,1)+'" text-anchor="middle" font-size="12">$'+f(DATA.debt.level,1)+' trillion</text>' : '')
+        ? '<text class="lbl" x="'+x+'" y="'+f(ay+70,1)+'" text-anchor="middle" style="font-size:12px">$'+f(DATA.debt.level,1)+' trillion</text>' : '')
     +'</g>';
 }
 
@@ -3711,7 +3711,7 @@ function fisherRod(){
     +'<rect x="'+(bx-14)+'" y="'+(tipY-46)+'" width="'+(tipX-bx+108)+'" height="'+(surf-tipY+96)+'" fill="transparent"/>'+g
     +'<circle class="focusring" cx="'+tipX+'" cy="'+f(fy,1)+'" r="20" fill="none" stroke="var(--verd)" stroke-width="2.5" stroke-dasharray="6 5"/>'
     +'<circle class="linkmark" cx="'+tipX+'" cy="'+f(fy-24,1)+'" r="7" fill="var(--verd)"/>'
-    +'<text class="lbl" x="'+tipX+'" y="'+(tipY-14)+'" text-anchor="middle" font-size="12">Ex-post real · Fisher</text>'
+    +'<text class="lbl" x="'+tipX+'" y="'+(tipY-14)+'" text-anchor="middle" style="font-size:12px">Ex-post real · Fisher</text>'
     +'<text class="num" x="'+tipX+'" y="'+(tipY-32)+'" text-anchor="middle">'+sgn(D.realPolicy,2,"pp")+'</text></g>';
 }
 
@@ -3739,7 +3739,7 @@ function satellite(){
     +'<rect x="'+(x-76)+'" y="'+(y-46)+'" width="152" height="112" fill="transparent"/>'+g
     +'<ellipse class="focusring" cx="'+x+'" cy="'+(y+2)+'" rx="80" ry="48" fill="none" stroke="var(--verd)" stroke-width="2.5" stroke-dasharray="6 5"/>'
     +ping(x,y+2,84,50)
-    +'<text class="lbl" x="'+x+'" y="'+(y+64)+'" text-anchor="middle" font-size="12">The figures &#9662;</text></g>';
+    +'<text class="lbl" x="'+x+'" y="'+(y+64)+'" text-anchor="middle" style="font-size:12px">The figures &#9662;</text></g>';
 }
 
 /* --- AIRFARE --- */
@@ -3764,7 +3764,7 @@ function plane(){
     +'<rect x="'+(x-84)+'" y="'+f(y-46,1)+'" width="168" height="94" fill="transparent"/>'+b
     +'<ellipse class="focusring" cx="'+x+'" cy="'+f(y,1)+'" rx="82" ry="44" fill="none" stroke="var(--verd)" stroke-width="2.5" stroke-dasharray="6 5"/>'
     +'<circle class="linkmark" cx="'+x+'" cy="'+f(y-48,1)+'" r="7" fill="var(--verd)"/>'
-    +'<text class="lbl" x="'+x+'" y="'+f(y+54,1)+'" text-anchor="middle" font-size="13">Airline fares</text>'
+    +'<text class="lbl" x="'+x+'" y="'+f(y+54,1)+'" text-anchor="middle" style="font-size:13px">Airline fares</text>'
     +'<text class="num" x="'+x+'" y="'+f(y+74,1)+'" text-anchor="middle">'+sgn(yoy,1,"% y/y")+'</text></g>';
 }
 
@@ -3811,7 +3811,7 @@ function fed(){
     +'<rect x="4" y="'+f(by-182,1)+'" width="214" height="'+f(NEAR+182-by,1)+'" fill="transparent"/>'+b
     +'<rect class="focusring" x="'+(bx-20)+'" y="'+f(by-40,1)+'" width="'+(bw+40)+'" height="'+(bh+54)+'" fill="none" stroke="var(--verd)" stroke-width="2.5" stroke-dasharray="6 5"/>'
     +'<circle class="linkmark" cx="'+(bx+bw/2)+'" cy="'+f(by-44,1)+'" r="7" fill="var(--verd)"/>'
-    +'<text class="lbl" x="'+(bx+bw/2)+'" y="'+(NEAR-78)+'" text-anchor="middle" font-size="13">Federal Reserve</text>'
+    +'<text class="lbl" x="'+(bx+bw/2)+'" y="'+(NEAR-78)+'" text-anchor="middle" style="font-size:13px">Federal Reserve</text>'
     +'<text class="num" x="'+(bx+bw/2)+'" y="'+(NEAR-57)+'" text-anchor="middle">'+f(DATA.fed.lower)+'–'+f(DATA.fed.upper)+'%</text></g>';
   return s+'</g>';
 }
@@ -3874,7 +3874,7 @@ function rocketPad(){
     +'<rect x="'+(x-58)+'" y="'+(b-hgt-24)+'" width="116" height="'+(hgt+34)+'" fill="transparent"/>'+g
     +'<rect class="focusring" x="'+(x-52)+'" y="'+(b-hgt-18)+'" width="104" height="'+(hgt+26)+'" fill="none" stroke="var(--verd)" stroke-width="2.5" stroke-dasharray="6 5"/>'
     +ping(x,b-hgt/2,56,74)+point
-    +'<text class="lbl" x="'+x+'" y="'+(b-hgt-26)+'" text-anchor="middle" font-size="12">Today\'s read &#9652;</text></g>';
+    +'<text class="lbl" x="'+x+'" y="'+(b-hgt-26)+'" text-anchor="middle" style="font-size:12px">Today\'s read &#9652;</text></g>';
 }
 
 /* ============================================================
@@ -4035,7 +4035,7 @@ function town(mix){
   var tcx=TOWN_X+TOWN_W/2, tcy=TOWN_BASE+42;
   s+='<g class="swap" id="obj-town-toggle" tabindex="0" role="button" aria-label="Switch the basket between CPI and PCE weights">'
     +'<rect x="'+(tcx-118)+'" y="'+(tcy-17)+'" width="236" height="26" rx="4" fill="transparent"/>'
-    +'<text class="lbl" x="'+tcx+'" y="'+tcy+'" text-anchor="middle" font-size="13" id="town-label">The basket</text>'
+    +'<text class="lbl" x="'+tcx+'" y="'+tcy+'" text-anchor="middle" style="font-size:13px" id="town-label">The basket</text>'
     +'<text class="swaphint" x="'+tcx+'" y="'+(tcy+17)+'" text-anchor="middle" font-size="12">tap to switch to PCE</text></g>';
   return s+'</g>';
 }
