@@ -106,6 +106,8 @@ SERIES = {
     "breakeven":  ("T10YIE", None),
     "real_tips":  ("DFII10", None),
     "debt_gdp":   ("GFDEGDQ188S", None),
+    "debt_level": ("GFDEBTN", None),               # the balance itself, in millions
+
     "airfare":    ("CUSR0000SETG01", "pc1"),
     "c_shelter":  ("CUSR0000SAH1", "pc1"),
     "c_food":     ("CPIUFDSL", "pc1"),
@@ -485,6 +487,9 @@ def build(S, manual):
             "gdp": r(S["debt_gdp"].value, 1),
             # GFDEGDQ188S is quarterly, so this is the change over four prints.
             "chg": r(S["debt_gdp"].value - S["debt_gdp"].at(4), 1),
+            # The ratio is the shape on the map; the balance is what people quote.
+            # GFDEBTN is in millions and shares the ratio's quarterly vintage.
+            "level": r(S["debt_level"].value / 1e6, 2),
         },
         "airfare": {
             "yoy": r(S["airfare"].value, 1),
@@ -535,7 +540,7 @@ HISTORY_WEEKS = 104
 HISTORY_KEYS = [
     "y3m", "y2y", "y10y", "y30y", "funds", "tgt_lo", "tgt_hi",
     "hy_oas", "hy_yield", "wti", "brent", "cpi", "pce",
-    "breakeven", "real_tips", "debt_gdp", "airfare",
+    "breakeven", "real_tips", "debt_gdp", "debt_level", "airfare",
     "c_shelter", "c_food", "c_medical", "c_transport", "c_energy",
 ]
 

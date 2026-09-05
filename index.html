@@ -72,6 +72,8 @@ svg.chart{display:block; width:100%; height:100%}
 /* Class, not a fill attribute: .num and .lbl set fill in CSS and a presentation
    attribute loses to any rule, so the alert was never visible. */
 .num.alert, .lbl.alert{fill:var(--rust)}
+/* Oil moves; the gap between the two barely does. The price gets the weight. */
+.num.price{font-size:19px; font-weight:600; letter-spacing:-.01em}
 .voice{font-family:"Newsreader",Georgia,serif; font-style:italic; fill:var(--ink-soft);
   pointer-events:none; user-select:none}
 .swaphint{font-family:"Newsreader",Georgia,serif; font-style:italic; fill:var(--ink-soft);
@@ -92,10 +94,16 @@ svg.chart{display:block; width:100%; height:100%}
 .timeline-head{display:flex; align-items:baseline; justify-content:space-between; gap:12px; margin-bottom:3px}
 .timeline-label{font-family:"IBM Plex Mono",monospace; font-size:11px; letter-spacing:.19em;
   text-transform:uppercase; color:var(--ink); font-weight:600}
-.timeline-hint{font-family:"IBM Plex Mono",monospace; font-size:9.5px; letter-spacing:.16em;
-  text-transform:uppercase; color:var(--ink-soft)}
-.timeline.travelling .timeline-hint{visibility:hidden}
+.timeline-open{-webkit-appearance:none; display:block; width:100%; text-align:left; cursor:pointer;
+  background:none; border:0; padding:0; font-family:"IBM Plex Mono",monospace; font-size:11px;
+  letter-spacing:.17em; text-transform:uppercase; color:var(--ink); font-weight:600}
+.timeline-open i{display:block; font-style:normal; font-size:9.5px; letter-spacing:.14em;
+  color:var(--ink-soft); margin-top:3px; font-weight:400}
+.timeline-glyph{font-size:13px; color:var(--verd)}
+.timeline-open:hover .timeline-glyph{color:var(--rust)}
+.timeline[data-open="1"] .timeline-open{display:none}
 .timeline.travelling .timeline-label{color:var(--rust)}
+.timeline-body{padding-top:1px}
 .timeline-now{-webkit-appearance:none; background:none; border:0; padding:0; cursor:pointer;
   font-family:"IBM Plex Mono",monospace; font-size:10.5px; letter-spacing:.14em;
   text-transform:uppercase; color:var(--verd); text-decoration:underline; text-underline-offset:3px}
@@ -462,14 +470,22 @@ svg.chart{display:block; width:100%; height:100%}
     <div id="sources"></div>
   </div>
 
+  <!-- Folded away by default. The site is today's numbers and today's read;
+       the archive is there for anyone who wants it, not competing for the eye. -->
   <div class="timeline" id="timeline" hidden>
-    <div class="timeline-head">
-      <span class="timeline-label" id="timeline-label">Today</span>
-      <span class="timeline-hint" id="timeline-hint">drag to replay two years</span>
-      <button type="button" class="timeline-now" id="timeline-now" hidden>Back to today</button>
+    <button type="button" class="timeline-open" id="timeline-open"
+            aria-expanded="false" aria-controls="timeline-body">
+      <span class="timeline-glyph" aria-hidden="true">&#8630;</span> Time travel
+      <i>replay the last two years</i>
+    </button>
+    <div class="timeline-body" id="timeline-body" hidden>
+      <div class="timeline-head">
+        <span class="timeline-label" id="timeline-label">Today</span>
+        <button type="button" class="timeline-now" id="timeline-now">Close</button>
+      </div>
+      <input type="range" id="timeslider" min="0" max="0" value="0" step="1"
+             aria-label="Drag to move the world back through time">
     </div>
-    <input type="range" id="timeslider" min="0" max="0" value="0" step="1"
-           aria-label="Drag to move the world back through time">
   </div>
 
   <div class="hint" id="hint" aria-hidden="true">
@@ -582,6 +598,7 @@ var DATA = {
     "breakeven": "2026-09-04",
     "real_tips": "2026-09-03",
     "debt_gdp": "2026-01-01",
+    "debt_level": "2026-01-01",
     "airfare": "2026-07-01",
     "c_shelter": "2026-07-01",
     "c_food": "2026-07-01",
@@ -608,7 +625,8 @@ var DATA = {
   "realTips": 2.42,
   "debt": {
     "gdp": 122.6,
-    "chg": 2.0
+    "chg": 2.0,
+    "level": 39.07
   },
   "airfare": {
     "yoy": 25.5,
@@ -2518,6 +2536,112 @@ var DATA = {
         122.59,
         122.59
       ],
+      "debt_level": [
+        35464674.0,
+        35464674.0,
+        35464674.0,
+        36218605.0,
+        36218605.0,
+        36218605.0,
+        36218605.0,
+        36218605.0,
+        36218605.0,
+        36218605.0,
+        36218605.0,
+        36218605.0,
+        36218605.0,
+        36218605.0,
+        36218605.0,
+        36218605.0,
+        36214309.52,
+        36214309.52,
+        36214309.52,
+        36214309.52,
+        36214309.52,
+        36214309.52,
+        36214309.52,
+        36214309.52,
+        36214309.52,
+        36214309.52,
+        36214309.52,
+        36214309.52,
+        36214309.52,
+        36211469.0,
+        36211469.0,
+        36211469.0,
+        36211469.0,
+        36211469.0,
+        36211469.0,
+        36211469.0,
+        36211469.0,
+        36211469.0,
+        36211469.0,
+        36211469.0,
+        36211469.0,
+        36211469.0,
+        37637552.6,
+        37637552.6,
+        37637552.6,
+        37637552.6,
+        37637552.6,
+        37637552.6,
+        37637552.6,
+        37637552.6,
+        37637552.6,
+        37637552.6,
+        37637552.6,
+        37637552.6,
+        37637552.6,
+        38514009.0,
+        38514009.0,
+        38514009.0,
+        38514009.0,
+        38514009.0,
+        38514009.0,
+        38514009.0,
+        38514009.0,
+        38514009.0,
+        38514009.0,
+        38514009.0,
+        38514009.0,
+        38514009.0,
+        39065421.0,
+        39065421.0,
+        39065421.0,
+        39065421.0,
+        39065421.0,
+        39065421.0,
+        39065421.0,
+        39065421.0,
+        39065421.0,
+        39065421.0,
+        39065421.0,
+        39065421.0,
+        39065421.0,
+        39065421.0,
+        39065421.0,
+        39065421.0,
+        39065421.0,
+        39065421.0,
+        39065421.0,
+        39065421.0,
+        39065421.0,
+        39065421.0,
+        39065421.0,
+        39065421.0,
+        39065421.0,
+        39065421.0,
+        39065421.0,
+        39065421.0,
+        39065421.0,
+        39065421.0,
+        39065421.0,
+        39065421.0,
+        39065421.0,
+        39065421.0,
+        39065421.0,
+        39065421.0
+      ],
       "airfare": [
         1.56,
         1.56,
@@ -3384,7 +3508,7 @@ function ships(){
     +'<rect class="focusring" x="'+(wtiX-rw-8)+'" y="'+(base-rh-54)+'" width="'+(rw*2+16)+'" height="'+(rh+86)+'" fill="none" stroke="var(--amber)" stroke-width="2.5" stroke-dasharray="6 5"/>'
     +'<circle class="linkmark" cx="'+wtiX+'" cy="'+(base-rh-58)+'" r="7" fill="var(--amber)"/>'
     +'<text class="lbl" x="'+wtiX+'" y="'+(base+30)+'" text-anchor="middle" font-size="13">WTI · landlocked</text>'
-    +'<text class="num" x="'+wtiX+'" y="'+(base+50)+'" text-anchor="middle">$'+f(DATA.oil.wti.price)+'</text></g>';
+    +'<text class="num price" x="'+wtiX+'" y="'+(base+52)+'" text-anchor="middle">$'+f(DATA.oil.wti.price)+'</text></g>';
 
   /* --- Brent: already at sea --- */
   var bw2=96*sc, bx=brentX;
@@ -3398,7 +3522,7 @@ function ships(){
     +'<rect class="focusring" x="'+(bx-bw2-14)+'" y="'+(y-52*sc)+'" width="'+(bw2*2+28)+'" height="'+(88*sc)+'" fill="none" stroke="var(--amber)" stroke-width="2.5" stroke-dasharray="6 5"/>'
     +'<circle class="linkmark" cx="'+bx+'" cy="'+(y-56*sc)+'" r="7" fill="var(--amber)"/>'
     +'<text class="lbl" x="'+bx+'" y="'+(y+48*sc)+'" text-anchor="middle" font-size="13">Brent · seaborne</text>'
-    +'<text class="num" x="'+bx+'" y="'+(y+68*sc)+'" text-anchor="middle">$'+f(DATA.oil.brent.price)+'</text></g>';
+    +'<text class="num price" x="'+bx+'" y="'+(y+70*sc)+'" text-anchor="middle">$'+f(DATA.oil.brent.price)+'</text></g>';
 
   /* --- the spread, measured across the water between them --- */
   var col=D.spread>8?'var(--rust)':'var(--amber)', my=y-120;
@@ -3406,7 +3530,7 @@ function ships(){
     +'<line x1="'+wtiX+'" y1="'+my+'" x2="'+bx+'" y2="'+my+'" stroke="'+col+'" stroke-width="1.5"/>'
     +'<line x1="'+wtiX+'" y1="'+(my-6)+'" x2="'+wtiX+'" y2="'+(my+6)+'" stroke="'+col+'" stroke-width="1.5"/>'
     +'<line x1="'+bx+'" y1="'+(my-6)+'" x2="'+bx+'" y2="'+(my+6)+'" stroke="'+col+'" stroke-width="1.5"/>'
-    +'<text class="num" x="'+((wtiX+bx)/2)+'" y="'+(my-9)+'" text-anchor="middle" fill="'+col+'" font-size="12.5">$'+f(D.spread)+' spread</text></g>';
+    +'<text class="num" x="'+((wtiX+bx)/2)+'" y="'+(my-9)+'" text-anchor="middle" fill="'+col+'" font-size="11">$'+f(D.spread)+' spread</text></g>';
 
   return s;
 }
@@ -3446,7 +3570,10 @@ function anchorDebt(){
     +'<rect class="focusring" x="'+(x-36)+'" y="'+(surf-40)+'" width="72" height="'+(depth+100)+'" fill="none" stroke="'+col+'" stroke-width="2.5" stroke-dasharray="6 5"/>'
     +'<circle class="linkmark" cx="'+x+'" cy="'+(surf-44)+'" r="7" fill="'+col+'"/>'
     +'<text class="lbl" x="'+x+'" y="'+(surf-48)+'" text-anchor="middle" font-size="13">Federal debt</text>'
-    +'<text class="num" x="'+x+'" y="'+f(ay+68,1)+'" text-anchor="middle" fill="'+col+'">'+f(DATA.debt.gdp,1)+'% of GDP</text></g>';
+    +'<text class="num" x="'+x+'" y="'+f(ay+68,1)+'" text-anchor="middle" fill="'+col+'">'+f(DATA.debt.gdp,1)+'% of GDP</text>'
+    +(DATA.debt.level!==undefined
+        ? '<text class="lbl" x="'+x+'" y="'+f(ay+86,1)+'" text-anchor="middle" font-size="12">$'+f(DATA.debt.level,1)+' trillion</text>' : '')
+    +'</g>';
 }
 
 /* --- FISHER: cast off the Fed's own cliff. Waterline is inflation, float is the real rate. --- */
@@ -3825,21 +3952,34 @@ var LINKS={
   "comp-energy":["wti","brent"], "comp-transport":["airfare"]
 };
 
+// Every body of prose on this page was written about today's print. Against a
+// number from a year ago it would simply be wrong, so looking back shows the
+// figures and drops the commentary.
+// Frames are a week apart, so a change measured between them is a week's, not a
+// day's. Saying otherwise would misreport the number.
+function per(){ return frame===null ? " on the day" : " on the week"; }
+
 function copyFor(m2){
+  var c=copyForToday(m2);
+  if(c && frame!==null){ c.body=""; c.points=null; c.after=""; }
+  return c;
+}
+
+function copyForToday(m2){
   var m=measure;
   if(m2==="credit") return {eyebrow:"High yield spread, ICE BofA OAS", big:DATA.credit.oas+" bp",
-    chg:sgn(DATA.credit.chg,0," bp on the week")+(DATA.credit.chg<0?" — tightening":" — widening"), chgUp:DATA.credit.chg>0,
+    chg:sgn(DATA.credit.chg,0," bp"+(frame===null?" on the week":" on the week"))+(DATA.credit.chg<0?" — tightening":" — widening"), chgUp:DATA.credit.chg>0,
     body:COPY.credit, tie:"Effective yield <b>"+f(D.hyYield)+"%</b>"};
   if(m2==="fed") return {eyebrow:"Federal funds target range", big:f(DATA.fed.lower)+"–"+f(DATA.fed.upper)+"%",
     // Looking back, the meeting dates and the written comment are still today's,
     // so they are dropped rather than shown against a rate from a year ago.
     chg:(frame!==null ? "" : (DATA.fed.lastMove===0 ? "Held on "+DATA.fed.lastDate : sgn(DATA.fed.lastMove,2,"pp on "+DATA.fed.lastDate))),
     chgUp:DATA.fed.lastMove>0,
-    body:(frame!==null ? "" : COPY.fed),
+    body:COPY.fed,
     tie:"Real policy rate "+sgn(D.realPolicy,2,"pp")+(frame!==null ? "" : " · next meeting "+DATA.fed.nextDate)};
-  if(m2==="wti") return {eyebrow:"WTI crude, Cushing", big:"$"+f(DATA.oil.wti.price), chg:oilChg(DATA.oil.wti," on the day"), chgUp:DATA.oil.wti.chg>0,
+  if(m2==="wti") return {eyebrow:"WTI crude, Cushing", big:"$"+f(DATA.oil.wti.price), chg:oilChg(DATA.oil.wti,per()), chgUp:DATA.oil.wti.chg>0,
     body:COPY.wti, tie:"$"+f(D.spread)+" under Brent"};
-  if(m2==="brent") return {eyebrow:"Brent crude, seaborne", big:"$"+f(DATA.oil.brent.price), chg:oilChg(DATA.oil.brent," on the day"), chgUp:DATA.oil.brent.chg>0,
+  if(m2==="brent") return {eyebrow:"Brent crude, seaborne", big:"$"+f(DATA.oil.brent.price), chg:oilChg(DATA.oil.brent,per()), chgUp:DATA.oil.brent.chg>0,
     body:COPY.brent, tie:D.spread>8?"Gap to WTI $"+f(D.spread)+" — wide, supply risk is priced":"Gap to WTI $"+f(D.spread)};
   if(m2==="airfare") return {eyebrow:"Airline fares, year over year", big:sgn(DATA.airfare.yoy,1,"%"), chg:sgn(DATA.airfare.chg,1,"pp on the month"), chgUp:DATA.airfare.chg>0,
     body:COPY.airfare, tie:"Feeds the transportation line"};
@@ -3851,9 +3991,11 @@ function copyFor(m2){
     return {eyebrow:(DATA.ai.label||"AI capex")+(DATA.ai.period?" · "+DATA.ai.period:""),
       big:(DATA.ai.headline||""), chg:"", list:list, body:COPY.ai, points:POINTS.ai, tie:""};
   }
-  if(m2==="debt") return {eyebrow:"Total federal debt / GDP", big:f(DATA.debt.gdp,1)+"%", chg:sgn(DATA.debt.chg,1,"pp on the year"), chgUp:DATA.debt.chg>0,
-    body:(frame!==null ? "" : COPY.debt), points:(frame!==null ? null : POINTS.debt),
-    after:(frame!==null ? "" : COPY.debtAfter), tie:"Interest cost is the 30-year against this balance"};
+  if(m2==="debt") return {eyebrow:"Total federal debt / GDP", big:f(DATA.debt.gdp,1)+"%",
+    chg:(DATA.debt.chg!==undefined?sgn(DATA.debt.chg,1,"pp on the year"):"")
+      +(DATA.debt.level!==undefined?(DATA.debt.chg!==undefined?" · ":"")+"$"+f(DATA.debt.level,2)+" trillion outstanding":""),
+    chgUp:DATA.debt.chg>0,
+    body:COPY.debt, points:POINTS.debt, after:COPY.debtAfter, tie:"Interest cost is the 30-year against this balance"};
   if(m2==="fisher") return {eyebrow:"Ex-post real policy rate", big:sgn(D.realPolicy,2,"pp"), chg:f(fundsNow)+"% effective funds − "+f(D.cpi,1)+"% CPI", chgUp:D.realPolicy<0,
     body:COPY.fisher, tie:"Ex-post · PCE basis "+sgn(D.realPolicyPce,2,"pp")+" · TIPS "+sgn(D.realMarket,2,"pp")};
   if(m2==="watch"){
@@ -3869,7 +4011,7 @@ function copyFor(m2){
       : k==="30Y" ? "2s10s slope "+sgn(D.slope,2,"pp")
       : "Funds rate is "+f(DATA.fed.lower)+"–"+f(DATA.fed.upper)+"%";
     return {eyebrow:c.label+(c.note?" · "+c.note:""), big:f(c.yield)+"%",
-      chg:(c.chg!==undefined?sgn(c.chg,2," on the day"):(c.note||"")), chgUp:!!c.alert,
+      chg:(c.chg!==undefined?sgn(c.chg,2,per()):(c.note||"")), chgUp:!!c.alert,
       body:COPY[k], tie:tie};
   }
   if(m2.indexOf("comp-")===0){
@@ -4523,7 +4665,12 @@ function applyFrame(i){
                    pce:(pce!==undefined?pce:LIVE.inflation.pce), pceChg:hDelta("pce",i) };
 
   var dg=hAt("debt_gdp",i);
-  DATA.debt={ gdp:(dg!==undefined?dg:LIVE.debt.gdp), chg:hDelta("debt_gdp",i) };
+  // Quarterly: a one-week delta is almost always zero, so the year is the
+  // honest comparison and matches the label the card already uses.
+  var dgY=(i>=52 && hAt("debt_gdp",i)!==undefined && hAt("debt_gdp",i-52)!==undefined)
+        ? +(hAt("debt_gdp",i)-hAt("debt_gdp",i-52)).toFixed(1) : undefined;
+  DATA.debt={ gdp:(dg!==undefined?dg:LIVE.debt.gdp), chg:dgY,
+              level:(hAt("debt_level",i)!==undefined ? +(hAt("debt_level",i)/1e6).toFixed(2) : undefined) };
 
   DATA.fed=JSON.parse(JSON.stringify(LIVE.fed));
   var lo=hAt("tgt_lo",i), hi=hAt("tgt_hi",i), ef=hAt("funds",i);
@@ -4583,7 +4730,7 @@ function repaintWorld(){
   var now=document.getElementById("timeline-now");
   if(lab) lab.textContent = frame===null ? "Today" : fmtWeek(HIST.weeks[frame]);
   if(tl) tl.classList.toggle("travelling", frame!==null);
-  if(now) now.hidden = frame===null;
+  if(now) now.textContent = frame===null ? "Close" : "Back to today";
 }
 
 (function(){
@@ -4595,8 +4742,21 @@ function repaintWorld(){
     var i=parseInt(sl.value,10);
     if(i>=last) restoreNow(); else applyFrame(i);
   });
+  var open=document.getElementById("timeline-open"), body=document.getElementById("timeline-body");
+  function setOpen(on){
+    tl.setAttribute("data-open", on?"1":"0");
+    body.hidden=!on;
+    open.setAttribute("aria-expanded", on?"true":"false");
+    if(on) sl.focus(); else open.focus();
+  }
+  open.addEventListener("click",function(){ setOpen(true); });
   var back=document.getElementById("timeline-now");
-  if(back) back.addEventListener("click",function(){ sl.value=last; restoreNow(); sl.focus(); });
+  if(back) back.addEventListener("click",function(){
+    sl.value=last; restoreNow(); setOpen(false);
+  });
+  document.addEventListener("keydown",function(e){
+    if(e.key==="Escape" && tl.getAttribute("data-open")==="1"){ sl.value=last; restoreNow(); setOpen(false); }
+  });
 })();
 
 fitWorld(); render(0); paintReadout(); paintNow(); paintMoved(); paintNote(); paintSources();
