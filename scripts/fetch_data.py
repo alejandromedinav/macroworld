@@ -529,6 +529,30 @@ def inject(data):
     path.write_text(html[:a] + block + html[b:], encoding="utf8")
 
 
+DEBT_PENNY = ("https://api.fiscaldata.treasury.gov/services/api/fiscal_service"
+              "/v2/accounting/od/debt_to_penny")
+
+
+def fetch_debt_to_penny(start):
+    """Total public debt outstanding, daily, straight from Treasury.
+
+    FRED's GFDEBTN is the same balance sampled quarterly and published with a
+    long lag, so it reads months stale as a headline. This is the number people
+    actually quote, and it needs no key.
+    """
+    q = urllib.parse.urlencode({
+        "sort": "record_date",
+        "page[size]": "10000",
+        "fields": "record_date,tot_pub_debt_out_amt",
+        "filter": "record_date:gte:" + start,
+    })
+    req = urllib.request.Request(DEBT_PENNY + "?" + q, headers={"User-Agent": "macro-soundings"})
+    with urllib.request.urlopen(req, timeout=45, context=SSL_CTX) as resp:
+        body = json.load(resp)
+    return [(r["record_date"], float(r["tot_pub_debt_out_amt"]) / 1e12)
+            for r in body.get("data", []) if r.get("tot_pub_debt_out_amt")]
+
+
 # ---------------------------------------------------------------- history ----
 # The map is a snapshot; this is what lets you drag it back through time. Two
 # years sampled weekly is smooth enough to scrub and small enough to inline:
@@ -617,9 +641,19 @@ def build_history(as_of):
             series[key] = got
         else:
             missing.append(key)
+    latest_debt = None
+    try:
+        penny = fetch_debt_to_penny(start)
+        sampled = sample_onto(penny, axis)
+        if sampled:
+            series["debt_penny"] = sampled
+            latest_debt = round(penny[-1][1], 2)
+            print(f"  debt outstanding ${latest_debt}tn (Treasury, {penny[-1][0]})")
+    except Exception as exc:
+        print(f"  debt to the penny unavailable, falling back to FRED's quarterly - {exc}")
     if missing:
         print(f"  history: skipping {', '.join(missing)}; the slider will hold these flat")
-    return {"weeks": axis, "series": series}
+    return {"weeks": axis, "series": series, "latestDebt": latest_debt}
 
 
 def main():
@@ -632,6 +666,10 @@ def main():
         manual_path.write_text(json.dumps(manual, indent=2, ensure_ascii=False) + "\n", encoding="utf8")
     data = build(S, manual)
     data["history"] = build_history(data["asOf"])
+    # Prefer Treasury's daily balance over FRED's quarterly one for the headline.
+    if data["history"].get("latestDebt"):
+        data["debt"]["level"] = data["history"]["latestDebt"]
+        data["debt"]["levelSource"] = "Treasury, daily"
     inject(data)
 
     slope = data["curve"][2]["yield"] - data["curve"][1]["yield"]

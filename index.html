@@ -72,8 +72,6 @@ svg.chart{display:block; width:100%; height:100%}
 /* Class, not a fill attribute: .num and .lbl set fill in CSS and a presentation
    attribute loses to any rule, so the alert was never visible. */
 .num.alert, .lbl.alert{fill:var(--rust)}
-/* Oil moves; the gap between the two barely does. The price gets the weight. */
-.num.price{font-size:19px; font-weight:600; letter-spacing:-.01em}
 .voice{font-family:"Newsreader",Georgia,serif; font-style:italic; fill:var(--ink-soft);
   pointer-events:none; user-select:none}
 .swaphint{font-family:"Newsreader",Georgia,serif; font-style:italic; fill:var(--ink-soft);
@@ -88,19 +86,24 @@ svg.chart{display:block; width:100%; height:100%}
    the anchor, the derrick and the rocket. This corner is empty sand, and it puts
    the page's four fixed elements in four corners. */
 .timeline{position:absolute; z-index:6; left:24px; bottom:22px;
-  width:min(380px, calc(100vw - 48px)); transition:opacity .18s ease;
-  background:var(--panel); border:1px solid var(--rule); padding:9px 15px 5px;
-  box-shadow:2px 2px 0 var(--rule-soft)}
+  width:min(380px, calc(100vw - 48px)); transition:opacity .18s ease}
+/* Open, the slider needs a ground to be legible against; closed, it is just a
+   mark on the sand. */
+.timeline[data-open="1"]{background:var(--panel); border:1px solid var(--rule);
+  padding:8px 14px 4px; box-shadow:2px 2px 0 var(--rule-soft)}
 .timeline-head{display:flex; align-items:baseline; justify-content:space-between; gap:12px; margin-bottom:3px}
 .timeline-label{font-family:"IBM Plex Mono",monospace; font-size:11px; letter-spacing:.19em;
   text-transform:uppercase; color:var(--ink); font-weight:600}
-.timeline-open{-webkit-appearance:none; display:block; width:100%; text-align:left; cursor:pointer;
-  background:none; border:0; padding:0; font-family:"IBM Plex Mono",monospace; font-size:11px;
-  letter-spacing:.17em; text-transform:uppercase; color:var(--ink); font-weight:600}
+.timeline-open{-webkit-appearance:none; display:flex; align-items:center; gap:9px; cursor:pointer;
+  text-align:left; background:none; border:0; padding:0;
+  font-family:"IBM Plex Mono",monospace; font-size:11px; letter-spacing:.17em;
+  text-transform:uppercase; color:var(--ink); font-weight:600}
 .timeline-open i{display:block; font-style:normal; font-size:9.5px; letter-spacing:.14em;
   color:var(--ink-soft); margin-top:3px; font-weight:400}
-.timeline-glyph{font-size:13px; color:var(--verd)}
-.timeline-open:hover .timeline-glyph{color:var(--rust)}
+.timeline-glass{width:14px; height:18px; flex:0 0 auto; color:var(--ink-soft);
+  transition:color .2s ease, transform .5s ease}
+.timeline-open:hover .timeline-glass, .timeline-open:focus-visible .timeline-glass{
+  color:var(--rust); transform:rotate(180deg)}
 .timeline[data-open="1"] .timeline-open{display:none}
 .timeline.travelling .timeline-label{color:var(--rust)}
 .timeline-body{padding-top:1px}
@@ -475,8 +478,12 @@ svg.chart{display:block; width:100%; height:100%}
   <div class="timeline" id="timeline" hidden>
     <button type="button" class="timeline-open" id="timeline-open"
             aria-expanded="false" aria-controls="timeline-body">
-      <span class="timeline-glyph" aria-hidden="true">&#8630;</span> Time travel
-      <i>replay the last two years</i>
+      <svg class="timeline-glass" viewBox="0 0 14 18" aria-hidden="true">
+        <path d="M2.5 1.6h9M2.5 16.4h9" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        <path d="M3.6 1.6h6.8L7 9 3.6 1.6Z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
+        <path d="M3.6 16.4h6.8L7 9 3.6 16.4Z" fill="currentColor" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
+      </svg>
+      <span>Time travel<i>replay the last two years</i></span>
     </button>
     <div class="timeline-body" id="timeline-body" hidden>
       <div class="timeline-head">
@@ -626,7 +633,8 @@ var DATA = {
   "debt": {
     "gdp": 122.6,
     "chg": 2.0,
-    "level": 39.07
+    "level": 40.1,
+    "levelSource": "Treasury, daily"
   },
   "airfare": {
     "yoy": 25.5,
@@ -3277,8 +3285,115 @@ var DATA = {
         14.45,
         14.45,
         14.45
+      ],
+      "debt_penny": [
+        35.27,
+        35.33,
+        35.3,
+        35.68,
+        35.68,
+        35.77,
+        35.81,
+        35.95,
+        35.94,
+        35.97,
+        36.03,
+        36.09,
+        36.17,
+        36.13,
+        36.17,
+        36.11,
+        36.17,
+        36.17,
+        36.2,
+        36.22,
+        36.22,
+        36.22,
+        36.22,
+        36.22,
+        36.22,
+        36.22,
+        36.22,
+        36.22,
+        36.22,
+        36.22,
+        36.22,
+        36.22,
+        36.22,
+        36.22,
+        36.21,
+        36.22,
+        36.22,
+        36.22,
+        36.22,
+        36.22,
+        36.21,
+        36.22,
+        36.22,
+        36.6,
+        36.66,
+        36.72,
+        36.92,
+        37.0,
+        37.09,
+        37.23,
+        37.31,
+        37.43,
+        37.47,
+        37.51,
+        37.47,
+        37.88,
+        37.88,
+        37.97,
+        38.01,
+        38.11,
+        38.12,
+        38.15,
+        38.33,
+        38.34,
+        38.39,
+        38.35,
+        38.38,
+        38.35,
+        38.51,
+        38.43,
+        38.45,
+        38.49,
+        38.57,
+        38.59,
+        38.65,
+        38.74,
+        38.79,
+        38.87,
+        38.9,
+        39.0,
+        38.99,
+        39.0,
+        38.94,
+        38.99,
+        38.94,
+        38.97,
+        38.93,
+        38.95,
+        39.07,
+        39.18,
+        39.23,
+        39.22,
+        39.31,
+        39.31,
+        39.38,
+        39.41,
+        39.52,
+        39.68,
+        39.84,
+        39.89,
+        39.93,
+        40.03,
+        40.08,
+        40.1
       ]
-    }
+    },
+    "latestDebt": 40.1
   }
 };
 /* === DATA:END === */
@@ -3477,6 +3592,16 @@ function island(){
 }
 
 /* --- OIL: WTI on the rock, Brent afloat. The gap is the spread. --- */
+// The scale the two oil markers ride on. Fixed for the life of the page so the
+// markers move against a steady backdrop rather than the axis moving under them.
+var OIL_RANGE = (function(){
+  var h=DATA.history && DATA.history.series;
+  if(!h || !h.wti || !h.brent) return null;
+  var all=h.wti.concat(h.brent), lo=Math.min.apply(null,all), hi=Math.max.apply(null,all);
+  var pad=(hi-lo)*0.07;
+  return {lo:Math.floor(lo-pad), hi:Math.ceil(hi+pad)};
+})();
+
 function ships(){
   var wtiX=660, y=712, sc=0.64;
   var gap=Math.max(280,Math.min(360,120+D.spread*16)), brentX=wtiX+gap;   // faithful in the normal range, clamped at extremes
@@ -3508,7 +3633,7 @@ function ships(){
     +'<rect class="focusring" x="'+(wtiX-rw-8)+'" y="'+(base-rh-54)+'" width="'+(rw*2+16)+'" height="'+(rh+86)+'" fill="none" stroke="var(--amber)" stroke-width="2.5" stroke-dasharray="6 5"/>'
     +'<circle class="linkmark" cx="'+wtiX+'" cy="'+(base-rh-58)+'" r="7" fill="var(--amber)"/>'
     +'<text class="lbl" x="'+wtiX+'" y="'+(base+30)+'" text-anchor="middle" font-size="13">WTI · landlocked</text>'
-    +'<text class="num price" x="'+wtiX+'" y="'+(base+52)+'" text-anchor="middle">$'+f(DATA.oil.wti.price)+'</text></g>';
+    +'<text class="num" x="'+wtiX+'" y="'+(base+50)+'" text-anchor="middle">$'+f(DATA.oil.wti.price)+'</text></g>';
 
   /* --- Brent: already at sea --- */
   var bw2=96*sc, bx=brentX;
@@ -3522,15 +3647,28 @@ function ships(){
     +'<rect class="focusring" x="'+(bx-bw2-14)+'" y="'+(y-52*sc)+'" width="'+(bw2*2+28)+'" height="'+(88*sc)+'" fill="none" stroke="var(--amber)" stroke-width="2.5" stroke-dasharray="6 5"/>'
     +'<circle class="linkmark" cx="'+bx+'" cy="'+(y-56*sc)+'" r="7" fill="var(--amber)"/>'
     +'<text class="lbl" x="'+bx+'" y="'+(y+48*sc)+'" text-anchor="middle" font-size="13">Brent · seaborne</text>'
-    +'<text class="num price" x="'+bx+'" y="'+(y+70*sc)+'" text-anchor="middle">$'+f(DATA.oil.brent.price)+'</text></g>';
+    +'<text class="num" x="'+bx+'" y="'+(y+68*sc)+'" text-anchor="middle">$'+f(DATA.oil.brent.price)+'</text></g>';
 
-  /* --- the spread, measured across the water between them --- */
+  /* --- Where those two prices sit against two years of trading. A bigger number
+         on its own says nothing; this says whether it is high. The distance
+         between the two markers is the spread, so the gap is still drawn. --- */
   var col=D.spread>8?'var(--rust)':'var(--amber)', my=y-120;
-  s+='<g pointer-events="none">'
-    +'<line x1="'+wtiX+'" y1="'+my+'" x2="'+bx+'" y2="'+my+'" stroke="'+col+'" stroke-width="1.5"/>'
-    +'<line x1="'+wtiX+'" y1="'+(my-6)+'" x2="'+wtiX+'" y2="'+(my+6)+'" stroke="'+col+'" stroke-width="1.5"/>'
-    +'<line x1="'+bx+'" y1="'+(my-6)+'" x2="'+bx+'" y2="'+(my+6)+'" stroke="'+col+'" stroke-width="1.5"/>'
-    +'<text class="num" x="'+((wtiX+bx)/2)+'" y="'+(my-9)+'" text-anchor="middle" fill="'+col+'" font-size="11">$'+f(D.spread)+' spread</text></g>';
+  if(OIL_RANGE){
+    var ax0=wtiX-40, ax1=bx+40, span=OIL_RANGE.hi-OIL_RANGE.lo;
+    var at=function(v){ return ax0+(ax1-ax0)*Math.max(0,Math.min(1,(v-OIL_RANGE.lo)/span)); };
+    var wx=at(DATA.oil.wti.price), bxp=at(DATA.oil.brent.price);
+    s+='<g pointer-events="none">'
+      +'<line x1="'+ax0+'" y1="'+my+'" x2="'+ax1+'" y2="'+my+'" stroke="var(--rule)" stroke-width="1.5"/>'
+      +'<line x1="'+ax0+'" y1="'+(my-5)+'" x2="'+ax0+'" y2="'+(my+5)+'" stroke="var(--rule)" stroke-width="1.5"/>'
+      +'<line x1="'+ax1+'" y1="'+(my-5)+'" x2="'+ax1+'" y2="'+(my+5)+'" stroke="var(--rule)" stroke-width="1.5"/>'
+      +'<line x1="'+f(Math.min(wx,bxp),1)+'" y1="'+my+'" x2="'+f(Math.max(wx,bxp),1)+'" y2="'+my+'" stroke="'+col+'" stroke-width="3"/>'
+      +'<circle cx="'+f(wx,1)+'" cy="'+my+'" r="5.5" fill="var(--rock)" stroke="var(--ink)" stroke-width="1.7"/>'
+      +'<circle cx="'+f(bxp,1)+'" cy="'+my+'" r="5.5" fill="var(--sea-deep)" stroke="var(--ink)" stroke-width="1.7"/>'
+      +'<text class="sounding" x="'+ax0+'" y="'+(my+18)+'" text-anchor="start">$'+OIL_RANGE.lo+'</text>'
+      +'<text class="sounding" x="'+ax1+'" y="'+(my+18)+'" text-anchor="end">$'+OIL_RANGE.hi+'</text>'
+      +'<text class="lbl" x="'+((ax0+ax1)/2)+'" y="'+(my-14)+'" text-anchor="middle" font-size="11">Two-year range · $'+f(D.spread)+' apart</text>'
+      +'</g>';
+  }
 
   return s;
 }
@@ -3570,9 +3708,9 @@ function anchorDebt(){
     +'<rect class="focusring" x="'+(x-36)+'" y="'+(surf-40)+'" width="72" height="'+(depth+100)+'" fill="none" stroke="'+col+'" stroke-width="2.5" stroke-dasharray="6 5"/>'
     +'<circle class="linkmark" cx="'+x+'" cy="'+(surf-44)+'" r="7" fill="'+col+'"/>'
     +'<text class="lbl" x="'+x+'" y="'+(surf-48)+'" text-anchor="middle" font-size="13">Federal debt</text>'
-    +'<text class="num" x="'+x+'" y="'+f(ay+68,1)+'" text-anchor="middle" fill="'+col+'">'+f(DATA.debt.gdp,1)+'% of GDP</text>'
+    +'<text class="num" x="'+x+'" y="'+f(ay+48,1)+'" text-anchor="middle" fill="'+col+'">'+f(DATA.debt.gdp,1)+'% of GDP</text>'
     +(DATA.debt.level!==undefined
-        ? '<text class="lbl" x="'+x+'" y="'+f(ay+86,1)+'" text-anchor="middle" font-size="12">$'+f(DATA.debt.level,1)+' trillion</text>' : '')
+        ? '<text class="lbl" x="'+x+'" y="'+f(ay+66,1)+'" text-anchor="middle" font-size="12">$'+f(DATA.debt.level,1)+' trillion</text>' : '')
     +'</g>';
 }
 
@@ -4670,7 +4808,8 @@ function applyFrame(i){
   var dgY=(i>=52 && hAt("debt_gdp",i)!==undefined && hAt("debt_gdp",i-52)!==undefined)
         ? +(hAt("debt_gdp",i)-hAt("debt_gdp",i-52)).toFixed(1) : undefined;
   DATA.debt={ gdp:(dg!==undefined?dg:LIVE.debt.gdp), chg:dgY,
-              level:(hAt("debt_level",i)!==undefined ? +(hAt("debt_level",i)/1e6).toFixed(2) : undefined) };
+              level:(hAt("debt_penny",i)!==undefined ? hAt("debt_penny",i)
+                     : (hAt("debt_level",i)!==undefined ? +(hAt("debt_level",i)/1e6).toFixed(2) : undefined)) };
 
   DATA.fed=JSON.parse(JSON.stringify(LIVE.fed));
   var lo=hAt("tgt_lo",i), hi=hAt("tgt_hi",i), ef=hAt("funds",i);
