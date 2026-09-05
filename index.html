@@ -74,6 +74,13 @@ svg.chart{display:block; width:100%; height:100%}
 .mark{position:absolute; top:20px; left:24px; z-index:4; font-family:"IBM Plex Mono",monospace;
   font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:var(--ink-soft); pointer-events:none; line-height:1.9}
 .mark i{display:block; font-style:normal; color:var(--ink-soft)}
+/* The page named itself only in the <title>, so a visitor arriving cold was
+   told when it updated and who made it but never what it is. */
+.mark-title{display:block; font-family:"Barlow Condensed",sans-serif; font-size:16px;
+  font-weight:600; letter-spacing:.2em; text-transform:uppercase; color:var(--ink);
+  line-height:1.3; margin-bottom:1px}
+.mark-sub{max-width:min(310px, calc(100vw - 165px)); font-size:11px; color:var(--ink-label); letter-spacing:.04em;
+  text-transform:none; line-height:1.55; margin-bottom:8px}
 .mark i em{font-style:normal; color:var(--verd); font-weight:600}
 
 /* ---------- callout ---------- */
@@ -297,7 +304,7 @@ svg.chart{display:block; width:100%; height:100%}
 
   /* Overlays hold still while the world moves under them. */
   .mark{position:fixed; font-size:9px; letter-spacing:.14em; line-height:1.8}
-  .credit{position:fixed; top:58px; left:24px; right:auto; text-align:left; font-size:9px; letter-spacing:.14em}
+  .credit{position:fixed; left:24px; right:auto; text-align:left; font-size:9px; letter-spacing:.14em}
   .srcbtn{position:fixed}
   .zoombtn{display:block}
   /* clears the Sources button, which the longer touch copy was running under */
@@ -341,7 +348,10 @@ svg.chart{display:block; width:100%; height:100%}
     <div class="callout" id="callout" aria-live="polite"></div>
   </div>
 
-  <div class="mark"><span id="mark-date"></span><i id="session"></i></div>
+  <div class="mark">
+    <b class="mark-title">Macro Soundings</b>
+    <i class="mark-sub">A live map of the U.S. economy. Every shape is a number.</i>
+    <span id="mark-date"></span><i id="session"></i></div>
 
   <div class="panel" id="panel">
     <div class="panel-in">
@@ -1807,7 +1817,17 @@ function fitWorld(){
 }
 window.addEventListener("resize",fitWorld);
 window.addEventListener("resize",phoneHint);
+// Phones stack the credit under the mark, whose height depends on how the
+// tagline wraps, so measure rather than guess an offset.
+function placeCredit(){
+  var mk=document.querySelector(".mark"), cr=document.getElementById("credit");
+  if(!mk||!cr) return;
+  cr.style.top = window.matchMedia("(max-width: 760px)").matches
+    ? (mk.getBoundingClientRect().bottom + 6) + "px" : "";
+}
+window.addEventListener("resize",placeCredit);
 phoneHint();
+placeCredit();
 
 document.addEventListener("keydown",function(e){
   if(e.key!=="Escape") return;
