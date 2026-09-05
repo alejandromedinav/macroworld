@@ -121,7 +121,15 @@ svg.chart{display:block; width:100%; height:100%}
 /* Sideways and on desktop the callout is anchored to its object and the slider
    stays usable; in portrait the sheet covers it, so it steps aside there. */
 @media (max-width: 760px){
-  .timeline{top:calc(50% + (100vw / 1.7778) / 2 + 18px); bottom:auto; left:20px; width:calc(100vw - 40px)}
+  /* Centred and pared back on a phone, so it sits with the read below it rather
+     than shouting over it. It only takes the full width once it is open. */
+  .timeline{top:calc(50% + (100vw / 1.7778) / 2 + 20px); bottom:auto;
+    left:50%; transform:translateX(-50%); width:auto; text-align:center}
+  .timeline-open{display:inline-block; width:auto; font-size:10px; letter-spacing:.22em;
+    color:var(--ink-soft)}
+  .timeline-open i{display:none}
+  .timeline-glyph{font-size:12px}
+  .timeline[data-open="1"]{width:calc(100vw - 40px); text-align:left}
   .timeline.dim{opacity:0; pointer-events:none}
 }
 .teaser{transition:opacity .18s ease}
@@ -538,7 +546,7 @@ svg.chart{display:block; width:100%; height:100%}
    === edit manual.json for the read, the watch list and AI capex.        === */
 var DATA = {
   "asOf": "2026-09-03",
-  "builtAt": "2026-09-04",
+  "builtAt": "2026-09-05",
   "summary": "The US hadn't attacked Iran in over a month. That ended on Tuesday. Oil prices are back up, or better yet, not going down. Expect inflation expectations to continue increasing, causing the treasury yields to not simmer down. Jobs report came out, Wall Street estimated 58,000, came in at 162,000. Strongish job market → more reason for the Fed to hike. Warsh might (should) hike. Bessent's hands are tied, trying to conduct monetary policy with a fiscal toolbox. Current debt is not sustainable longterm. AI Capex helping economic growth, but lots of data center roadblocks (energy grid + returns). OpenAI just released GPT-6 Astra, so the buildout is shipping something. AI to AGI, maybe. Oh, and Vance just said the Fed should cut rates, the Vice President of the United States. Only thing I'll say, grab your popcorn for Sep 16.",
   "author": "A.M.",
   "maker": "Alejandro Medina",
