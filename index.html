@@ -69,6 +69,8 @@ svg.chart{display:block; width:100%; height:100%}
 .num{font-family:"IBM Plex Mono",monospace; font-size:14px; font-weight:500; fill:var(--ink); pointer-events:none; user-select:none}
 .sounding{font-family:"IBM Plex Mono",monospace; font-size:11px; fill:var(--sea-deep); opacity:.75; pointer-events:none}
 .annot{font-family:"IBM Plex Mono",monospace; font-size:12px; fill:var(--verd); pointer-events:none}
+.voice{font-family:"Newsreader",Georgia,serif; font-style:italic; fill:var(--ink-soft);
+  pointer-events:none; user-select:none}
 
 /* ---------- discreet corner mark (replaces the masthead) ---------- */
 .mark{position:absolute; top:20px; left:24px; z-index:4; font-family:"IBM Plex Mono",monospace;
@@ -733,15 +735,17 @@ function grounds(){
 /* --- CREDIT: cloud cover --- */
 function clouds(){
   var oas=DATA.credit.oas, t=Math.max(0,Math.min(1,(oas-250)/350)), op=(0.18+t*0.60).toFixed(3), body='';
-  [[300,140,92,48],[400,124,116,58],[520,144,100,50],[630,132,104,54],[730,150,82,42],[450,168,142,46]].forEach(function(p){
+  // Kept clear of the masthead on the left and the satellite on the right; the
+  // spread carries no data, only the opacity and the rain do.
+  [[620,120,80,42],[690,104,98,50],[775,124,86,44],[815,112,86,46],[710,148,120,40]].forEach(function(p){
     body+='<ellipse cx="'+p[0]+'" cy="'+p[1]+'" rx="'+p[2]+'" ry="'+p[3]+'" fill="var(--ink)" opacity="'+op+'"/>'; });
-  if(t>0.15) for(var i=0;i<9;i++){ var x=340+i*44;
+  if(t>0.15) for(var i=0;i<8;i++){ var x=570+i*42;
     body+='<line x1="'+x+'" y1="196" x2="'+(x-15)+'" y2="'+(238+i%3*15)+'" stroke="var(--rust)" stroke-width="1.6" opacity="'+(t*0.72).toFixed(2)+'"/>'; }
   return '<g class="obj" id="obj-credit" data-metric="credit" tabindex="0" role="button" aria-label="High yield credit spread, '+oas+' basis points">'
-    +'<rect x="190" y="62" width="640" height="190" fill="transparent"/>'+body
-    +'<ellipse class="focusring" cx="512" cy="146" rx="258" ry="100" fill="none" stroke="var(--rust)" stroke-width="2" stroke-dasharray="6 5"/>'
-    +'<circle class="linkmark" cx="512" cy="146" r="7" fill="var(--rust)"/>'
-    +'<text class="lbl" x="826" y="60" text-anchor="end">Credit weather</text></g>';
+    +'<rect x="520" y="58" width="400" height="200" fill="transparent"/>'+body
+    +'<ellipse class="focusring" cx="718" cy="126" rx="205" ry="78" fill="none" stroke="var(--rust)" stroke-width="2" stroke-dasharray="6 5"/>'
+    +'<circle class="linkmark" cx="718" cy="126" r="7" fill="var(--rust)"/>'
+    +'<text class="lbl" x="901" y="58" text-anchor="end">Credit weather</text></g>';
 }
 
 /* --- CURVE: mountain range (peaks are true yields) --- */
@@ -1042,8 +1046,8 @@ function fed(){
     +'<rect x="4" y="'+f(by-182,1)+'" width="214" height="'+f(NEAR+182-by,1)+'" fill="transparent"/>'+b
     +'<rect class="focusring" x="'+(bx-20)+'" y="'+f(by-40,1)+'" width="'+(bw+40)+'" height="'+(bh+54)+'" fill="none" stroke="var(--verd)" stroke-width="2.5" stroke-dasharray="6 5"/>'
     +'<circle class="linkmark" cx="'+(bx+bw/2)+'" cy="'+f(by-44,1)+'" r="7" fill="var(--verd)"/>'
-    +'<text class="lbl" x="'+(bx+bw/2)+'" y="'+(NEAR+34)+'" text-anchor="middle" font-size="13">Federal Reserve</text>'
-    +'<text class="num" x="'+(bx+bw/2)+'" y="'+(NEAR+55)+'" text-anchor="middle">'+f(DATA.fed.lower)+'–'+f(DATA.fed.upper)+'%</text></g>';
+    +'<text class="lbl" x="'+(bx+bw/2)+'" y="'+(NEAR-78)+'" text-anchor="middle" font-size="13">Federal Reserve</text>'
+    +'<text class="num" x="'+(bx+bw/2)+'" y="'+(NEAR-57)+'" text-anchor="middle">'+f(DATA.fed.lower)+'–'+f(DATA.fed.upper)+'%</text></g>';
   return s+'</g>';
 }
 
@@ -1100,7 +1104,7 @@ function rocketPad(){
     +'<rect x="'+(x-58)+'" y="'+(b-hgt-24)+'" width="116" height="'+(hgt+34)+'" fill="transparent"/>'+g
     +'<rect class="focusring" x="'+(x-52)+'" y="'+(b-hgt-18)+'" width="104" height="'+(hgt+26)+'" fill="none" stroke="var(--verd)" stroke-width="2.5" stroke-dasharray="6 5"/>'
     +ping(x,b-hgt/2,56,74)
-    +'<text class="lbl" x="'+x+'" y="'+(b-hgt-26)+'" text-anchor="middle" font-size="12">Today\'s read &#9652;</text></g>';
+    +'<text class="voice" x="'+x+'" y="'+(b-hgt-44)+'" text-anchor="middle" font-size="14">my opinion</text>'+'<text class="lbl" x="'+x+'" y="'+(b-hgt-26)+'" text-anchor="middle" font-size="12">Today\'s read &#9652;</text></g>';
 }
 
 /* ============================================================
@@ -1830,8 +1834,27 @@ function placeCredit(){
     ? (mk.getBoundingClientRect().bottom + 6) + "px" : "";
 }
 window.addEventListener("resize",placeCredit);
+
+// The masthead is laid out in CSS pixels but the clouds live in the SVG, which
+// crops and slides as the window changes shape, so no fixed width stays clear
+// of them. Measure the cloud bank and let the standfirst wrap to fit.
+function fitMasthead(){
+  var sub=document.querySelector(".mark-sub"), mk=document.querySelector(".mark");
+  if(!sub||!mk) return;
+  if(window.matchMedia("(max-width: 760px)").matches){ sub.style.maxWidth=""; return; }
+  var left=Infinity;
+  document.querySelectorAll("#obj-credit ellipse:not(.focusring)").forEach(function(e){
+    var r=e.getBoundingClientRect(); if(r.width) left=Math.min(left,r.left);
+  });
+  if(!isFinite(left)) return;
+  var room=left-mk.getBoundingClientRect().left-16;
+  sub.style.maxWidth=Math.max(190,Math.min(330,room))+"px";
+  placeCredit();
+}
+window.addEventListener("resize",fitMasthead);
 phoneHint();
 placeCredit();
+requestAnimationFrame(fitMasthead);
 
 document.addEventListener("keydown",function(e){
   if(e.key!=="Escape") return;
