@@ -126,13 +126,31 @@ svg.chart{display:block; width:100%; height:100%}
 @media (max-width: 760px){
   /* Centred and pared back on a phone, so it sits with the read below it rather
      than shouting over it. It only takes the full width once it is open. */
-  .timeline{top:calc(50% + (100vw / 1.7778) / 2 + 20px); bottom:auto;
+  .timeline{position:fixed; top:calc(50% + (100vw / 1.7778) / 2 + 20px); bottom:auto;
     left:50%; transform:translateX(-50%); width:auto; text-align:center}
   .timeline-open{display:inline-block; width:auto; font-size:10px; letter-spacing:.22em;
     color:var(--ink-soft)}
   .timeline-open i{display:none}
   .timeline-glyph{font-size:12px}
   .timeline[data-open="1"]{width:calc(100vw - 40px); text-align:left}
+
+  /* Zoomed in, the world fills the screen and scrolls sideways. These were
+     absolute inside it, so they slid off with the map and stranded themselves
+     over the fisher rod. Fixed now, and the overview's furniture stands aside:
+     the read teaser and the standfirst have no ground to sit on at this size,
+     and the slider drops to the foot of the screen. */
+  .world.zoomed .teaser{display:none}
+  .world.zoomed .mark-sub{display:none}
+  .world.zoomed .credit{display:none}
+  /* The slider would lie across the rocket at this size, and closing it is one
+     tap away, so it waits for the overview. */
+  .world.zoomed .timeline{display:none}
+  /* Zoomed, the masthead lies across the map's own labels, so it waits for the
+     overview too. The exception is while looking back, when the date is the
+     only thing saying so, and there it gets a paper glow to sit on. */
+  .world.zoomed .mark{display:none}
+  .world.zoomed.looking-back .mark{display:block;
+    text-shadow:0 0 5px var(--paper), 0 0 10px var(--paper), 0 0 16px var(--paper)}
   .timeline.dim{opacity:0; pointer-events:none}
 }
 .teaser{transition:opacity .18s ease}
@@ -398,7 +416,7 @@ svg.chart{display:block; width:100%; height:100%}
   /* Anchored to the bottom rather than to the strip: short answers sit in the
      beach band, long ones (Fed, capex, debt, credit weather) grow upward over
      the map instead of being clipped. */
-  .teaser{display:block; bottom:118px; font-size:15px}
+  .teaser{display:block; position:fixed; bottom:118px; font-size:15px}
   .callout{position:fixed !important; left:12px !important; right:12px !important;
            width:auto !important; top:auto !important; bottom:56px !important;
            max-height:62dvh}
@@ -4863,6 +4881,8 @@ function repaintWorld(){
   clear();
   render(measure==="cpi"?0:1);
   paintReadout(); paintNow(); paintMoved(); paintNote(); paintMark(); paintPanelSub(); markStatic();
+  var wr=document.querySelector(".world");
+  if(wr) wr.classList.toggle("looking-back", frame!==null);
   var tl=document.getElementById("timeline");
   var lab=document.getElementById("timeline-label");
   var now=document.getElementById("timeline-now");
