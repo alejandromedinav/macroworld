@@ -80,6 +80,8 @@ svg.chart{display:block; width:100%; height:100%}
   display:none; max-width:min(560px, calc(100vw - 48px)); text-align:center;
   font-family:"Newsreader",Georgia,serif; font-size:16px; line-height:1.5;
   color:var(--ink); pointer-events:none}
+.teaser{transition:opacity .18s ease}
+.teaser.dim{opacity:0}
 .teaser i{display:block; font-style:normal; font-family:"IBM Plex Mono",monospace;
   font-size:9.5px; letter-spacing:.2em; text-transform:uppercase; color:var(--ink-soft);
   margin-top:7px}
@@ -1408,6 +1410,9 @@ function show(metric,node){
   callout.scrollTop=0;
   callout.classList.toggle("scrollable", callout.scrollHeight > callout.clientHeight + 1);
   scene.classList.add("engaged"); node.classList.add("hot");
+  // The teaser sits in the same beach band the callout grows into, so it steps
+  // aside rather than showing through from behind it.
+  var tz=document.getElementById("teaser"); if(tz) tz.classList.add("dim");
   (LINKS[metric]||[]).forEach(function(id){ var n=document.getElementById("obj-"+id); if(n) n.classList.add("linked"); });
 }
 var clearTimer=null;
@@ -1416,6 +1421,7 @@ function scheduleClear(){ cancelClear(); clearTimer=setTimeout(function(){ clear
 function clear(){
   cancelClear();
   callout.classList.remove("show"); scene.classList.remove("engaged");
+  var tz=document.getElementById("teaser"); if(tz) tz.classList.remove("dim");
   Array.prototype.forEach.call(scene.querySelectorAll(".obj"),function(n){ n.classList.remove("hot"); n.classList.remove("linked"); });
 }
 function wire(){
@@ -1786,6 +1792,7 @@ var panel=document.getElementById("panel");
 function setPanel(open){
   panel.classList.toggle("open",open);
   panel.setAttribute("aria-hidden",String(!open));
+  var tz=document.getElementById("teaser"); if(tz) tz.classList.toggle("dim",open);
   if(open) document.getElementById("panel-close").focus();
   else { var sat=document.getElementById("obj-satellite"); if(sat) sat.focus(); }
 }
