@@ -89,9 +89,12 @@
     },
     "notes": {
       "10Y": "4.80% on 2 Sep, highest since 2023"
-    }
+    },
+    "alert": [
+      "10Y"
+    ]
   },
-  "_curve_note": "Optional hand entry for a yield FRED has not published yet. Same rule as oil: only used while newer than FRED. notes/alert are display only - alert turns the figure rust.",
+  "_curve_note": "Optional hand entry for a yield FRED has not published yet. Same rule as oil: only used while newer than FRED. notes/alert are display only. Put alert on whatever the day's story is: it turns the figure rust and is the only thing telling a first-time visitor where to look.",
   "author": "A.M.",
   "_author_note": "Shown under the read, so the opinion is signed and separable from the sourced data.",
   "credit": "Alejandro Medina",

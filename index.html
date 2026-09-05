@@ -69,8 +69,22 @@ svg.chart{display:block; width:100%; height:100%}
 .num{font-family:"IBM Plex Mono",monospace; font-size:14px; font-weight:500; fill:var(--ink); pointer-events:none; user-select:none}
 .sounding{font-family:"IBM Plex Mono",monospace; font-size:11px; fill:var(--sea-deep); opacity:.75; pointer-events:none}
 .annot{font-family:"IBM Plex Mono",monospace; font-size:12px; fill:var(--verd); pointer-events:none}
+/* Class, not a fill attribute: .num and .lbl set fill in CSS and a presentation
+   attribute loses to any rule, so the alert was never visible. */
+.num.alert, .lbl.alert{fill:var(--rust)}
 .voice{font-family:"Newsreader",Georgia,serif; font-style:italic; fill:var(--ink-soft);
   pointer-events:none; user-select:none}
+.swaphint{font-family:"Newsreader",Georgia,serif; font-style:italic; fill:var(--ink-soft);
+  pointer-events:none; user-select:none; opacity:.85}
+.teaser{position:absolute; left:50%; transform:translateX(-50%); bottom:64px; z-index:5;
+  display:none; max-width:min(560px, calc(100vw - 48px)); text-align:center;
+  font-family:"Newsreader",Georgia,serif; font-size:16px; line-height:1.5;
+  color:var(--ink); pointer-events:none}
+.teaser i{display:block; font-style:normal; font-family:"IBM Plex Mono",monospace;
+  font-size:9.5px; letter-spacing:.2em; text-transform:uppercase; color:var(--ink-soft);
+  margin-top:7px}
+.swap{cursor:pointer}
+.swap:hover .swaphint{opacity:1; fill:var(--verd)}
 
 /* ---------- discreet corner mark (replaces the masthead) ---------- */
 .mark{position:absolute; top:20px; left:24px; z-index:4; font-family:"IBM Plex Mono",monospace;
@@ -327,6 +341,7 @@ svg.chart{display:block; width:100%; height:100%}
   /* Anchored to the bottom rather than to the strip: short answers sit in the
      beach band, long ones (Fed, capex, debt, credit weather) grow upward over
      the map instead of being clipped. */
+  .teaser{display:block; bottom:118px; font-size:15px}
   .callout{position:fixed !important; left:12px !important; right:12px !important;
            width:auto !important; top:auto !important; bottom:56px !important;
            max-height:62dvh}
@@ -357,6 +372,9 @@ svg.chart{display:block; width:100%; height:100%}
     <div class="callout" id="callout" aria-live="polite"></div>
   </div>
 
+  <!-- The read is the one thing here nobody else could have written, and it was
+       entirely behind the rocket. Its opening line now shows on the map. -->
+  <div class="teaser" id="teaser" aria-hidden="true"></div>
   <div class="mark">
     <b class="mark-title">Macro Soundings</b>
     <i class="mark-sub">I mapped the U.S. economy to scale. Every shape is a real number, rebuilt daily. Go ahead and explore.</i>
@@ -465,7 +483,8 @@ var DATA = {
       "key": "10Y",
       "label": "10-year note",
       "yield": 4.77,
-      "note": "4.80% on 2 Sep, highest since 2023"
+      "note": "4.80% on 2 Sep, highest since 2023",
+      "alert": true
     },
     {
       "key": "30Y",
@@ -770,8 +789,8 @@ function mountains(){
       +'<rect x="'+(px-62)+'" y="'+f(py-32,1)+'" width="124" height="'+f(SEA-py+32,1)+'" fill="transparent"/>'
       +'<circle class="focusring" cx="'+px+'" cy="'+f(py,1)+'" r="13" fill="none" stroke="var(--verd)" stroke-width="2.5"/>'
       +'<circle class="linkmark" cx="'+px+'" cy="'+f(py,1)+'" r="7" fill="var(--verd)"/>'
-      +'<text class="num" x="'+px+'" y="'+f(py-22,1)+'" text-anchor="middle"'+(c.alert?' fill="var(--rust)"':'')+'>'+f(c.yield)+'%</text>'
-      +'<text class="lbl" x="'+px+'" y="'+f(py-41,1)+'" text-anchor="middle" font-size="13"'+(c.alert?' fill="var(--rust)"':'')+'>'+c.key+'</text>'
+      +'<text class="num'+(c.alert?' alert':'')+'" x="'+px+'" y="'+f(py-22,1)+'" text-anchor="middle">'+f(c.yield)+'%</text>'
+      +'<text class="lbl'+(c.alert?' alert':'')+'" x="'+px+'" y="'+f(py-41,1)+'" text-anchor="middle" font-size="13">'+c.key+'</text>'
       +(c.note?'<text class="sounding" x="'+px+'" y="'+f(py-57,1)+'" text-anchor="middle" fill="var(--rust)" opacity="1">'+c.note+'</text>':'')
       +'</g>';
   });
@@ -1267,7 +1286,14 @@ function town(mix){
     if(b.w>42) s+='<text class="sounding" x="'+f(b.x+b.w/2,1)+'" y="'+(TOWN_BASE+20)+'" text-anchor="middle" fill="var(--ink-soft)">'+pct+'%</text>';
   });
   s+='<line x1="'+(TOWN_X-24)+'" y1="'+TOWN_BASE+'" x2="'+(TOWN_X+TOWN_W+14)+'" y2="'+TOWN_BASE+'" stroke="var(--ink)" stroke-width="2"/>';
-  s+='<text class="lbl" x="'+(TOWN_X+TOWN_W/2)+'" y="'+(TOWN_BASE+42)+'" text-anchor="middle" font-size="13" id="town-label">The basket</text>';
+  // The weights toggle only existed inside the figures panel, so the one object
+  // whose width carries data was illegible until you found it. The label is the
+  // switch now.
+  var tcx=TOWN_X+TOWN_W/2, tcy=TOWN_BASE+42;
+  s+='<g class="swap" id="obj-town-toggle" tabindex="0" role="button" aria-label="Switch the basket between CPI and PCE weights">'
+    +'<rect x="'+(tcx-118)+'" y="'+(tcy-17)+'" width="236" height="26" rx="4" fill="transparent"/>'
+    +'<text class="lbl" x="'+tcx+'" y="'+tcy+'" text-anchor="middle" font-size="13" id="town-label">The basket</text>'
+    +'<text class="swaphint" x="'+tcx+'" y="'+(tcy+17)+'" text-anchor="middle" font-size="12">tap to switch to PCE</text></g>';
   return s+'</g>';
 }
 
@@ -1722,8 +1748,12 @@ function paintNote(){
     : "Shelter drops to <strong>"+f(sh.pce,1)+"%</strong>, medical care rises to <strong>"+f(md.pce,1)+"%</strong>. Same lines, different weights.";
   var tl=document.getElementById("town-label");
   if(tl) tl.textContent = measure==="cpi" ? "The CPI basket" : "The PCE basket";
+  var th=document.querySelector(".swaphint");
+  if(th) th.textContent = measure==="cpi" ? "tap to switch to PCE" : "tap to switch back to CPI";
 }
 var animating=false;
+function toggleMeasure(){ setMeasure(measure==="cpi"?"pce":"cpi"); }
+
 function setMeasure(next){
   if(next===measure||animating) return;
   var from=measure==="cpi"?0:1, to=next==="cpi"?0:1;
@@ -1740,6 +1770,14 @@ function setMeasure(next){
     if(p<1) requestAnimationFrame(step); else { animating=false; paintNote(); }
   })(t0);
 }
+// Delegated, because render() rebuilds the SVG and would drop a direct listener.
+document.getElementById("scene").addEventListener("click",function(e){
+  if(e.target.closest && e.target.closest(".swap")) toggleMeasure();
+});
+document.getElementById("scene").addEventListener("keydown",function(e){
+  if(e.key!=="Enter"&&e.key!==" ") return;
+  if(e.target.closest && e.target.closest(".swap")){ e.preventDefault(); toggleMeasure(); }
+});
 document.getElementById("btn-cpi").addEventListener("click",function(){ setMeasure("cpi"); });
 document.getElementById("btn-pce").addEventListener("click",function(){ setMeasure("pce"); });
 
@@ -1790,6 +1828,12 @@ if(!seenHint()){
 
 /* fill the screen on wide viewports; letterbox rather than crop on narrow ones */
 function isPhone(){ return window.matchMedia("(max-width: 760px)").matches; }
+
+function paintTeaser(){
+  var el=document.getElementById("teaser"); if(!el) return;
+  var first=(DATA.summary||"").split(/(?<=\.)\s/)[0] || "";
+  el.innerHTML = first ? first+'<i>rocket for the rest</i>' : "";
+}
 
 function phoneHint(){
   var h=document.getElementById("hint"); if(!h) return;
@@ -1865,6 +1909,7 @@ function fitMasthead(){
 window.addEventListener("resize",fitMasthead);
 phoneHint();
 placeCredit();
+paintTeaser();
 requestAnimationFrame(fitMasthead);
 // The standfirst is set in a webfont, so the mark grows taller once it loads and
 // anything measured before that is stale. Measure again when the fonts settle.
