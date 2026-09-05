@@ -79,8 +79,12 @@ svg.chart{display:block; width:100%; height:100%}
 .mark-title{display:block; font-family:"Barlow Condensed",sans-serif; font-size:16px;
   font-weight:600; letter-spacing:.2em; text-transform:uppercase; color:var(--ink);
   line-height:1.3; margin-bottom:1px}
-.mark-sub{max-width:min(310px, calc(100vw - 165px)); font-size:11px; color:var(--ink-label); letter-spacing:.04em;
-  text-transform:none; line-height:1.55; margin-bottom:8px}
+/* Newsreader, not mono: on this page mono means machine and condensed caps mean
+   chart label, so a line set in either reads as metadata and gets skipped. The
+   serif is the voice typeface, the one the read is set in. */
+.mark-sub{max-width:min(330px, calc(100vw - 165px)); font-family:"Newsreader",Georgia,serif;
+  font-size:14.5px; color:var(--ink); letter-spacing:0; text-transform:none;
+  line-height:1.45; margin:2px 0 9px}
 .mark i em{font-style:normal; color:var(--verd); font-weight:600}
 
 /* ---------- callout ---------- */
@@ -350,7 +354,7 @@ svg.chart{display:block; width:100%; height:100%}
 
   <div class="mark">
     <b class="mark-title">Macro Soundings</b>
-    <i class="mark-sub">A live map of the U.S. economy. Every shape is a number.</i>
+    <i class="mark-sub">The U.S. economy, drawn to scale. Every shape is a real number, rebuilt daily. Have a look around.</i>
     <span id="mark-date"></span><i id="session"></i></div>
 
   <div class="panel" id="panel">
