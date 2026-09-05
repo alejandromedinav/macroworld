@@ -740,15 +740,15 @@ function clouds(){
   var oas=DATA.credit.oas, t=Math.max(0,Math.min(1,(oas-250)/350)), op=(0.18+t*0.60).toFixed(3), body='';
   // Kept clear of the masthead on the left and the satellite on the right; the
   // spread carries no data, only the opacity and the rain do.
-  [[620,120,80,42],[690,104,98,50],[775,124,86,44],[815,112,86,46],[710,148,120,40]].forEach(function(p){
+  [[580,120,80,42],[650,104,98,50],[735,124,86,44],[775,112,86,46],[670,148,120,40]].forEach(function(p){
     body+='<ellipse cx="'+p[0]+'" cy="'+p[1]+'" rx="'+p[2]+'" ry="'+p[3]+'" fill="var(--ink)" opacity="'+op+'"/>'; });
-  if(t>0.15) for(var i=0;i<8;i++){ var x=570+i*42;
+  if(t>0.15) for(var i=0;i<8;i++){ var x=530+i*42;
     body+='<line x1="'+x+'" y1="196" x2="'+(x-15)+'" y2="'+(238+i%3*15)+'" stroke="var(--rust)" stroke-width="1.6" opacity="'+(t*0.72).toFixed(2)+'"/>'; }
   return '<g class="obj" id="obj-credit" data-metric="credit" tabindex="0" role="button" aria-label="High yield credit spread, '+oas+' basis points">'
-    +'<rect x="520" y="58" width="400" height="200" fill="transparent"/>'+body
-    +'<ellipse class="focusring" cx="718" cy="126" rx="205" ry="78" fill="none" stroke="var(--rust)" stroke-width="2" stroke-dasharray="6 5"/>'
-    +'<circle class="linkmark" cx="718" cy="126" r="7" fill="var(--rust)"/>'
-    +'<text class="lbl" x="901" y="58" text-anchor="end">Credit weather</text></g>';
+    +'<rect x="480" y="58" width="400" height="200" fill="transparent"/>'+body
+    +'<ellipse class="focusring" cx="678" cy="126" rx="205" ry="78" fill="none" stroke="var(--rust)" stroke-width="2" stroke-dasharray="6 5"/>'
+    +'<circle class="linkmark" cx="678" cy="126" r="7" fill="var(--rust)"/>'
+    +'<text class="lbl" x="861" y="58" text-anchor="end">Credit weather</text></g>';
 }
 
 /* --- CURVE: mountain range (peaks are true yields) --- */
@@ -1855,7 +1855,7 @@ function fitMasthead(){
     var r=e.getBoundingClientRect(); if(r.width) left=Math.min(left,r.left);
   });
   if(!isFinite(left)) return;
-  var room=Math.max(190,Math.min(330,left-mk.getBoundingClientRect().left-16));
+  var room=Math.max(172,Math.min(330,left-mk.getBoundingClientRect().left-16));
   // The date stamp is the widest line and will not wrap on its own, so the cap
   // goes on the whole block, not just the standfirst.
   sub.style.maxWidth=room+"px";
