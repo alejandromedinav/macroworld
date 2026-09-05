@@ -647,8 +647,8 @@ var POINTS = {
   // FY2025 actual outlays for the budget comparison, so interest and defense
   // come from one dataset on one accounting basis; SIPRI for the country
   // comparison, since that is the only measure defined the same way abroad.
-  debt: ["We spent $970 billion on net interest payments.",
-         "We spent $917 billion on national defense.",
+  debt: ["We spent $970 billion on net interest payments in FY2025.",
+         "We spent $917 billion on national defense in FY2025.",
          "For perspective, the U.S. spends more on its military than the next 6 highest-spending countries combined."],
   ai:   ["Energy-grid infrastructure. Imagine trying to power a mini city that never turns off its lights, and you need it done by yesterday. Pretty challenging.",
          "Returns. You spend so much on building, but it takes time to generate returns (investors get pretty antsy)."]
@@ -1100,11 +1100,16 @@ function rocketPad(){
   g+='<path d="M'+(rx-8)+','+(b-31)+' q-10,15 -9,27 q8,-6 13,-8 Z" fill="var(--rust)" stroke="var(--ink)" stroke-width="1.7" stroke-linejoin="round"/>';
   g+='<path d="M'+(rx+8)+','+(b-31)+' q10,15 9,27 q-8,-6 -13,-8 Z" fill="var(--rust)" stroke="var(--ink)" stroke-width="1.7" stroke-linejoin="round"/>';
   g+='<rect x="'+(rx-8)+'" y="'+(b-8)+'" width="16" height="8" rx="2" fill="var(--ink)"/>';
+  // The label sits left of the hint bar, which owns the middle of the beach for
+  // its first eleven seconds, and a curve carries the eye up to the rocket.
+  var point='<path d="M624,852 C 672,864 736,860 782,838" fill="none" stroke="var(--ink-soft)" stroke-width="1.7" stroke-linecap="round" opacity=".8"/>'
+    +'<polygon points="793,830 780,836 787,845" fill="var(--ink-soft)" opacity=".8"/>'
+    +'<text class="voice" x="616" y="857" text-anchor="end" font-size="15">my opinion</text>';
   return '<g class="obj" id="obj-rocket" data-metric="rocket" tabindex="0" role="button" aria-label="Launch: zoom out for the overall read">'
     +'<rect x="'+(x-58)+'" y="'+(b-hgt-24)+'" width="116" height="'+(hgt+34)+'" fill="transparent"/>'+g
     +'<rect class="focusring" x="'+(x-52)+'" y="'+(b-hgt-18)+'" width="104" height="'+(hgt+26)+'" fill="none" stroke="var(--verd)" stroke-width="2.5" stroke-dasharray="6 5"/>'
-    +ping(x,b-hgt/2,56,74)
-    +'<text class="voice" x="'+x+'" y="'+(b-hgt-44)+'" text-anchor="middle" font-size="14">my opinion</text>'+'<text class="lbl" x="'+x+'" y="'+(b-hgt-26)+'" text-anchor="middle" font-size="12">Today\'s read &#9652;</text></g>';
+    +ping(x,b-hgt/2,56,74)+point
+    +'<text class="lbl" x="'+x+'" y="'+(b-hgt-26)+'" text-anchor="middle" font-size="12">Today\'s read &#9652;</text></g>';
 }
 
 /* ============================================================
@@ -1841,20 +1846,36 @@ window.addEventListener("resize",placeCredit);
 function fitMasthead(){
   var sub=document.querySelector(".mark-sub"), mk=document.querySelector(".mark");
   if(!sub||!mk) return;
-  if(window.matchMedia("(max-width: 760px)").matches){ sub.style.maxWidth=""; return; }
+  if(window.matchMedia("(max-width: 760px)").matches){ sub.style.maxWidth=""; mk.style.maxWidth=""; placeCredit(); return; }
   var left=Infinity;
   document.querySelectorAll("#obj-credit ellipse:not(.focusring)").forEach(function(e){
     var r=e.getBoundingClientRect(); if(r.width) left=Math.min(left,r.left);
   });
   if(!isFinite(left)) return;
-  var room=left-mk.getBoundingClientRect().left-16;
-  sub.style.maxWidth=Math.max(190,Math.min(330,room))+"px";
+  var room=Math.max(190,Math.min(330,left-mk.getBoundingClientRect().left-16));
+  // The date stamp is the widest line and will not wrap on its own, so the cap
+  // goes on the whole block, not just the standfirst.
+  sub.style.maxWidth=room+"px";
+  mk.style.maxWidth=room+"px";
   placeCredit();
 }
 window.addEventListener("resize",fitMasthead);
 phoneHint();
 placeCredit();
 requestAnimationFrame(fitMasthead);
+// The standfirst is set in a webfont, so the mark grows taller once it loads and
+// anything measured before that is stale. Measure again when the fonts settle.
+if(document.fonts && document.fonts.ready) document.fonts.ready.then(fitMasthead);
+// Rotating a phone can change (hover) and the width breakpoint without firing a
+// resize we can rely on, so listen to the queries themselves.
+if(window.matchMedia){
+  var _relayout=function(){ phoneHint(); fitMasthead(); placeCredit(); };
+  ["(max-width: 760px)","(hover: none)"].forEach(function(q){
+    var mq=window.matchMedia(q);
+    if(mq.addEventListener) mq.addEventListener("change",_relayout);
+    else if(mq.addListener) mq.addListener(_relayout);
+  });
+}
 
 document.addEventListener("keydown",function(e){
   if(e.key!=="Escape") return;
