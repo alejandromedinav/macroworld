@@ -121,6 +121,9 @@ svg.chart{display:block; width:100%; height:100%}
 }
 
 .callout .tie{margin-top:10px; padding-top:9px; border-top:1px solid var(--rule-soft); font-size:13px; letter-spacing:.05em; text-transform:uppercase; color:var(--verd); font-weight:600}
+/* The number is the point of the tie line, so it outweighs its own label. */
+.callout .tie b{font-family:"IBM Plex Mono",monospace; font-size:16px; font-weight:600;
+  letter-spacing:0; margin-left:2px}
 .callout ul{margin:8px 0 0; padding:0; list-style:none}
 .callout ol.points{margin:8px 0 0; padding-left:18px; font-size:15px; line-height:1.45; color:var(--ink)}
 .callout li{display:flex; gap:10px; font-size:14px; padding:4px 0; border-bottom:1px solid var(--rule-soft)}
@@ -1102,8 +1105,8 @@ function rocketPad(){
   g+='<rect x="'+(rx-8)+'" y="'+(b-8)+'" width="16" height="8" rx="2" fill="var(--ink)"/>';
   // The label sits left of the hint bar, which owns the middle of the beach for
   // its first eleven seconds, and a curve carries the eye up to the rocket.
-  var point='<path d="M624,852 C 672,864 736,860 782,838" fill="none" stroke="var(--ink-soft)" stroke-width="1.7" stroke-linecap="round" opacity=".8"/>'
-    +'<polygon points="793,830 780,836 787,845" fill="var(--ink-soft)" opacity=".8"/>'
+  var point='<path d="M628,850 C 668,860 712,857 742,840" fill="none" stroke="var(--ink-soft)" stroke-width="1.7" stroke-linecap="round" opacity=".8"/>'
+    +'<polygon points="753,831 739,836 747,846" fill="var(--ink-soft)" opacity=".8"/>'
     +'<text class="voice" x="616" y="857" text-anchor="end" font-size="15">my opinion</text>';
   return '<g class="obj" id="obj-rocket" data-metric="rocket" tabindex="0" role="button" aria-label="Launch: zoom out for the overall read">'
     +'<rect x="'+(x-58)+'" y="'+(b-hgt-24)+'" width="116" height="'+(hgt+34)+'" fill="transparent"/>'+g
@@ -1292,7 +1295,7 @@ function copyFor(m2){
   var m=measure;
   if(m2==="credit") return {eyebrow:"High yield spread, ICE BofA OAS", big:DATA.credit.oas+" bp",
     chg:sgn(DATA.credit.chg,0," bp on the week")+(DATA.credit.chg<0?" — tightening":" — widening"), chgUp:DATA.credit.chg>0,
-    body:COPY.credit, tie:"Effective yield "+f(D.hyYield)+"%"};
+    body:COPY.credit, tie:"Effective yield <b>"+f(D.hyYield)+"%</b>"};
   if(m2==="fed") return {eyebrow:"Federal funds target range", big:f(DATA.fed.lower)+"–"+f(DATA.fed.upper)+"%",
     chg:(DATA.fed.lastMove===0 ? "Held on "+DATA.fed.lastDate : sgn(DATA.fed.lastMove,2,"pp on "+DATA.fed.lastDate)), chgUp:DATA.fed.lastMove>0,
     body:COPY.fed, tie:"Real policy rate "+sgn(D.realPolicy,2,"pp")+" · next meeting "+DATA.fed.nextDate};
