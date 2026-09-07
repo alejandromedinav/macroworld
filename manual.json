@@ -54,11 +54,16 @@
   "_ai_note": "Hand-entered - no FRED series covers company capex. The sentence shown lives in COPY.ai in index.html.",
   "_fed_note": "lastMove 0 means the FOMC held. Use -0.25 / +0.25 only for an actual move. Hand-entered - nothing validates this.",
   "oil": {
-    "asOf": "2026-09-04",
-    "wti": 91.1,
-    "brent": 95.7,
+    "asOf": "2026-09-05",
+    "wti": 92.7,
+    "brent": 97.3,
     "note": "Front-month futures, read by hand",
     "history": [
+      {
+        "asOf": "2026-09-05",
+        "wti": 92.7,
+        "brent": 97.3
+      },
       {
         "asOf": "2026-09-04",
         "wti": 91.1,
