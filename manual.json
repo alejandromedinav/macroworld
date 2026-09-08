@@ -92,9 +92,7 @@
     "values": {
       "10Y": 4.79
     },
-    "notes": {
-      "10Y": "4.80% on 2 Sep, highest since 2023"
-    },
+    "notes": {},
     "alert": [
       "10Y"
     ]
