@@ -1,6 +1,6 @@
 {
   "_comment": "The hand-written half. Edit this daily; fetch-data.mjs merges it with FRED and never overwrites it.",
-  "summary": "The US hadn't attacked Iran in over a month. That ended 8 days ago. Oil prices are back up, or better yet, not going down. Expect inflation expectations to continue increasing, causing the treasury yields to not simmer down. Jobs report came out, Wall Street estimated 58,000, came in at 162,000. Strongish job market → more reason for the Fed to hike. Warsh might (should) hike. Bessent's hands are tied, trying to conduct monetary policy with a fiscal toolbox. Current debt is not sustainable longterm. AI Capex helping economic growth, but lots of data center roadblocks (energy grid + returns). OpenAI released GPT-6 Astra last week, so the buildout is shipping something. AI to AGI, maybe. Oh, and last week Vance said the Fed should cut rates, the Vice President of the United States. Only thing I'll say, grab your popcorn for Sep 16.",
+  "summary": "The US hadn't attacked Iran in over a month. That ended 9 days ago. Oil prices are back up, or better yet, not going down. Expect inflation expectations to continue increasing, causing the treasury yields to not simmer down. Jobs report came out, Wall Street estimated 58,000, came in at 162,000. Strongish job market → more reason for the Fed to hike. Warsh might (should) hike. Bessent's hands are tied, trying to conduct monetary policy with a fiscal toolbox. Current debt is not sustainable longterm. AI Capex helping economic growth, but lots of data center roadblocks (energy grid + returns). OpenAI released GPT-6 Astra last week, so the buildout is shipping something. AI to AGI, maybe. Oh, and last week Vance said the Fed should cut rates, the Vice President of the United States. Only thing I'll say, grab your popcorn for Sep 16.",
   "fed": {
     "lastMove": 0,
     "lastDate": "29 Jul 2026",
@@ -54,11 +54,16 @@
   "_ai_note": "Hand-entered - no FRED series covers company capex. The sentence shown lives in COPY.ai in index.html.",
   "_fed_note": "lastMove 0 means the FOMC held. Use -0.25 / +0.25 only for an actual move. Hand-entered - nothing validates this.",
   "oil": {
-    "asOf": "2026-09-09",
-    "wti": 95.7,
-    "brent": 100.7,
+    "asOf": "2026-09-10",
+    "wti": 101.7,
+    "brent": 107.2,
     "note": "Front-month futures, read by hand",
     "history": [
+      {
+        "asOf": "2026-09-10",
+        "wti": 101.7,
+        "brent": 107.2
+      },
       {
         "asOf": "2026-09-09",
         "wti": 95.7,
@@ -78,19 +83,14 @@
         "asOf": "2026-09-04",
         "wti": 91.1,
         "brent": 95.7
-      },
-      {
-        "asOf": "2026-09-03",
-        "wti": 91.7,
-        "brent": 95.7
       }
     ]
   },
   "_oil_note": "Optional daily override. Set asOf to the date you read them and fill wti/brent. Used only while newer than FRED's print - if you stop updating, it falls back to FRED automatically rather than showing an ever-staler number.",
   "curve": {
-    "asOf": "2026-09-09",
+    "asOf": "2026-09-10",
     "values": {
-      "10Y": 4.83
+      "10Y": 4.93
     },
     "notes": {},
     "alert": [
