@@ -3510,6 +3510,10 @@ function defs(){
   return '<defs>'
   + '<pattern id="hatch" width="7" height="7" patternTransform="rotate(45)" patternUnits="userSpaceOnUse"><line x1="0" y1="0" x2="0" y2="7" stroke="var(--ink)" stroke-width="1" opacity=".16"/></pattern>'
   + '<pattern id="hatchLand" width="6" height="6" patternTransform="rotate(-45)" patternUnits="userSpaceOnUse"><line x1="0" y1="0" x2="0" y2="6" stroke="var(--ink)" stroke-width="1" opacity=".13"/></pattern>'
+  + '<linearGradient id="tribute" x1="0" y1="1" x2="0" y2="0">'
+  +   '<stop offset="0" stop-color="#FFFFFF" stop-opacity=".62"/>'
+  +   '<stop offset=".55" stop-color="#FFFFFF" stop-opacity=".22"/>'
+  +   '<stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/></linearGradient>'
   + '</defs>';
 }
 function grounds(){
@@ -4074,8 +4078,21 @@ function town(mix){
   return s+'</g>';
 }
 
+/* Two columns of light on 11 September, New York time. The one thing on the
+   map that is not a number, and it stays because it is a remembrance, not an
+   ornament. Drawn before the range so they rise from beyond the coast. */
+function tribute(){
+  var ny=new Date(new Date().toLocaleString("en-US",{timeZone:"America/New_York"}));
+  if(!(ny.getMonth()===8 && ny.getDate()===11)) return '';
+  var g='<g aria-hidden="true" pointer-events="none">';
+  [152,182].forEach(function(x){
+    g+='<polygon points="'+(x-5)+',565 '+(x+5)+',565 '+(x+3.5)+',0 '+(x-3.5)+',0" fill="url(#tribute)"/>';
+  });
+  return g+'</g>';
+}
+
 function render(mix){
-  document.getElementById("svg").innerHTML = defs()+grounds()+clouds()+mountains()
+  document.getElementById("svg").innerHTML = defs()+grounds()+tribute()+clouds()+mountains()
     + '<line x1="0" y1="'+SEA+'" x2="'+W+'" y2="'+SEA+'" stroke="var(--ink)" stroke-width="1.5" opacity=".4"/>'
     + lighthouse()+island()+satellite()+plane()+anchorDebt()+ships()
     + nearShore()+fed()+fisherRod()+rocketPad()+town(mix);
