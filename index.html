@@ -579,7 +579,7 @@ svg.chart{display:block; width:100%; height:100%}
 var DATA = {
   "asOf": "2026-09-09",
   "builtAt": "2026-09-11",
-  "summary": "The US hadn't attacked Iran in over a month. That ended 10 days ago. Oil prices are back up, or better yet, not going down. Expect inflation expectations to continue increasing, causing the treasury yields to not simmer down. Jobs report came out, Wall Street estimated 58,000, came in at 162,000. Strongish job market → more reason for the Fed to hike. Warsh might (should) hike. Bessent's hands are tied, trying to conduct monetary policy with a fiscal toolbox. Current debt is not sustainable longterm. AI Capex helping economic growth, but lots of data center roadblocks (energy grid + returns). OpenAI released GPT-6 Astra last week, so the buildout is shipping something. AI to AGI, maybe. Oh, and last week Vance said the Fed should cut rates, the Vice President of the United States. Only thing I'll say, grab your popcorn for Sep 16.",
+  "summary": "Attacks continue with Iran, causing oil to hover above $100. Why don't we use our reserves? We have been, but the shock is too large, about a fifth of oil supply. CPI report was released, core YoY fell, but MoM has been increasing, especially in August +0.3%. Pretty BAD. Basically means other factors are affecting inflation, not just the oil shock. Job market is strong, Wall Street estimated 58,000, came in at 162,000. The economy is too hot. Warsh might (should) hike. Bessent's hands are tied, trying to conduct monetary policy with a fiscal toolbox. Buybacks aren't working. Other countries are selling their US bonds, no bueno. To add a cherry on top, our largest debt holder Japan now has more incentive to invest at home, due to its CB hikes. Bringing it back home, the President and VP don't want to raise rates. Every single factor is saying we NEED to raise rates, Warsh and Bessent know this. Only thing I'll say, grab your popcorn for Sep 16, the day the decision is made.",
   "author": "A.M.",
   "maker": "Alejandro Medina",
   "curve": [
@@ -701,7 +701,7 @@ var DATA = {
   },
   "watch": [
     {
-      "when": "10 Sep",
+      "when": "11 Sep",
       "what": "August CPI",
       "key": true
     },
@@ -721,12 +721,12 @@ var DATA = {
   "news": [
     {
       "when": "11 Sep",
-      "what": "10-year 4.95%, highest since 2023. 2-year 4.62%, 30-year 5.35%.",
+      "what": "CPI report → headline MoM came in hotter than expected (also core).",
       "key": true
     },
     {
       "when": "10 Sep",
-      "what": "August CPI 3.35% y/y, from 3.30%. Houthi attacks on shipping."
+      "what": "Houthi attacks on shipping sent Brent to about $109."
     },
     {
       "when": "9 Sep",
@@ -734,7 +734,7 @@ var DATA = {
     },
     {
       "when": "4 Sep",
-      "what": "Payrolls +162,000 vs 58,000 expected."
+      "what": "Payrolls +162,000 vs 58,000 expected → interesting breakdown, a loss in tech jobs."
     },
     {
       "when": "3 Sep",
@@ -3470,7 +3470,7 @@ var POINTS = {
          "We spent $917 billion on national defense in FY2025.",
          "For perspective, the U.S. spends more on its military than the next 6 highest-spending countries combined."],
   ai:   ["Energy-grid infrastructure. Imagine trying to power a mini city that never turns off its lights, and you need it done by yesterday. Pretty challenging.",
-         "Returns. You spend so much on building, but it takes time to generate returns (investors get pretty antsy)."]
+         "Returns. You spend so much on physically building, but it takes time to generate returns (investors get pretty antsy)."]
 };
 
 var COPY = {
@@ -3479,17 +3479,18 @@ var COPY = {
   "30Y": "Long-term inflation expectations + concerns about government debt and borrowing.",
   "3M":  "Usually anchored to the Fed's current policy rate.",
   credit:"Tightening, not widening. The market is seeing current strong economic growth + large borrowing (thanks to AI Capex). So risk is being priced low, companies are accepting a high rate (due to the treasury yield floor).",
-  fed:   "Warsh recently spoke at Jackson Hole, hinting at a hike. They held rates in July, possibly (very likely) due to the incumbent administration not wanting high rates (makes things more expensive → approval rating falls). Fed governor Waller spoke last Thursday, saying he will vote not to hike rates, unless conditions change and force him to (media-trained response). So will Warsh hike in 5 days? It's live on Kalshi! (this website does not promote gambling, sorry sports betting?)",
+  fed:   "New Fed chair Warsh recently spoke at Jackson Hole, hinting at a hike, the only “forward guidance” he’s provided. They held rates in July, possibly (very likely) due to the incumbent administration not wanting high rates (makes borrowing more expensive → approval rating falls). Fed governor Waller said 8 days ago he will vote to hold rates, if conditions don’t worsen. Well, the CPI was released today, and it doesn’t swing in his favor. So will Warsh hike in 5 days? It’s live on Kalshi! (this website does not promote gambling, sorry sports betting?)",
   wti:   "U.S. oil benchmark. More sensitive to U.S. supply, inventories, and production.",
   brent: "Global oil benchmark. More sensitive to worldwide supply and geopolitical risk. U.S.-Iran conflict and disruption in the Strait of Hormuz are directly affecting this.",
   airfare:"Thinking about going on that trip? Forget about it, throw your Hokas on or pick up some overtime.",
   ai:    "Lots of Capex spending. Problems:",
   debt:  "Remember the argument being why we spend so much on our defense budget over other programs (like healthcare)? Well, we now spend more on yearly interest payments for our debt than on defense spending. Some fun facts:",
   debtAfter:"So, this record debt should grab our attention. Long term, it's not sustainable.",
+  aiAfter:"For perspective: at $1 million a day, you’d have to start around the beginning of the Roman Empire to spend $750 billion by today.",
   fisher:"Real = nominal − inflation. The waterline is inflation, the float is what's left.",
   watch: "What could move this next.",
-  news:  "The facts, dated. The take is behind the rocket.",
-  rocket:"Where I think this is heading.",
+  news:  "My attempt to defend my paid subscriptions. How? Forced to read the news and provide insights here. Thanks mom for visiting my site! Solid ROI.",
+  rocket:"Where I think all of this is heading.",
   satellite:"Every figure on one screen.",
   comp:  "Width is the weight in the index, height is the year-over-year."
 };
@@ -4247,7 +4248,7 @@ function copyForToday(m2){
       ? '<ul>'+parts.map(function(p){ return '<li><span>'+p.value+'</span>'+p.name+'</li>'; }).join("")+'</ul>'
       : '';
     return {eyebrow:(DATA.ai.label||"AI capex")+(DATA.ai.period?" · "+DATA.ai.period:""),
-      big:(DATA.ai.headline||""), chg:"", list:list, body:COPY.ai, points:POINTS.ai, tie:""};
+      big:(DATA.ai.headline||""), chg:"", list:list, body:COPY.ai, points:POINTS.ai, after:COPY.aiAfter, tie:""};
   }
   if(m2==="debt") return {eyebrow:"Total federal debt / GDP", big:f(DATA.debt.gdp,1)+"%",
     chg:(DATA.debt.chg!==undefined?sgn(DATA.debt.chg,1,"pp on the year"):"")
@@ -4258,7 +4259,7 @@ function copyForToday(m2){
     body:COPY.fisher, tie:"Ex-post · PCE basis "+sgn(D.realPolicyPce,2,"pp")+" · TIPS "+sgn(D.realMarket,2,"pp")};
   if(m2==="news"){
     var ni=(DATA.news||[]).map(function(n){ return '<li'+(n.key?' class="key"':'')+'><span>'+n.when+'</span>'+n.what+'</li>'; }).join("");
-    return {eyebrow:"What moved it", big:"", chg:"", list:'<ul>'+ni+'</ul>', body:"", tie:COPY.news};
+    return {eyebrow:"What moved it", big:"", chg:"", list:'<ul>'+ni+'</ul>', body:COPY.news, tie:"The facts, dated. The take is behind the rocket."};
   }
   if(m2==="watch"){
     var li=DATA.watch.map(function(w){ return '<li'+(w.key?' class="key"':'')+'><span>'+w.when+'</span>'+w.what+'</li>'; }).join("");

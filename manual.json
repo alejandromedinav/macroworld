@@ -1,6 +1,6 @@
 {
   "_comment": "The hand-written half. Edit this daily; fetch-data.mjs merges it with FRED and never overwrites it.",
-  "summary": "The US hadn't attacked Iran in over a month. That ended 10 days ago. Oil prices are back up, or better yet, not going down. Expect inflation expectations to continue increasing, causing the treasury yields to not simmer down. Jobs report came out, Wall Street estimated 58,000, came in at 162,000. Strongish job market → more reason for the Fed to hike. Warsh might (should) hike. Bessent's hands are tied, trying to conduct monetary policy with a fiscal toolbox. Current debt is not sustainable longterm. AI Capex helping economic growth, but lots of data center roadblocks (energy grid + returns). OpenAI released GPT-6 Astra last week, so the buildout is shipping something. AI to AGI, maybe. Oh, and last week Vance said the Fed should cut rates, the Vice President of the United States. Only thing I'll say, grab your popcorn for Sep 16.",
+  "summary": "Attacks continue with Iran, causing oil to hover above $100. Why don't we use our reserves? We have been, but the shock is too large, about a fifth of oil supply. CPI report was released, core YoY fell, but MoM has been increasing, especially in August +0.3%. Pretty BAD. Basically means other factors are affecting inflation, not just the oil shock. Job market is strong, Wall Street estimated 58,000, came in at 162,000. The economy is too hot. Warsh might (should) hike. Bessent's hands are tied, trying to conduct monetary policy with a fiscal toolbox. Buybacks aren't working. Other countries are selling their US bonds, no bueno. To add a cherry on top, our largest debt holder Japan now has more incentive to invest at home, due to its CB hikes. Bringing it back home, the President and VP don't want to raise rates. Every single factor is saying we NEED to raise rates, Warsh and Bessent know this. Only thing I'll say, grab your popcorn for Sep 16, the day the decision is made.",
   "fed": {
     "lastMove": 0,
     "lastDate": "29 Jul 2026",
@@ -33,7 +33,7 @@
   },
   "watch": [
     {
-      "when": "10 Sep",
+      "when": "11 Sep",
       "what": "August CPI",
       "key": true
     },
@@ -53,12 +53,12 @@
   "news": [
     {
       "when": "11 Sep",
-      "what": "10-year 4.95%, highest since 2023. 2-year 4.62%, 30-year 5.35%.",
+      "what": "CPI report → headline MoM came in hotter than expected (also core).",
       "key": true
     },
     {
       "when": "10 Sep",
-      "what": "August CPI 3.35% y/y, from 3.30%. Houthi attacks on shipping."
+      "what": "Houthi attacks on shipping sent Brent to about $109."
     },
     {
       "when": "9 Sep",
@@ -66,7 +66,7 @@
     },
     {
       "when": "4 Sep",
-      "what": "Payrolls +162,000 vs 58,000 expected."
+      "what": "Payrolls +162,000 vs 58,000 expected → interesting breakdown, a loss in tech jobs."
     },
     {
       "when": "3 Sep",
