@@ -450,6 +450,10 @@ svg.chart{display:block; width:100%; height:100%}
   .thesis-lbl{margin-bottom:12px}
 }
 @keyframes soar{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+@keyframes flick{0%,100%{transform:scaleY(1) scaleX(1)}30%{transform:scaleY(1.07) scaleX(.95)}60%{transform:scaleY(.94) scaleX(1.05)}}
+.flame{animation:flick 1.6s ease-in-out infinite; transform-box:fill-box; transform-origin:50% 100%}
+@keyframes puff{0%{transform:translate(0,0) scale(.7); opacity:0}18%{opacity:.7}100%{transform:translate(16px,-34px) scale(1.5); opacity:0}}
+.puff{animation:puff 3.6s ease-out infinite; transform-box:fill-box; transform-origin:center}
 @keyframes drift{0%,100%{transform:translate(0,0) rotate(0deg)} 35%{transform:translate(3px,-6px) rotate(3deg)} 70%{transform:translate(-2px,-3px) rotate(-2deg)}}
 .drift{animation:drift 7.5s ease-in-out infinite; transform-box:fill-box; transform-origin:center}
 .soar{animation:soar 6.5s ease-in-out infinite; transform-box:fill-box; transform-origin:center}
@@ -3650,6 +3654,39 @@ function island(){
 }
 
 /* --- OIL: WTI on the rock, Brent afloat. The gap is the spread. --- */
+// Where a price sits in the two years the slider covers, 0 at the low, 1 at
+// the high. This is what the flare and the exhaust are sized by.
+function oilHeat(key, price){
+  var h=(DATA.history && DATA.history.series) ? DATA.history.series[key] : null;
+  if(!h || h.length<2) return 0.5;
+  var lo=Math.min.apply(null,h), hi=Math.max.apply(null,h);
+  return hi>lo ? Math.max(0,Math.min(1,(price-lo)/(hi-lo))) : 0.5;
+}
+
+// Two layers in theme colours rather than one mixed rgb, so it goes amber to
+// rust in both palettes: the rust flame sits on the amber one at opacity t.
+function flare(x,y,t){
+  var h=6+28*t, w=3.5+5*t;
+  var d='M'+f(x-w,1)+','+f(y,1)+' C'+f(x-w*1.2,1)+','+f(y-h*.45,1)+' '+f(x-w*.2,1)+','+f(y-h*.6,1)+' '+f(x,1)+','+f(y-h,1)
+       +' C'+f(x+w*.2,1)+','+f(y-h*.6,1)+' '+f(x+w*1.2,1)+','+f(y-h*.45,1)+' '+f(x+w,1)+','+f(y,1)+' Z';
+  var core='M'+f(x-w*.45,1)+','+f(y,1)+' C'+f(x-w*.5,1)+','+f(y-h*.3,1)+' '+f(x-w*.1,1)+','+f(y-h*.42,1)+' '+f(x,1)+','+f(y-h*.62,1)
+       +' C'+f(x+w*.1,1)+','+f(y-h*.42,1)+' '+f(x+w*.5,1)+','+f(y-h*.3,1)+' '+f(x+w*.45,1)+','+f(y,1)+' Z';
+  return '<g class="flame">'
+    +'<path d="'+d+'" fill="var(--amber)" stroke="var(--ink)" stroke-width="1.4" stroke-linejoin="round" opacity=".92"/>'
+    +'<path d="'+d+'" fill="var(--rust)" opacity="'+f(Math.min(1,t*1.15)*.9,2)+'"/>'
+    +'<path d="'+core+'" fill="var(--panel)" opacity=".8"/></g>';
+}
+function exhaust(x,y,t){
+  var n=1+Math.round(t*3), r=4.5+t*8, out='';
+  for(var i=0;i<n;i++){
+    var delay=(i*(3.6/n)).toFixed(2), cy=y-r;
+    out+='<g class="puff" style="animation-delay:-'+delay+'s">'
+      +'<ellipse cx="'+f(x,1)+'" cy="'+f(cy,1)+'" rx="'+f(r,1)+'" ry="'+f(r*.78,1)+'" fill="var(--ink-soft)" stroke="var(--ink)" stroke-width=".8" stroke-opacity=".35"/>'
+      +'<ellipse cx="'+f(x,1)+'" cy="'+f(cy,1)+'" rx="'+f(r,1)+'" ry="'+f(r*.78,1)+'" fill="var(--rust)" opacity="'+f(Math.min(1,t*1.1)*.55,2)+'"/></g>';
+  }
+  return out;
+}
+
 function ships(){
   var wtiX=660, y=712, sc=0.64;
   var gap=Math.max(280,Math.min(360,120+D.spread*16)), brentX=wtiX+gap;   // faithful in the normal range, clamped at extremes
@@ -3669,6 +3706,9 @@ function ships(){
   }
   w+='<line x1="'+f(dx-9,1)+'" y1="'+f(dy+dh*0.35,1)+'" x2="'+f(dx+9,1)+'" y2="'+f(dy+dh*0.8,1)+'" stroke="var(--ink)" stroke-width="1.2" opacity=".45"/>';
   w+='<line x1="'+f(dx+9,1)+'" y1="'+f(dy+dh*0.35,1)+'" x2="'+f(dx-9,1)+'" y2="'+f(dy+dh*0.8,1)+'" stroke="var(--ink)" stroke-width="1.2" opacity=".45"/>';
+  // a short stack on the derrick head, and the flare the price sets
+  w+='<line x1="'+f(dx,1)+'" y1="'+f(dy,1)+'" x2="'+f(dx,1)+'" y2="'+f(dy-7,1)+'" stroke="var(--ink)" stroke-width="2.4" stroke-linecap="round"/>';
+  w+=flare(dx, dy-7, oilHeat("wti", DATA.oil.wti.price));
   // storage tanks on the shelf
   [[26,10],[48,8]].forEach(function(t){
     var tx=wtiX+t[0], ty=base-6, r=t[1];
@@ -3677,9 +3717,9 @@ function ships(){
   });
 
   var s='<g class="obj" id="obj-wti" data-metric="wti" tabindex="0" role="button" aria-label="West Texas Intermediate crude, '+f(DATA.oil.wti.price)+' dollars, priced inland and unable to reach a ship">'
-    +'<rect x="'+(wtiX-rw-14)+'" y="'+(base-rh-58)+'" width="'+(rw*2+28)+'" height="'+(rh+96)+'" fill="transparent"/>'+w
-    +'<rect class="focusring" x="'+(wtiX-rw-8)+'" y="'+(base-rh-54)+'" width="'+(rw*2+16)+'" height="'+(rh+86)+'" fill="none" stroke="var(--amber)" stroke-width="2.5" stroke-dasharray="6 5"/>'
-    +'<circle class="linkmark" cx="'+wtiX+'" cy="'+(base-rh-58)+'" r="7" fill="var(--amber)"/>'
+    +'<rect x="'+(wtiX-rw-14)+'" y="'+(base-rh-74)+'" width="'+(rw*2+28)+'" height="'+(rh+112)+'" fill="transparent"/>'+w
+    +'<rect class="focusring" x="'+(wtiX-rw-8)+'" y="'+(base-rh-70)+'" width="'+(rw*2+16)+'" height="'+(rh+102)+'" fill="none" stroke="var(--amber)" stroke-width="2.5" stroke-dasharray="6 5"/>'
+    +'<circle class="linkmark" cx="'+wtiX+'" cy="'+(base-rh-78)+'" r="7" fill="var(--amber)"/>'
     +'<text class="lbl" x="'+wtiX+'" y="'+(base+30)+'" text-anchor="middle" style="font-size:13px">WTI · landlocked</text>'
     +'<text class="num" x="'+wtiX+'" y="'+(base+50)+'" text-anchor="middle">$'+f(DATA.oil.wti.price)+'</text></g>';
 
@@ -3690,8 +3730,9 @@ function ships(){
     +'<line x1="'+(bx+bw2*0.62)+'" y1="'+(y-24*sc)+'" x2="'+(bx+bw2*0.62)+'" y2="'+(y-46*sc)+'" stroke="var(--ink)" stroke-width="1.8"/>';
   for(var j=0;j<3;j++) b+='<rect x="'+(bx-bw2*0.82+j*bw2*0.30)+'" y="'+(y-13*sc)+'" width="'+(bw2*0.24)+'" height="'+(13*sc)+'" rx="'+(6*sc)+'" fill="var(--amber)" stroke="var(--ink)" stroke-width="1.5" opacity=".85"/>';
   b+='<path d="M'+(bx-bw2-16)+','+(y+20*sc)+' q 18,7 38,0 q 18,-7 38,0" fill="none" stroke="var(--sea-deep)" stroke-width="2" opacity=".8"/>';
+  b+=exhaust(bx+bw2*0.62, y-46*sc, oilHeat("brent", DATA.oil.brent.price));
   s+='<g class="obj" id="obj-brent" data-metric="brent" tabindex="0" role="button" aria-label="Brent crude, '+f(DATA.oil.brent.price)+' dollars, seaborne benchmark">'
-    +'<rect x="'+(bx-bw2-20)+'" y="'+(y-56*sc)+'" width="'+(bw2*2+40)+'" height="'+(96*sc)+'" fill="transparent"/>'+b
+    +'<rect x="'+(bx-bw2-20)+'" y="'+(y-56*sc-44)+'" width="'+(bw2*2+40)+'" height="'+(96*sc+44)+'" fill="transparent"/>'+b
     +'<rect class="focusring" x="'+(bx-bw2-14)+'" y="'+(y-52*sc)+'" width="'+(bw2*2+28)+'" height="'+(88*sc)+'" fill="none" stroke="var(--amber)" stroke-width="2.5" stroke-dasharray="6 5"/>'
     +'<circle class="linkmark" cx="'+bx+'" cy="'+(y-56*sc)+'" r="7" fill="var(--amber)"/>'
     +'<text class="lbl" x="'+bx+'" y="'+(y+48*sc)+'" text-anchor="middle" style="font-size:13px">Brent · seaborne</text>'
@@ -3699,11 +3740,12 @@ function ships(){
 
   /* --- the spread, measured across the water between them --- */
   var col=D.spread>8?'var(--rust)':'var(--amber)', my=y-120;
+  var sx=wtiX+14;   // off the derrick's shoulder, so the flare does not cross it
   s+='<g pointer-events="none">'
-    +'<line x1="'+wtiX+'" y1="'+my+'" x2="'+bx+'" y2="'+my+'" stroke="'+col+'" stroke-width="1.5"/>'
-    +'<line x1="'+wtiX+'" y1="'+(my-6)+'" x2="'+wtiX+'" y2="'+(my+6)+'" stroke="'+col+'" stroke-width="1.5"/>'
+    +'<line x1="'+sx+'" y1="'+my+'" x2="'+bx+'" y2="'+my+'" stroke="'+col+'" stroke-width="1.5"/>'
+    +'<line x1="'+sx+'" y1="'+(my-6)+'" x2="'+sx+'" y2="'+(my+6)+'" stroke="'+col+'" stroke-width="1.5"/>'
     +'<line x1="'+bx+'" y1="'+(my-6)+'" x2="'+bx+'" y2="'+(my+6)+'" stroke="'+col+'" stroke-width="1.5"/>'
-    +'<text class="num" x="'+((wtiX+bx)/2)+'" y="'+(my-9)+'" text-anchor="middle" fill="'+col+'" style="font-size:12.5px">$'+f(D.spread)+' spread</text></g>';
+    +'<text class="num" x="'+((sx+bx)/2)+'" y="'+(my-9)+'" text-anchor="middle" fill="'+col+'" style="font-size:12.5px">$'+f(D.spread)+' spread</text></g>';
 
   return s;
 }
