@@ -502,6 +502,7 @@ def build(S, manual):
         },
         "ai": manual["ai"],   # hand-entered; no FRED equivalent
         "watch": manual["watch"],
+        "news": manual.get("news", []),
         "components": components,
     }
 

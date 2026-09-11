@@ -50,6 +50,34 @@
       "what": "Payrolls"
     }
   ],
+  "news": [
+    {
+      "when": "11 Sep",
+      "what": "10-year 4.95%, highest since 2023. 2-year 4.62%, 30-year 5.35%.",
+      "key": true
+    },
+    {
+      "when": "10 Sep",
+      "what": "August CPI 3.35% y/y, from 3.30%. Houthi attacks on shipping."
+    },
+    {
+      "when": "9 Sep",
+      "what": "Brent through $100."
+    },
+    {
+      "when": "4 Sep",
+      "what": "Payrolls +162,000 vs 58,000 expected."
+    },
+    {
+      "when": "3 Sep",
+      "what": "Waller: no hike vote unless conditions change. Vance calls for a cut. GPT-6 Astra released."
+    },
+    {
+      "when": "1 Sep",
+      "what": "U.S.-Iran strikes resume after a month's pause."
+    }
+  ],
+  "_news_note": "The newspaper on the map. Dated bullets, newest first, five to seven at most; the oldest falls off. Facts only, the take lives in the read. key:true marks one row rust.",
   "_stance_note": "fed.stance drives the bird on the Federal Reserve: hawkish | dovish | neutral",
   "_ai_note": "Hand-entered - no FRED series covers company capex. The sentence shown lives in COPY.ai in index.html.",
   "_fed_note": "lastMove 0 means the FOMC held. Use -0.25 / +0.25 only for an actual move. Hand-entered - nothing validates this.",

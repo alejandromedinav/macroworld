@@ -450,6 +450,8 @@ svg.chart{display:block; width:100%; height:100%}
   .thesis-lbl{margin-bottom:12px}
 }
 @keyframes soar{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+@keyframes drift{0%,100%{transform:translate(0,0) rotate(0deg)} 35%{transform:translate(3px,-6px) rotate(3deg)} 70%{transform:translate(-2px,-3px) rotate(-2deg)}}
+.drift{animation:drift 7.5s ease-in-out infinite; transform-box:fill-box; transform-origin:center}
 .soar{animation:soar 6.5s ease-in-out infinite; transform-box:fill-box; transform-origin:center}
 @media (prefers-reduced-motion: reduce){
   *{transition-duration:.01ms !important; animation-duration:.01ms !important}
@@ -710,6 +712,33 @@ var DATA = {
     {
       "when": "2 Oct",
       "what": "Payrolls"
+    }
+  ],
+  "news": [
+    {
+      "when": "11 Sep",
+      "what": "10-year 4.95%, highest since 2023. 2-year 4.62%, 30-year 5.35%.",
+      "key": true
+    },
+    {
+      "when": "10 Sep",
+      "what": "August CPI 3.35% y/y, from 3.30%. Houthi attacks on shipping."
+    },
+    {
+      "when": "9 Sep",
+      "what": "Brent through $100."
+    },
+    {
+      "when": "4 Sep",
+      "what": "Payrolls +162,000 vs 58,000 expected."
+    },
+    {
+      "when": "3 Sep",
+      "what": "Waller: no hike vote unless conditions change. Vance calls for a cut. GPT-6 Astra released."
+    },
+    {
+      "when": "1 Sep",
+      "what": "U.S.-Iran strikes resume after a month's pause."
     }
   ],
   "components": [
@@ -3455,6 +3484,7 @@ var COPY = {
   debtAfter:"So, this record debt should grab our attention. Long term, it's not sustainable.",
   fisher:"Real = nominal − inflation. The waterline is inflation, the float is what's left.",
   watch: "What could move this next.",
+  news:  "The facts, dated. The take is behind the rocket.",
   rocket:"Where I think this is heading.",
   satellite:"Every figure on one screen.",
   comp:  "Width is the weight in the index, height is the year-over-year."
@@ -4088,10 +4118,34 @@ function tribute(){
   return g+'</g>';
 }
 
+/* --- THE NEWS: a broadsheet adrift in the sky, top-left, above the hawk ---
+   A door, like the rocket and the satellite: it opens the dated record of what
+   moved markets. Position on the outer g, motion on the inner, since a CSS
+   transform would otherwise replace the SVG one. */
+function newspaper(){
+  var px=104, py=292, k=1.45, g='';
+  g+='<g transform="translate('+px+','+py+') rotate(-9) scale('+k+')"><g class="drift">';
+  g+='<rect x="-22" y="-15" width="44" height="30" fill="var(--panel)" stroke="var(--ink)" stroke-width="1.5" stroke-linejoin="round"/>';
+  g+='<line x1="-22" y1="0.5" x2="22" y2="0.5" stroke="var(--ink)" stroke-width="1" opacity=".45"/>';
+  g+='<rect x="-18" y="-11.5" width="21" height="4.2" fill="var(--ink)" opacity=".82"/>';
+  g+='<line x1="6" y1="-10.5" x2="18" y2="-10.5" stroke="var(--ink)" stroke-width="1.1" opacity=".5"/>';
+  g+='<line x1="6" y1="-8.2" x2="18" y2="-8.2" stroke="var(--ink)" stroke-width="1.1" opacity=".5"/>';
+  [-4.5,-2,3.5,6,8.5,11].forEach(function(y,i){
+    g+='<line x1="-18" y1="'+y+'" x2="'+(i%3===2?9:18)+'" y2="'+y+'" stroke="var(--ink)" stroke-width="1.1" opacity=".38"/>';
+  });
+  g+='<rect x="-18" y="2.5" width="9" height="9.5" fill="var(--sea-deep)" opacity=".55"/>';
+  g+='</g></g>';
+  return '<g class="obj" id="obj-news" data-metric="news" tabindex="0" role="button" aria-label="The news: '+DATA.news.length+' dated items on what moved markets">'
+    +'<rect x="'+(px-46)+'" y="'+(py-44)+'" width="92" height="82" fill="transparent"/>'+g
+    +'<rect class="focusring" x="'+(px-40)+'" y="'+(py-34)+'" width="80" height="66" rx="3" fill="none" stroke="var(--rust)" stroke-width="2" stroke-dasharray="6 5"/>'
+    +'<circle class="linkmark" cx="'+px+'" cy="'+(py-40)+'" r="6" fill="var(--rust)"/>'
+    +'<text class="lbl" x="'+px+'" y="'+(py-44)+'" text-anchor="middle" style="font-size:12px">The news</text></g>';
+}
+
 function render(mix){
   document.getElementById("svg").innerHTML = defs()+grounds()+tribute()+clouds()+mountains()
     + '<line x1="0" y1="'+SEA+'" x2="'+W+'" y2="'+SEA+'" stroke="var(--ink)" stroke-width="1.5" opacity=".4"/>'
-    + lighthouse()+island()+satellite()+plane()+anchorDebt()+ships()
+    + lighthouse()+island()+satellite()+plane()+newspaper()+anchorDebt()+ships()
     + nearShore()+fed()+fisherRod()+rocketPad()+town(mix);
   wire();
 }
@@ -4154,6 +4208,10 @@ function copyForToday(m2){
     body:COPY.debt, points:POINTS.debt, after:COPY.debtAfter, tie:"Interest cost is the 30-year against this balance"};
   if(m2==="fisher") return {eyebrow:"Ex-post real policy rate", big:sgn(D.realPolicy,2,"pp"), chg:f(D.fundsNow)+"% effective funds − "+f(D.cpi,1)+"% CPI", chgUp:D.realPolicy<0,
     body:COPY.fisher, tie:"Ex-post · PCE basis "+sgn(D.realPolicyPce,2,"pp")+" · TIPS "+sgn(D.realMarket,2,"pp")};
+  if(m2==="news"){
+    var ni=(DATA.news||[]).map(function(n){ return '<li'+(n.key?' class="key"':'')+'><span>'+n.when+'</span>'+n.what+'</li>'; }).join("");
+    return {eyebrow:"What moved it", big:"", chg:"", list:'<ul>'+ni+'</ul>', body:"", tie:COPY.news};
+  }
   if(m2==="watch"){
     var li=DATA.watch.map(function(w){ return '<li'+(w.key?' class="key"':'')+'><span>'+w.when+'</span>'+w.what+'</li>'; }).join("");
     return {eyebrow:"Ahead", big:"", chg:"", list:'<ul>'+li+'</ul>', body:"", tie:COPY.watch};
@@ -4213,7 +4271,16 @@ function show(metric,node){
   var cw=290, ch=callout.offsetHeight||190;
   var left=Math.max(10,Math.min(sb.width-cw-10, nb.left-sb.left+nb.width/2-cw/2));
   var top=nb.top-sb.top-ch-14;
-  if(top<10) top=nb.top-sb.top+nb.height+14;
+  if(top<10){
+    // Nothing fits above an object in the top-left corner, and a tall card
+    // below it runs down over the coast. Beside it is open sky.
+    var beside=nb.right-sb.left+14;
+    if(nb.left-sb.left < sb.width*0.3 && beside+cw+10 < sb.width){
+      left=beside; top=Math.max(10, nb.top-sb.top-6);
+    } else {
+      top=nb.top-sb.top+nb.height+14;
+    }
+  }
   top=Math.max(10,Math.min(sb.height-ch-10,top));
   callout.style.left=left+"px"; callout.style.top=top+"px"; callout.classList.add("show");
   callout.scrollTop=0;
@@ -4467,7 +4534,7 @@ var QUARTERLY={debt_gdp:1}, MONTHLY={cpi:1,pce:1,airfare:1,c_shelter:1,c_food:1,
 // The island's capex is a 2026 estimate, the lighthouse lists events still to
 // come, and the hawk is today's stance. None of them have a past to show, so
 // rather than vanish and make the coastline lurch, they stand down.
-var STATIC_OBJECTS = ["obj-ai","obj-watch","obj-hawk"];
+var STATIC_OBJECTS = ["obj-ai","obj-watch","obj-hawk","obj-news"];
 function markStatic(){
   STATIC_OBJECTS.forEach(function(id){
     var el=document.getElementById(id); if(!el) return;
