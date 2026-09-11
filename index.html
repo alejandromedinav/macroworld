@@ -701,13 +701,9 @@ var DATA = {
   },
   "watch": [
     {
-      "when": "11 Sep",
-      "what": "August CPI",
-      "key": true
-    },
-    {
       "when": "16 Sep",
-      "what": "FOMC (hike or hold)"
+      "what": "FOMC (hike or hold)",
+      "key": true
     },
     {
       "when": "26 Sep",
@@ -726,7 +722,7 @@ var DATA = {
     },
     {
       "when": "10 Sep",
-      "what": "Houthi attacks on shipping sent Brent to about $109."
+      "what": "Houthi attacks on shipping sent Brent to about $108."
     },
     {
       "when": "9 Sep",
@@ -3479,7 +3475,7 @@ var COPY = {
   "30Y": "Long-term inflation expectations + concerns about government debt and borrowing.",
   "3M":  "Usually anchored to the Fed's current policy rate.",
   credit:"Tightening, not widening. The market is seeing current strong economic growth + large borrowing (thanks to AI Capex). So risk is being priced low, companies are accepting a high rate (due to the treasury yield floor).",
-  fed:   "New Fed chair Warsh recently spoke at Jackson Hole, hinting at a hike, the only “forward guidance” he’s provided. They held rates in July, possibly (very likely) due to the incumbent administration not wanting high rates (makes borrowing more expensive → approval rating falls). Fed governor Waller said 8 days ago he will vote to hold rates, if conditions don’t worsen. Well, the CPI was released today, and it doesn’t swing in his favor. So will Warsh hike in 5 days? It’s live on Kalshi! (this website does not promote gambling, sorry sports betting?)",
+  fed:   "New Fed chair Warsh recently spoke at Jackson Hole, hinting at a hike, the only “forward guidance” he’s provided. They held rates in July, possibly (very likely) due to the incumbent administration not wanting high rates (makes borrowing more expensive → approval rating falls). Fed governor Waller said {{since:2026-09-03}} he will vote to hold rates, if conditions don’t worsen. Well, the CPI was released {{since:2026-09-11}}, and it doesn’t swing in his favor. So will Warsh hike {{until:2026-09-16}}? It’s live on Kalshi! (this website does not promote gambling, sorry sports betting?)",
   wti:   "U.S. oil benchmark. More sensitive to U.S. supply, inventories, and production.",
   brent: "Global oil benchmark. More sensitive to worldwide supply and geopolitical risk. U.S.-Iran conflict and disruption in the Strait of Hormuz are directly affecting this.",
   airfare:"Thinking about going on that trip? Forget about it, throw your Hokas on or pick up some overtime.",
@@ -4259,7 +4255,7 @@ function copyForToday(m2){
     body:COPY.fisher, tie:"Ex-post · PCE basis "+sgn(D.realPolicyPce,2,"pp")+" · TIPS "+sgn(D.realMarket,2,"pp")};
   if(m2==="news"){
     var ni=(DATA.news||[]).map(function(n){ return '<li'+(n.key?' class="key"':'')+'><span>'+n.when+'</span>'+n.what+'</li>'; }).join("");
-    return {eyebrow:"What moved it", big:"", chg:"", list:'<ul>'+ni+'</ul>', body:COPY.news, tie:"The facts, dated. The take is behind the rocket."};
+    return {eyebrow:"What moved it", big:"", chg:"", list:'<ul>'+ni+'</ul>', body:"", tie:COPY.news};
   }
   if(m2==="watch"){
     var li=DATA.watch.map(function(w){ return '<li'+(w.key?' class="key"':'')+'><span>'+w.when+'</span>'+w.what+'</li>'; }).join("");
@@ -4300,10 +4296,36 @@ function tokens(){
     wti:"$"+f(DATA.oil.wti.price), brent:"$"+f(DATA.oil.brent.price)
   };
 }
+// {{since:2026-09-03}} reads "8 days ago" and {{until:2026-09-16}} reads "in 5
+// days", counted from today in New York, so a line written once stays right.
+// Every relative date typed by hand on this page has drifted at least once.
+function nyToday(){
+  var ny=new Date(new Date().toLocaleString("en-US",{timeZone:"America/New_York"}));
+  return Date.UTC(ny.getFullYear(), ny.getMonth(), ny.getDate());
+}
+function daysFrom(iso){
+  var p=iso.split("-"), then=Date.UTC(+p[0], +p[1]-1, +p[2]);
+  return Math.round((nyToday()-then)/86400000);   // positive means in the past
+}
+function relDate(kind, iso){
+  var n=daysFrom(iso);
+  if(kind==="until") n=-n;                          // positive means still ahead
+  if(n===0) return "today";
+  if(kind==="since"){
+    if(n===1) return "yesterday";
+    if(n<0)  return (-n===1) ? "tomorrow" : "in "+(-n)+" days";
+    return n+" days ago";
+  }
+  if(n===1) return "tomorrow";
+  if(n<0)  return (-n===1) ? "yesterday" : (-n)+" days ago";
+  return "in "+n+" days";
+}
 function fill(t){
   if(!t) return t;
   var T=tokens();
-  return t.replace(/\{\{(\w+)\}\}/g, function(m,k){ return T[k]!==undefined ? T[k] : m; });
+  return t
+    .replace(/\{\{(since|until):(\d{4}-\d{2}-\d{2})\}\}/g, function(m,k,iso){ return relDate(k,iso); })
+    .replace(/\{\{(\w+)\}\}/g, function(m,k){ return T[k]!==undefined ? T[k] : m; });
 }
 
 var scene=document.getElementById("scene"), callout=document.getElementById("callout");

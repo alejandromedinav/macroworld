@@ -33,13 +33,9 @@
   },
   "watch": [
     {
-      "when": "11 Sep",
-      "what": "August CPI",
-      "key": true
-    },
-    {
       "when": "16 Sep",
-      "what": "FOMC (hike or hold)"
+      "what": "FOMC (hike or hold)",
+      "key": true
     },
     {
       "when": "26 Sep",
@@ -58,7 +54,7 @@
     },
     {
       "when": "10 Sep",
-      "what": "Houthi attacks on shipping sent Brent to about $109."
+      "what": "Houthi attacks on shipping sent Brent to about $108."
     },
     {
       "when": "9 Sep",
