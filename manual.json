@@ -48,6 +48,10 @@
   ],
   "news": [
     {
+      "when": "12 Sep",
+      "what": "Anthropic CEO just said we need to slow down the AI race. Take a second to think about that."
+    },
+    {
       "when": "11 Sep",
       "what": "CPI report → headline MoM came in hotter than expected (also core).",
       "key": true
