@@ -53,6 +53,10 @@
       "key": true
     },
     {
+      "when": "14 Sep",
+      "what": "S&P down as a direct effect of the 12 Sep news, semiconductor index down 5%. Investors questioning growth after Amodei, Altman and Musk said models need to slow down, due to regulation testing and the risks of these models."
+    },
+    {
       "when": "12 Sep",
       "what": "Anthropic CEO just said we need to slow down the AI race. Take a second to think about that."
     },
@@ -71,10 +75,6 @@
     {
       "when": "4 Sep",
       "what": "Payrolls +162,000 vs 58,000 expected → interesting breakdown, a loss in tech jobs."
-    },
-    {
-      "when": "3 Sep",
-      "what": "Waller: no hike vote unless conditions change. Vance calls for a cut. GPT-6 Astra released."
     }
   ],
   "_news_note": "The newspaper on the map. Dated bullets, newest first, five to seven at most; the oldest falls off. Facts only, the take lives in the read. key:true marks one row rust.",
