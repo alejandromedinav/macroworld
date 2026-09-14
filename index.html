@@ -3583,6 +3583,17 @@ function clouds(){
 }
 
 /* --- CURVE: mountain range (peaks are true yields) --- */
+// The alert made visible from across the map: a fault line down the summit,
+// in the same ink as the range, with one branch. Hairline, not a cartoon.
+function fracture(px,py){
+  var d='M'+f(px+1,1)+','+f(py+3,1)+' l-3,11 l4,9 l-5,13 l3,10 l-4,12 l2,9';
+  var b='M'+f(px-2,1)+','+f(py+23,1)+' l-7,6 l2,8 l-5,7';
+  return '<g pointer-events="none">'
+    +'<path d="'+d+'" fill="none" stroke="var(--ink)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" opacity=".8"/>'
+    +'<path d="'+b+'" fill="none" stroke="var(--ink)" stroke-width="1.2" stroke-linejoin="round" stroke-linecap="round" opacity=".6"/>'
+    +'<path d="'+d+'" fill="none" stroke="var(--rust)" stroke-width=".8" stroke-linejoin="round" opacity=".7"/></g>';
+}
+
 function mountains(){
   var pts=[[190,SEA]];
   DATA.curve.forEach(function(c,i){
@@ -3602,6 +3613,7 @@ function mountains(){
       +'<circle class="focusring" cx="'+px+'" cy="'+f(py,1)+'" r="13" fill="none" stroke="var(--verd)" stroke-width="2.5"/>'
       +'<circle class="linkmark" cx="'+px+'" cy="'+f(py,1)+'" r="7" fill="var(--verd)"/>'
       +'<text class="num'+(c.alert?' alert':'')+'" x="'+px+'" y="'+f(py-22,1)+'" text-anchor="middle">'+f(c.yield)+'%</text>'
+      +(c.alert ? fracture(px,py) : '')
       +'<text class="lbl'+(c.alert?' alert':'')+'" x="'+px+'" y="'+f(py-41,1)+'" text-anchor="middle" style="font-size:13px">'+c.key+'</text>'
       +(c.note?'<text class="sounding" x="'+px+'" y="'+f(py-57,1)+'" text-anchor="middle" fill="var(--rust)" opacity="1">'+c.note+'</text>':'')
       +'</g>';
@@ -3922,7 +3934,11 @@ function fed(){
     +'<rect class="focusring" x="'+(bx-20)+'" y="'+f(by-40,1)+'" width="'+(bw+40)+'" height="'+(bh+54)+'" fill="none" stroke="var(--verd)" stroke-width="2.5" stroke-dasharray="6 5"/>'
     +'<circle class="linkmark" cx="'+(bx+bw/2)+'" cy="'+f(by-44,1)+'" r="7" fill="var(--verd)"/>'
     +'<text class="lbl" x="'+(bx+bw/2)+'" y="'+(NEAR-78)+'" text-anchor="middle" style="font-size:13px">Federal Reserve</text>'
-    +'<text class="num" x="'+(bx+bw/2)+'" y="'+(NEAR-57)+'" text-anchor="middle">'+f(DATA.fed.lower)+'–'+f(DATA.fed.upper)+'%</text></g>';
+    +'<text class="num" x="'+(bx+bw/2)+'" y="'+(NEAR-57)+'" text-anchor="middle">'+f(DATA.fed.lower)+'–'+f(DATA.fed.upper)+'%</text>'
+    +(function(){ var n=daysToMeeting(); if(n===null||n<0||n>14) return '';
+        var w = n===0 ? 'Decision today' : n===1 ? 'Decision tomorrow' : 'Decision in '+n+' days';
+        return '<text class="lbl alert" x="'+(bx+bw/2)+'" y="'+(NEAR-38)+'" text-anchor="middle" style="font-size:12px">'+w+'</text>'; })()
+    +'</g>';
   return s+'</g>';
 }
 
@@ -4199,6 +4215,7 @@ function render(mix){
     + lighthouse()+island()+satellite()+plane()+newspaper()+anchorDebt()+ships()
     + nearShore()+fed()+fisherRod()+rocketPad()+town(mix);
   wire();
+  if(typeof placeNews==="function") placeNews();
 }
 
 /* ============================================================
@@ -4313,6 +4330,15 @@ function daysFrom(iso){
   var p=iso.split("-"), then=Date.UTC(+p[0], +p[1]-1, +p[2]);
   return Math.round((nyToday()-then)/86400000);   // positive means in the past
 }
+// manual.json writes the meeting as "16 Sep 2026"; count from today, New York.
+function daysToMeeting(){
+  var m=(DATA.fed.nextDate||"").match(/^(\d{1,2})\s+([A-Za-z]{3})\w*\s+(\d{4})$/);
+  if(!m) return null;
+  var M={jan:0,feb:1,mar:2,apr:3,may:4,jun:5,jul:6,aug:7,sep:8,oct:9,nov:10,dec:11}[m[2].toLowerCase()];
+  if(M===undefined) return null;
+  return Math.round((Date.UTC(+m[3],M,+m[1])-nyToday())/86400000);
+}
+
 function relDate(kind, iso){
   var n=daysFrom(iso);
   if(kind==="until") n=-n;                          // positive means still ahead
@@ -4885,10 +4911,25 @@ function fitMasthead(){
   placeCredit();
 }
 window.addEventListener("resize",fitMasthead);
+
+// The scroll sits under the masthead in SVG units while the masthead wraps in
+// CSS pixels, so on a tall narrow window the two meet. Measure, and drop the
+// scroll just far enough to clear, capped short of the hawk.
+function placeNews(){
+  var g=document.getElementById("obj-news"), mk=document.querySelector(".mark"), svg=document.getElementById("svg");
+  if(!g||!mk||!svg) return;
+  if(window.matchMedia("(max-width: 760px)").matches){ g.removeAttribute("transform"); return; }
+  g.removeAttribute("transform");
+  var need=(mk.getBoundingClientRect().bottom+10)-g.getBoundingClientRect().top;
+  if(need<=0) return;
+  var ctm=svg.getScreenCTM(), scale=ctm?ctm.a:1;
+  g.setAttribute("transform","translate(0,"+Math.min(100, need/scale).toFixed(1)+")");
+}
+window.addEventListener("resize",placeNews);
 phoneHint();
 placeCredit();
 paintTeaser();
-requestAnimationFrame(fitMasthead);
+requestAnimationFrame(function(){ fitMasthead(); placeNews(); });
 // The standfirst is set in a webfont, so the mark grows taller once it loads and
 // anything measured before that is stale. Measure again when the fonts settle.
 if(document.fonts && document.fonts.ready) document.fonts.ready.then(fitMasthead);
