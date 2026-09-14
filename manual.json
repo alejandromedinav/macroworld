@@ -48,13 +48,17 @@
   ],
   "news": [
     {
+      "when": "14 Sep",
+      "what": "10-year touches 5%, the first time since 2023. Eases to 4.95% by afternoon.",
+      "key": true
+    },
+    {
       "when": "12 Sep",
       "what": "Anthropic CEO just said we need to slow down the AI race. Take a second to think about that."
     },
     {
       "when": "11 Sep",
-      "what": "CPI report → headline MoM came in hotter than expected (also core).",
-      "key": true
+      "what": "CPI report → headline MoM came in hotter than expected (also core)."
     },
     {
       "when": "10 Sep",
@@ -71,10 +75,6 @@
     {
       "when": "3 Sep",
       "what": "Waller: no hike vote unless conditions change. Vance calls for a cut. GPT-6 Astra released."
-    },
-    {
-      "when": "1 Sep",
-      "what": "U.S.-Iran strikes resume after a month's pause."
     }
   ],
   "_news_note": "The newspaper on the map. Dated bullets, newest first, five to seven at most; the oldest falls off. Facts only, the take lives in the read. key:true marks one row rust.",
@@ -82,11 +82,16 @@
   "_ai_note": "Hand-entered - no FRED series covers company capex. The sentence shown lives in COPY.ai in index.html.",
   "_fed_note": "lastMove 0 means the FOMC held. Use -0.25 / +0.25 only for an actual move. Hand-entered - nothing validates this.",
   "oil": {
-    "asOf": "2026-09-11",
-    "wti": 100.1,
-    "brent": 105.0,
+    "asOf": "2026-09-14",
+    "wti": 103.0,
+    "brent": 107.0,
     "note": "Front-month futures, read by hand",
     "history": [
+      {
+        "asOf": "2026-09-14",
+        "wti": 103.0,
+        "brent": 107.0
+      },
       {
         "asOf": "2026-09-11",
         "wti": 100.1,
@@ -106,24 +111,20 @@
         "asOf": "2026-09-08",
         "wti": 94.3,
         "brent": 99.3
-      },
-      {
-        "asOf": "2026-09-05",
-        "wti": 92.7,
-        "brent": 97.3
       }
     ]
   },
   "_oil_note": "Optional daily override. Set asOf to the date you read them and fill wti/brent. Used only while newer than FRED's print - if you stop updating, it falls back to FRED automatically rather than showing an ever-staler number.",
   "curve": {
-    "asOf": "2026-09-11",
+    "asOf": "2026-09-14",
     "values": {
-      "3M": 4.0,
+      "3M": 4.03,
       "2Y": 4.62,
-      "10Y": 4.95,
-      "30Y": 5.35
+      "10Y": 5.0
     },
-    "notes": {},
+    "notes": {
+      "10Y": "Intraday high · highest since 2023"
+    },
     "alert": [
       "10Y"
     ]
