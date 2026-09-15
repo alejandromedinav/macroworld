@@ -515,6 +515,17 @@ HEADER = (
 END = "/* === DATA:END === */"
 
 
+def check_document(html):
+    """A stray edit once left CSS ahead of the doctype: the browser rendered it as
+    text on a white page for a frame and dropped into quirks mode. Refuse to
+    write anything that does not open as a document."""
+    if not html.lstrip().startswith("<!DOCTYPE html>"):
+        sys.exit("Build failed, nothing written: index.html does not begin with <!DOCTYPE html>")
+    head = html[: html.index("<body")]
+    if "<style>" not in head or head.count("<style>") != head.count("</style>"):
+        sys.exit("Build failed, nothing written: <style> block is not intact inside <head>")
+
+
 def inject(data):
     """Rewrites only the DATA block between the markers.
 
