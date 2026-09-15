@@ -692,8 +692,7 @@ var DATA = {
   "debt": {
     "gdp": 122.6,
     "chg": 2.0,
-    "level": 40.05,
-    "levelSource": "Treasury, daily"
+    "level": 39.07
   },
   "airfare": {
     "yoy": 23.4,
@@ -3498,115 +3497,9 @@ var DATA = {
         16.05,
         16.05,
         16.05
-      ],
-      "debt_penny": [
-        35.32,
-        35.32,
-        35.68,
-        35.71,
-        35.77,
-        35.82,
-        35.87,
-        35.95,
-        35.96,
-        36.05,
-        36.09,
-        36.17,
-        36.13,
-        36.16,
-        36.14,
-        36.16,
-        36.17,
-        36.21,
-        36.22,
-        36.22,
-        36.22,
-        36.22,
-        36.22,
-        36.22,
-        36.22,
-        36.22,
-        36.22,
-        36.22,
-        36.22,
-        36.21,
-        36.22,
-        36.22,
-        36.21,
-        36.21,
-        36.22,
-        36.22,
-        36.22,
-        36.22,
-        36.22,
-        36.22,
-        36.22,
-        36.22,
-        36.6,
-        36.65,
-        36.73,
-        36.83,
-        37.0,
-        37.14,
-        37.23,
-        37.27,
-        37.43,
-        37.46,
-        37.51,
-        37.5,
-        37.85,
-        37.89,
-        37.98,
-        38.01,
-        38.04,
-        38.12,
-        38.15,
-        38.33,
-        38.4,
-        38.39,
-        38.34,
-        38.37,
-        38.38,
-        38.42,
-        38.43,
-        38.46,
-        38.49,
-        38.52,
-        38.59,
-        38.65,
-        38.75,
-        38.77,
-        38.87,
-        38.9,
-        39.0,
-        39.02,
-        38.98,
-        38.95,
-        38.98,
-        38.95,
-        38.88,
-        38.94,
-        39.0,
-        39.11,
-        39.21,
-        39.22,
-        39.21,
-        39.31,
-        39.34,
-        39.38,
-        39.41,
-        39.58,
-        39.69,
-        39.77,
-        39.89,
-        39.93,
-        40.03,
-        40.1,
-        40.09,
-        40.05
       ]
     },
-    "latestDebt": 40.05
+    "latestDebt": null
   }
 };
 /* === DATA:END === */
@@ -4103,7 +3996,7 @@ function fed(){
 // one. Reads the whole table in a glance: up, flat, down, flat, and tomorrow.
 function fedStairs(cx,y1){
   var P=DATA.fedPath||[]; if(P.length<2) return '';
-  var W=100, H=20, x0=cx-W/2, n=P.length+1;           // +1 for the pending step
+  var W=132, H=24, x0=cx-W/2, n=P.length+1;           // +1 for the pending step
   var lo=Math.min.apply(null,P.map(function(r){return r.upper;})), hi=Math.max.apply(null,P.map(function(r){return r.upper;}));
   if(hi<=lo) hi=lo+0.25;
   var step=W/n, Y=function(u){ return y1-(u-lo)/(hi-lo)*H; };
@@ -4116,7 +4009,7 @@ function fedStairs(cx,y1){
   }
   var xl=x0+P.length*step, yl=Y(P[P.length-1].upper);
   g+='<line x1="'+f(xl,1)+'" y1="'+f(yl,1)+'" x2="'+f(xl+step,1)+'" y2="'+f(yl,1)+'" stroke="var(--rust)" stroke-width="2" stroke-dasharray="2.5 2.5" stroke-linecap="round"/>';
-  g+='<text class="sounding" x="'+f(xl+step+3,1)+'" y="'+f(yl+3.5,1)+'" fill="var(--rust)" opacity="1" style="font-size:10px">?</text>';
+  g+='<text class="sounding" x="'+f(xl+step+3,1)+'" y="'+f(yl+4,1)+'" fill="var(--rust)" opacity="1" style="font-size:12px; font-weight:600">?</text>';
   g+='</g>';
   var holds=P.filter(function(r){return r.kind==="hold";}).length, cuts=P.filter(function(r){return r.kind==="cut";}).length;
   return '<g class="obj" id="obj-fedpath" data-metric="fedpath" tabindex="0" role="button" aria-label="Fed decisions since the last hike: '+holds+' holds and '+cuts+' cuts">'
@@ -4395,7 +4288,7 @@ function render(mix){
   document.getElementById("svg").innerHTML = defs()+grounds()+tribute()+clouds()+mountains()
     + '<line x1="0" y1="'+SEA+'" x2="'+W+'" y2="'+SEA+'" stroke="var(--ink)" stroke-width="1.5" opacity=".4"/>'
     + lighthouse()+island()+satellite()+plane()+newspaper()+anchorDebt()+ships()
-    + nearShore()+fed()+fedStairs(75, NEAR-8)+fisherRod()+rocketPad()+town(mix);
+    + nearShore()+fed()+fedStairs(76, NEAR-5)+fisherRod()+rocketPad()+town(mix);
   wire();
   if(typeof placeNews==="function") placeNews();
 }
@@ -4462,7 +4355,7 @@ function copyForToday(m2){
     chg:(frame!==null ? "" : (DATA.fed.lastMove===0 ? "Held on "+DATA.fed.lastDate : sgn(DATA.fed.lastMove,2,"pp on "+DATA.fed.lastDate))),
     chgUp:DATA.fed.lastMove>0,
     body:COPY.fed,
-    tie:"Real policy rate "+sgn(D.realPolicy,2,"pp")+(frame!==null ? "" : " · next meeting "+DATA.fed.nextDate)};
+    tie:"Real policy rate "+sgn(D.realPolicy,2,"pp")+(frame!==null ? "" : " · next meeting "+DATA.fed.nextDate+" · decision record below")};
   if(m2==="fedpath"){
     var P=DATA.fedPath||[], holds=P.filter(function(r){return r.kind==="hold";}).length, cuts=P.filter(function(r){return r.kind==="cut";}).length;
     return {eyebrow:"Fed decisions since the last hike", big:"", chg:"", body:"", table:fedTable(),
