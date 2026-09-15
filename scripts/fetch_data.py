@@ -528,7 +528,9 @@ def inject(data):
     if a == -1 or b == -1:
         raise RuntimeError("DATA markers not found in index.html")
     block = HEADER + "var DATA = " + json.dumps(data, indent=2, ensure_ascii=False) + ";\n"
-    path.write_text(html[:a] + block + html[b:], encoding="utf8")
+    out = html[:a] + block + html[b:]
+    check_document(out)
+    path.write_text(out, encoding="utf8")
 
 
 DEBT_PENNY = ("https://api.fiscaldata.treasury.gov/services/api/fiscal_service"

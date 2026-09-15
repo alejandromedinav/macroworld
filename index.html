@@ -1,20 +1,3 @@
-/* A tide table: ruled, monospaced, a header row, every column aligned. */
-.fedhist{margin-top:4px}
-.fedhist-cap{font-family:"IBM Plex Mono",monospace; font-size:10.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--ink-soft); margin-bottom:7px}
-.fedhist table{width:100%; border-collapse:collapse; font-family:"IBM Plex Mono",monospace; font-size:11.5px;
-  border-top:1.5px solid var(--ink); border-bottom:1.5px solid var(--ink)}
-.fedhist th{font-weight:500; font-size:9.5px; letter-spacing:.16em; text-transform:uppercase; color:var(--ink-soft);
-  text-align:left; padding:5px 6px 4px; border-bottom:1px solid var(--ink)}
-.fedhist td{padding:4px 6px; border-top:1px solid var(--rule-soft); vertical-align:top; white-space:nowrap}
-.fedhist th+th, .fedhist td+td{border-left:1px solid var(--rule-soft)}
-.fedhist tbody tr:nth-child(even) td{background:rgba(196,185,159,.13)}
-.fedhist td:first-child{color:var(--ink-soft); width:44%}
-.fedhist td:nth-child(2){font-weight:600; width:28%}
-.fedhist th:last-child, .fedhist td:last-child{text-align:right}
-.fedhist tr.hold td:nth-child(2){color:var(--ink-soft); font-weight:500}
-.fedhist tr.cut td:nth-child(2){color:var(--verd)}
-.fedhist tr.hike td:nth-child(2){color:var(--rust)}
-.fedhist tr.next td{color:var(--rust); font-weight:600; background:none !important}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -231,17 +214,23 @@ svg.chart{display:block; width:100%; height:100%}
   .hint{font-size:13px}
 }
 
-.fedhist{margin-top:11px}
-.fedhist-cap{font-family:"IBM Plex Mono",monospace; font-size:10.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--ink-soft); margin-bottom:5px}
-.fedhist table{width:100%; border-collapse:collapse; font-size:12.5px}
-.fedhist td{padding:2.5px 0; border-top:1px solid var(--rule-soft); vertical-align:top}
-.fedhist td:first-child{font-family:"IBM Plex Mono",monospace; font-size:11.5px; color:var(--ink-soft); width:46%; padding-right:8px}
-.fedhist td:nth-child(2){font-weight:600; width:26%}
-.fedhist td:last-child{font-family:"IBM Plex Mono",monospace; font-size:11.5px; text-align:right; white-space:nowrap}
+/* A tide table: ruled, monospaced, a header row, every column aligned. */
+.fedhist{margin-top:4px}
+.fedhist-cap{font-family:"IBM Plex Mono",monospace; font-size:10.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--ink-soft); margin-bottom:7px}
+.fedhist table{width:100%; border-collapse:collapse; font-family:"IBM Plex Mono",monospace; font-size:11.5px;
+  border-top:1.5px solid var(--ink); border-bottom:1.5px solid var(--ink)}
+.fedhist th{font-weight:500; font-size:9.5px; letter-spacing:.16em; text-transform:uppercase; color:var(--ink-soft);
+  text-align:left; padding:5px 6px 4px; border-bottom:1px solid var(--ink)}
+.fedhist td{padding:4px 6px; border-top:1px solid var(--rule-soft); vertical-align:top; white-space:nowrap}
+.fedhist th+th, .fedhist td+td{border-left:1px solid var(--rule-soft)}
+.fedhist tbody tr:nth-child(even) td{background:rgba(196,185,159,.13)}
+.fedhist td:first-child{color:var(--ink-soft); width:44%}
+.fedhist td:nth-child(2){font-weight:600; width:28%}
+.fedhist th:last-child, .fedhist td:last-child{text-align:right}
 .fedhist tr.hold td:nth-child(2){color:var(--ink-soft); font-weight:500}
 .fedhist tr.cut td:nth-child(2){color:var(--verd)}
 .fedhist tr.hike td:nth-child(2){color:var(--rust)}
-.fedhist tr.next td{color:var(--rust); font-weight:600}
+.fedhist tr.next td{color:var(--rust); font-weight:600; background:none !important}
 .callout.show.scrollable{pointer-events:auto}
 .callout .tie{margin-top:10px; padding-top:9px; border-top:1px solid var(--rule-soft); font-size:13px; letter-spacing:.05em; text-transform:uppercase; color:var(--verd); font-weight:600}
 /* The number is the point of the tie line, so it outweighs its own label. */
