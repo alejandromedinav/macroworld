@@ -177,12 +177,12 @@
   "news": [
     {
       "when": "15 Sep",
-      "what": "Mostly political today. But, 10 year is still holding at 5%. Fed decision is tomorrow, will they end the 3-year streak of not hiking rates?"
+      "what": "Mostly political today. But, 10 year is still holding at 5%. Fed decision is tomorrow, will they end the 3-year streak of not hiking rates?",
+      "key": true
     },
     {
       "when": "14 Sep",
-      "what": "10 year hit 5% for the first time since 2023. The other time it hit that was in 2007...",
-      "key": true
+      "what": "10 year hit 5% for the first time since 2023. The other time it hit that was in 2007..."
     },
     {
       "when": "14 Sep",

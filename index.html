@@ -1,3 +1,20 @@
+/* A tide table: ruled, monospaced, a header row, every column aligned. */
+.fedhist{margin-top:4px}
+.fedhist-cap{font-family:"IBM Plex Mono",monospace; font-size:10.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--ink-soft); margin-bottom:7px}
+.fedhist table{width:100%; border-collapse:collapse; font-family:"IBM Plex Mono",monospace; font-size:11.5px;
+  border-top:1.5px solid var(--ink); border-bottom:1.5px solid var(--ink)}
+.fedhist th{font-weight:500; font-size:9.5px; letter-spacing:.16em; text-transform:uppercase; color:var(--ink-soft);
+  text-align:left; padding:5px 6px 4px; border-bottom:1px solid var(--ink)}
+.fedhist td{padding:4px 6px; border-top:1px solid var(--rule-soft); vertical-align:top; white-space:nowrap}
+.fedhist th+th, .fedhist td+td{border-left:1px solid var(--rule-soft)}
+.fedhist tbody tr:nth-child(even) td{background:rgba(196,185,159,.13)}
+.fedhist td:first-child{color:var(--ink-soft); width:44%}
+.fedhist td:nth-child(2){font-weight:600; width:28%}
+.fedhist th:last-child, .fedhist td:last-child{text-align:right}
+.fedhist tr.hold td:nth-child(2){color:var(--ink-soft); font-weight:500}
+.fedhist tr.cut td:nth-child(2){color:var(--verd)}
+.fedhist tr.hike td:nth-child(2){color:var(--rust)}
+.fedhist tr.next td{color:var(--rust); font-weight:600; background:none !important}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -730,12 +747,12 @@ var DATA = {
   "news": [
     {
       "when": "15 Sep",
-      "what": "Mostly political today. But, 10 year is still holding at 5%. Fed decision is tomorrow, will they end the 3-year streak of not hiking rates?"
+      "what": "Mostly political today. But, 10 year is still holding at 5%. Fed decision is tomorrow, will they end the 3-year streak of not hiking rates?",
+      "key": true
     },
     {
       "when": "14 Sep",
-      "what": "10 year hit 5% for the first time since 2023. The other time it hit that was in 2007...",
-      "key": true
+      "what": "10 year hit 5% for the first time since 2023. The other time it hit that was in 2007..."
     },
     {
       "when": "14 Sep",
@@ -4068,12 +4085,11 @@ function fed(){
   // Soaring above the building, clear of the flag at the pediment.
   b+='<g id="obj-hawk">'+fedBird(bx+bw/2+6, by-150)+'</g>';
   s+='<g class="obj" id="obj-fed" data-metric="fed" tabindex="0" role="button" aria-label="Federal funds target rate, '+f(DATA.fed.lower)+' to '+f(DATA.fed.upper)+' percent">'
-    +'<rect x="4" y="'+f(by-182,1)+'" width="214" height="'+f(NEAR+182-by,1)+'" fill="transparent"/>'+b
+    +'<rect x="4" y="'+f(by-182,1)+'" width="214" height="'+f(NEAR-30+182-by,1)+'" fill="transparent"/>'+b
     +'<rect class="focusring" x="'+(bx-20)+'" y="'+f(by-40,1)+'" width="'+(bw+40)+'" height="'+(bh+54)+'" fill="none" stroke="var(--verd)" stroke-width="2.5" stroke-dasharray="6 5"/>'
     +'<circle class="linkmark" cx="'+(bx+bw/2)+'" cy="'+f(by-44,1)+'" r="7" fill="var(--verd)"/>'
     +'<text class="lbl" x="'+(bx+bw/2)+'" y="'+(NEAR-78)+'" text-anchor="middle" style="font-size:13px">Federal Reserve</text>'
     +'<text class="num" x="'+(bx+bw/2)+'" y="'+(NEAR-57)+'" text-anchor="middle">'+f(DATA.fed.lower)+'–'+f(DATA.fed.upper)+'%</text>'
-    +fedStairs(bx+bw/2, NEAR-8)
     +(function(){ var n=daysToMeeting(); if(n===null||n<0||n>14) return '';
         var w = n===0 ? 'Decision today' : n===1 ? 'Decision tomorrow' : 'Decision in '+n+' days';
         return '<text class="lbl alert" x="'+(bx+bw/2)+'" y="'+(NEAR-38)+'" text-anchor="middle" style="font-size:12px">'+w+'</text>'; })()
@@ -4101,7 +4117,13 @@ function fedStairs(cx,y1){
   var xl=x0+P.length*step, yl=Y(P[P.length-1].upper);
   g+='<line x1="'+f(xl,1)+'" y1="'+f(yl,1)+'" x2="'+f(xl+step,1)+'" y2="'+f(yl,1)+'" stroke="var(--rust)" stroke-width="2" stroke-dasharray="2.5 2.5" stroke-linecap="round"/>';
   g+='<text class="sounding" x="'+f(xl+step+3,1)+'" y="'+f(yl+3.5,1)+'" fill="var(--rust)" opacity="1" style="font-size:10px">?</text>';
-  return g+'</g>';
+  g+='</g>';
+  var holds=P.filter(function(r){return r.kind==="hold";}).length, cuts=P.filter(function(r){return r.kind==="cut";}).length;
+  return '<g class="obj" id="obj-fedpath" data-metric="fedpath" tabindex="0" role="button" aria-label="Fed decisions since the last hike: '+holds+' holds and '+cuts+' cuts">'
+    +'<rect x="'+f(x0-8,1)+'" y="'+f(y1-H-8,1)+'" width="'+(W+34)+'" height="'+(H+16)+'" fill="transparent"/>'+g
+    +'<rect class="focusring" x="'+f(x0-6,1)+'" y="'+f(y1-H-6,1)+'" width="'+(W+30)+'" height="'+(H+12)+'" rx="3" fill="none" stroke="var(--verd)" stroke-width="2" stroke-dasharray="6 5"/>'
+    +'<circle class="linkmark" cx="'+f(x0+W/2,1)+'" cy="'+f(y1-H-12,1)+'" r="6" fill="var(--verd)"/>'
+    +'<text class="lbl" x="'+f(x0+W+22,1)+'" y="'+f(y1-6,1)+'" text-anchor="start" style="font-size:10px">Decisions</text></g>';
 }
 
 function fedBird(px,py){
@@ -4374,7 +4396,7 @@ function render(mix){
   document.getElementById("svg").innerHTML = defs()+grounds()+tribute()+clouds()+mountains()
     + '<line x1="0" y1="'+SEA+'" x2="'+W+'" y2="'+SEA+'" stroke="var(--ink)" stroke-width="1.5" opacity=".4"/>'
     + lighthouse()+island()+satellite()+plane()+newspaper()+anchorDebt()+ships()
-    + nearShore()+fed()+fisherRod()+rocketPad()+town(mix);
+    + nearShore()+fed()+fedStairs(75, NEAR-8)+fisherRod()+rocketPad()+town(mix);
   wire();
   if(typeof placeNews==="function") placeNews();
 }
@@ -4409,7 +4431,7 @@ function fedTable(){
   var P=DATA.fedPath||[]; if(P.length<2) return "";
   var M=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
   function dmy(iso){ var p=iso.split("-"); return (+p[2])+" "+M[+p[1]-1]+" "+p[0]; }
-  function my(iso){ var p=iso.split("-"); return M[+p[1]-1]+" "+p[0]; }
+  function my(iso){ var p=iso.split("-"); return M[+p[1]-1]+" ’"+p[0].slice(2); }   // Sep '23, so a run fits on one line
   function rng(u){ return f(u-0.25)+"–"+f(u)+"%"; }
   var rows=[], i=1;                                   // row 0 is the anchor hike
   while(i<P.length){
@@ -4423,10 +4445,11 @@ function fedTable(){
       i++;
     }
   }
-  var h='<div class="fedhist"><div class="fedhist-cap">Since the last hike, '+dmy(P[0].d)+' · '+rng(P[0].upper)+'</div><table>';
+  var h='<div class="fedhist"><div class="fedhist-cap">Last hike '+dmy(P[0].d)+' · to '+rng(P[0].upper)+'</div>'
+    +'<table><thead><tr><th>Meeting</th><th>Decision</th><th>Target range</th></tr></thead><tbody>';
   rows.forEach(function(r){ h+='<tr class="'+r.k+'"><td>'+r.when+'</td><td>'+r.what+'</td><td>'+r.r+'</td></tr>'; });
-  if(DATA.fed.nextDate) h+='<tr class="next"><td>'+DATA.fed.nextDate+'</td><td>?</td><td></td></tr>';
-  return h+'</table></div>';
+  if(DATA.fed.nextDate) h+='<tr class="next"><td>'+DATA.fed.nextDate+'</td><td>?</td><td>·</td></tr>';
+  return h+'</tbody></table></div>';
 }
 
 function copyForToday(m2){
@@ -4440,8 +4463,12 @@ function copyForToday(m2){
     chg:(frame!==null ? "" : (DATA.fed.lastMove===0 ? "Held on "+DATA.fed.lastDate : sgn(DATA.fed.lastMove,2,"pp on "+DATA.fed.lastDate))),
     chgUp:DATA.fed.lastMove>0,
     body:COPY.fed,
-    table:(frame!==null ? "" : fedTable()),
     tie:"Real policy rate "+sgn(D.realPolicy,2,"pp")+(frame!==null ? "" : " · next meeting "+DATA.fed.nextDate)};
+  if(m2==="fedpath"){
+    var P=DATA.fedPath||[], holds=P.filter(function(r){return r.kind==="hold";}).length, cuts=P.filter(function(r){return r.kind==="cut";}).length;
+    return {eyebrow:"Fed decisions since the last hike", big:"", chg:"", body:"", table:fedTable(),
+      tie:holds+" holds · "+cuts+" cuts · no hikes since "+(P[0]?P[0].d.slice(0,4):"")};
+  }
   if(m2==="wti") return {eyebrow:"WTI crude, Cushing", big:"$"+f(DATA.oil.wti.price), chg:oilChg(DATA.oil.wti,per()), chgUp:DATA.oil.wti.chg>0,
     body:COPY.wti, tie:"$"+f(D.spread)+" under Brent"};
   if(m2==="brent") return {eyebrow:"Brent crude, seaborne", big:"$"+f(DATA.oil.brent.price), chg:oilChg(DATA.oil.brent,per()), chgUp:DATA.oil.brent.chg>0,
@@ -4825,7 +4852,7 @@ var QUARTERLY={debt_gdp:1}, MONTHLY={cpi:1,pce:1,airfare:1,c_shelter:1,c_food:1,
 // The island's capex is a 2026 estimate, the lighthouse lists events still to
 // come, and the hawk is today's stance. None of them have a past to show, so
 // rather than vanish and make the coastline lurch, they stand down.
-var STATIC_OBJECTS = ["obj-ai","obj-watch","obj-hawk","obj-news"];
+var STATIC_OBJECTS = ["obj-ai","obj-watch","obj-hawk","obj-news","obj-fedpath"];
 function markStatic(){
   STATIC_OBJECTS.forEach(function(id){
     var el=document.getElementById(id); if(!el) return;
