@@ -219,7 +219,7 @@ svg.chart{display:block; width:100%; height:100%}
   .callout{overflow-y:auto; -webkit-overflow-scrolling:touch}
   /* Only a sheet that actually overflows takes the finger. Giving every
      callout pointer events made it swallow taps meant for the map beneath. */
-  .callout.scrollable{pointer-events:auto}
+  .callout.show.scrollable{pointer-events:auto}
 }
 
 /* Phone held sideways: the world fills the screen, so the answer overlays it. */
@@ -242,7 +242,7 @@ svg.chart{display:block; width:100%; height:100%}
 .fedhist tr.cut td:nth-child(2){color:var(--verd)}
 .fedhist tr.hike td:nth-child(2){color:var(--rust)}
 .fedhist tr.next td{color:var(--rust); font-weight:600}
-.callout.scrollable{pointer-events:auto}
+.callout.show.scrollable{pointer-events:auto}
 .callout .tie{margin-top:10px; padding-top:9px; border-top:1px solid var(--rule-soft); font-size:13px; letter-spacing:.05em; text-transform:uppercase; color:var(--verd); font-weight:600}
 /* The number is the point of the tie line, so it outweighs its own label. */
 .callout .tie b{font-family:"IBM Plex Mono",monospace; font-size:16px; font-weight:600;
@@ -4615,7 +4615,9 @@ function cancelClear(){ if(clearTimer){ clearTimeout(clearTimer); clearTimer=nul
 function scheduleClear(){ cancelClear(); clearTimer=setTimeout(function(){ clearTimer=null; clear(); },70); }
 function clear(){
   cancelClear();
-  callout.classList.remove("show"); scene.classList.remove("engaged");
+  // scrollable grants pointer events, and a hidden card must not keep them:
+  // left on, it sat invisibly over the phone's map and ate the next tap.
+  callout.classList.remove("show"); callout.classList.remove("scrollable"); scene.classList.remove("engaged");
   var tz=document.getElementById("teaser"); if(tz) tz.classList.remove("dim");
   var tm=document.getElementById("timeline"); if(tm) tm.classList.remove("dim");
   Array.prototype.forEach.call(scene.querySelectorAll(".obj"),function(n){ n.classList.remove("hot"); n.classList.remove("linked"); });
