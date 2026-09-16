@@ -371,6 +371,21 @@ def _oil_entry(o):
     return out
 
 
+def fed_range(manual, S, side):
+    """The target range from FRED, unless manual.json carries a newer one.
+
+    FRED publishes the new range the day after a decision, but the series is
+    daily and already carries a row dated today with the old range filled
+    forward, so on decision day the hand entry has to win a tie on the date.
+    It steps aside once FRED prints a later day."""
+    rng = (manual.get("fed") or {}).get("range") or {}
+    key = "tgt_lo" if side == "lower" else "tgt_hi"
+    if rng.get("asOf") and rng.get(side) is not None and rng["asOf"] >= S[key].date:
+        print(f"  Fed {side}: using your hand entry {rng[side]} ({rng['asOf']})")
+        return r(float(rng[side]))
+    return r(S[key].value)
+
+
 def build(S, manual):
     # --- components: measured lines, then "other" as the reconciling residual ---
     measured = {
@@ -468,8 +483,8 @@ def build(S, manual):
         "dates": dates,
         "oilSource": wti_src,
         "fed": {
-            "lower": r(S["tgt_lo"].value),
-            "upper": r(S["tgt_hi"].value),
+            "lower": fed_range(manual, S, "lower"),
+            "upper": fed_range(manual, S, "upper"),
             "effective": r(S["funds"].value),
             "lastMove": manual["fed"]["lastMove"],
             "lastDate": manual["fed"]["lastDate"],

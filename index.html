@@ -664,12 +664,12 @@ var DATA = {
   },
   "oilSource": "Manual (front-month futures)",
   "fed": {
-    "lower": 3.5,
-    "upper": 3.75,
+    "lower": 3.75,
+    "upper": 4.0,
     "effective": 3.63,
-    "lastMove": 0,
-    "lastDate": "29 Jul 2026",
-    "nextDate": "16 Sep 2026",
+    "lastMove": 0.25,
+    "lastDate": "16 Sep 2026",
+    "nextDate": "28 Oct 2026",
     "stance": "hawkish"
   },
   "credit": {
@@ -737,8 +737,12 @@ var DATA = {
   "news": [
     {
       "when": "16 Sep",
-      "what": "Big day today.",
+      "what": "The Fed hiked 25bp to 3.75–4.00%. First hike since July 2023.",
       "key": true
+    },
+    {
+      "when": "16 Sep",
+      "what": "Big day today."
     },
     {
       "when": "15 Sep",
@@ -759,10 +763,6 @@ var DATA = {
     {
       "when": "11 Sep",
       "what": "CPI report → headline MoM came in hotter than expected (also core)."
-    },
-    {
-      "when": "10 Sep",
-      "what": "Houthi attacks on shipping sent Brent to about $108."
     }
   ],
   "fedPath": [
@@ -890,6 +890,11 @@ var DATA = {
       "d": "2026-07-29",
       "upper": 3.75,
       "kind": "hold"
+    },
+    {
+      "d": "2026-09-16",
+      "upper": 4.0,
+      "kind": "hike"
     }
   ],
   "components": [
@@ -2109,7 +2114,7 @@ var DATA = {
         86.34,
         87.03,
         92.69,
-        97.26
+        102.42
       ],
       "brent": [
         74.95,
@@ -2215,7 +2220,7 @@ var DATA = {
         92.71,
         89.75,
         104.47,
-        109.51
+        121.25
       ],
       "cpi": [
         2.43,
@@ -4081,6 +4086,10 @@ function fed(){
     +'<text class="lbl" x="'+(bx+bw/2)+'" y="'+(NEAR-78)+'" text-anchor="middle" style="font-size:13px">Federal Reserve</text>'
     +'<text class="num" x="'+(bx+bw/2)+'" y="'+(NEAR-57)+'" text-anchor="middle">'+f(DATA.fed.lower)+'–'+f(DATA.fed.upper)+'%</text>'
     +(function(){ var w=decisionLine(); if(!w) return '';
+        // On the day of a move it goes up in the sky above the hawk, where
+        // there is room to be loud; otherwise it is the small line under the rate.
+        if(moveToday())
+          return '<text class="lbl alert" id="decision-line" x="'+(bx+bw/2)+'" y="'+f(by-228,1)+'" text-anchor="middle" style="font-size:27px; font-weight:700; letter-spacing:.08em">'+w+'</text>';
         return '<text class="lbl alert" id="decision-line" x="'+(bx+bw/2)+'" y="'+(NEAR-38)+'" text-anchor="middle" style="font-size:12px">'+w+'</text>'; })()
     +'</g>';
   return s+'</g>';
@@ -4433,7 +4442,7 @@ function fedTable(){
       i++;
     }
   }
-  var h='<div class="fedhist"><div class="fedhist-cap">Last hike '+dmy(P[0].d)+' · to '+rng(P[0].upper)+'</div>'
+  var h='<div class="fedhist"><div class="fedhist-cap">From the '+dmy(P[0].d)+' hike · '+rng(P[0].upper)+'</div>'
     +'<table><thead><tr><th>Meeting</th><th>Decision</th><th>Target range</th></tr></thead><tbody>';
   rows.forEach(function(r){ h+='<tr class="'+r.k+'"><td>'+r.when+'</td><td>'+r.what+'</td><td>'+r.r+'</td></tr>'; });
   if(DATA.fed.nextDate) h+='<tr class="next"><td>'+DATA.fed.nextDate+'</td><td>?</td><td>·</td></tr>';
@@ -4454,8 +4463,9 @@ function copyForToday(m2){
     tie:"Real policy rate "+sgn(D.realPolicy,2,"pp")+(frame!==null ? "" : " · next meeting "+DATA.fed.nextDate+" · decision record below")};
   if(m2==="fedpath"){
     var P=DATA.fedPath||[], holds=P.filter(function(r){return r.kind==="hold";}).length, cuts=P.filter(function(r){return r.kind==="cut";}).length;
-    return {eyebrow:"Fed decisions since the last hike", big:"", chg:"", body:"", table:fedTable(),
-      tie:holds+" holds · "+cuts+" cuts · no hikes since "+(P[0]?P[0].d.slice(0,4):"")};
+    var hikes=P.slice(1).filter(function(r){return r.kind==="hike";}).length;
+    return {eyebrow:"Fed decisions since "+(P[0]?P[0].d.slice(0,4):""), big:"", chg:"", body:"", table:fedTable(),
+      tie:holds+" holds · "+cuts+" cuts · "+(hikes?hikes+" hike"+(hikes>1?"s":""):"no hikes")};
   }
   if(m2==="wti") return {eyebrow:"WTI crude, Cushing", big:"$"+f(DATA.oil.wti.price), chg:oilChg(DATA.oil.wti,per()), chgUp:DATA.oil.wti.chg>0,
     body:COPY.wti, tie:"$"+f(D.spread)+" under Brent"};
@@ -4557,7 +4567,17 @@ function meetingInstant(){
 }
 // What the line under the Fed says. On the day itself it counts down to the
 // statement, then says so, and the page keeps it ticking.
+// The day of a move, the line says so and says it loud. It reads lastDate,
+// so it lasts exactly as long as today does.
+function moveToday(){
+  var m=(DATA.fed.lastDate||"").match(/^(\d{1,2})\s+([A-Za-z]{3})\w*\s+(\d{4})$/); if(!m) return null;
+  var M={jan:0,feb:1,mar:2,apr:3,may:4,jun:5,jul:6,aug:7,sep:8,oct:9,nov:10,dec:11}[m[2].toLowerCase()];
+  if(M===undefined || Date.UTC(+m[3],M,+m[1])!==nyToday()) return null;
+  var mv=+DATA.fed.lastMove||0; if(!mv) return "HELD";
+  return (mv>0?"HIKED ":"CUT ")+Math.round(Math.abs(mv)*100)+"bp";
+}
 function decisionLine(){
+  var mt=moveToday(); if(mt) return mt;
   var n=daysToMeeting(); if(n===null||n<0||n>14) return "";
   if(n>1) return "Decision in "+n+" days";
   if(n===1) return "Decision tomorrow";

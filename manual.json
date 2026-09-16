@@ -2,10 +2,15 @@
   "_comment": "The hand-written half. Edit this daily; fetch-data.mjs merges it with FRED and never overwrites it.",
   "summary": "Attacks continue with Iran, keeping the Strait of Hormuz closed. Simple fix: use our oil reserves to bring oil prices down, right? We have been, but the disruption is too large. Even better, Saudi Arabia's east-west pipeline has been avoiding this disruption by funneling oil underground and around the strait closure. Well, it got attacked recently, and now it's closed as well (the strait is 20% of global supply, the pipeline another 5%). CPI report was released, core YoY fell, but MoM has been increasing, especially in August +0.3%. Pretty BAD. Basically means other factors are affecting inflation, not just the oil disruption. Jobs came in at nearly three times what Wall Street expected. The economy is too hot. Bessent's hands are tied, trying to conduct monetary policy with a fiscal toolbox. Buybacks aren't working. Other countries are selling their US bonds, no bueno. To add a cherry on top, our largest debt holder Japan now has more incentive to invest at home, due to its CB hikes. Bringing it back home, the President and VP don't want to raise rates. Every single factor is saying we NEED to raise rates, Warsh and Bessent know this. Only thing I'll say, grab your popcorn for {{until:2026-09-16}}, the day that decision is made.",
   "fed": {
-    "lastMove": 0,
-    "lastDate": "29 Jul 2026",
-    "nextDate": "16 Sep 2026",
-    "stance": "hawkish"
+    "lastMove": 0.25,
+    "lastDate": "16 Sep 2026",
+    "nextDate": "28 Oct 2026",
+    "stance": "hawkish",
+    "range": {
+      "asOf": "2026-09-16",
+      "lower": 3.75,
+      "upper": 4.0
+    }
   },
   "fedPath": [
     {
@@ -132,6 +137,11 @@
       "d": "2026-07-29",
       "upper": 3.75,
       "kind": "hold"
+    },
+    {
+      "d": "2026-09-16",
+      "upper": 4.0,
+      "kind": "hike"
     }
   ],
   "_fedPath_note": "Every FOMC decision since the last hike, oldest first: the date, the upper bound of the target range after it, and hike / cut / hold. Drawn as the staircase under the Fed and listed in its card. Add a row after each meeting.",
@@ -177,8 +187,12 @@
   "news": [
     {
       "when": "16 Sep",
-      "what": "Big day today.",
+      "what": "The Fed hiked 25bp to 3.75–4.00%. First hike since July 2023.",
       "key": true
+    },
+    {
+      "when": "16 Sep",
+      "what": "Big day today."
     },
     {
       "when": "15 Sep",
@@ -199,16 +213,12 @@
     {
       "when": "11 Sep",
       "what": "CPI report → headline MoM came in hotter than expected (also core)."
-    },
-    {
-      "when": "10 Sep",
-      "what": "Houthi attacks on shipping sent Brent to about $108."
     }
   ],
   "_news_note": "The newspaper on the map. Dated bullets, newest first, five to seven at most; the oldest falls off. Facts only, the take lives in the read. key:true marks one row rust.",
   "_stance_note": "fed.stance drives the bird on the Federal Reserve: hawkish | dovish | neutral",
   "_ai_note": "Hand-entered - no FRED series covers company capex. The sentence shown lives in COPY.ai in index.html.",
-  "_fed_note": "lastMove 0 means the FOMC held. Use -0.25 / +0.25 only for an actual move. Hand-entered - nothing validates this.",
+  "_fed_note": "lastMove 0 means the FOMC held; +0.25 / -0.25 for a move. range is the hand-entered target range for decision day, used only while newer than FRED. Hand-entered - nothing validates this.",
   "oil": {
     "asOf": "2026-09-16",
     "wti": 102.6,
