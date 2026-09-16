@@ -4581,6 +4581,9 @@ function show(metric,node){
     // Nothing fits above an object in the top-left corner, and a tall card
     // below it runs down over the coast. Beside it is open sky.
     var beside=nb.right-sb.left+14;
+    // and clear of the masthead, which owns that corner
+    var mk=document.querySelector(".mark"), mkR=mk ? mk.getBoundingClientRect().right-sb.left+12 : 0;
+    beside=Math.max(beside, mkR);
     if(nb.left-sb.left < sb.width*0.3 && beside+cw+10 < sb.width){
       left=beside; top=Math.max(10, nb.top-sb.top-6);
     } else {
@@ -4588,6 +4591,17 @@ function show(metric,node){
     }
   }
   top=Math.max(10,Math.min(sb.height-ch-10,top));
+  // Nothing sits on the time-travel control. If the card would, it moves up;
+  // if it cannot move up enough, it is capped and scrolls instead.
+  callout.style.maxHeight="";
+  var tlEl=document.getElementById("timeline");
+  if(tlEl && !window.matchMedia("(max-width: 760px)").matches){
+    var tr=tlEl.getBoundingClientRect(), tlTop=tr.top-sb.top-8, tlL=tr.left-sb.left, tlR=tr.right-sb.left;
+    if(left<tlR && left+cw>tlL && top+ch>tlTop){
+      top=tlTop-ch;
+      if(top<10){ top=10; callout.style.maxHeight=(tlTop-10)+"px"; }
+    }
+  }
   callout.style.left=left+"px"; callout.style.top=top+"px"; callout.classList.add("show");
   callout.scrollTop=0;
   callout.classList.toggle("scrollable", callout.scrollHeight > callout.clientHeight + 1);
