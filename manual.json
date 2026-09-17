@@ -186,9 +186,13 @@
   ],
   "news": [
     {
-      "when": "16 Sep",
-      "what": "The Fed hiked 25bp to 3.75–4.00%. First hike since July 2023.",
+      "when": "17 Sep",
+      "what": "Stock market is up after the Fed hiked yesterday, affirming control of inflation long term.",
       "key": true
+    },
+    {
+      "when": "16 Sep",
+      "what": "The Fed hiked 25bp to 3.75–4.00%. First hike since July 2023."
     },
     {
       "when": "15 Sep",
