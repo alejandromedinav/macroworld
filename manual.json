@@ -216,11 +216,16 @@
   "_ai_note": "Hand-entered - no FRED series covers company capex. The sentence shown lives in COPY.ai in index.html.",
   "_fed_note": "lastMove 0 means the FOMC held; +0.25 / -0.25 for a move. range is the hand-entered target range for decision day, used only while newer than FRED. Hand-entered - nothing validates this.",
   "oil": {
-    "asOf": "2026-09-16",
-    "wti": 102.6,
-    "brent": 106.0,
+    "asOf": "2026-09-17",
+    "wti": 101.0,
+    "brent": 104.0,
     "note": "Front-month futures, read by hand",
     "history": [
+      {
+        "asOf": "2026-09-17",
+        "wti": 101.0,
+        "brent": 104.0
+      },
       {
         "asOf": "2026-09-16",
         "wti": 102.6,
@@ -240,24 +245,19 @@
         "asOf": "2026-09-11",
         "wti": 100.1,
         "brent": 105.0
-      },
-      {
-        "asOf": "2026-09-10",
-        "wti": 101.7,
-        "brent": 107.2
       }
     ]
   },
   "_oil_note": "Optional daily override. Set asOf to the date you read them and fill wti/brent. Used only while newer than FRED's print - if you stop updating, it falls back to FRED automatically rather than showing an ever-staler number.",
   "curve": {
-    "asOf": "2026-09-16",
+    "asOf": "2026-09-17",
     "values": {
-      "3M": 4.05,
-      "2Y": 4.63,
-      "10Y": 4.97
+      "3M": 4.07,
+      "2Y": 4.7,
+      "10Y": 4.95
     },
     "notes": {
-      "10Y": "Off Monday's 5% · highest since 2023"
+      "10Y": "Closed at 5.00% on 15 Sep · highest since 2023"
     },
     "alert": [
       "10Y"
