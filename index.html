@@ -4996,7 +4996,14 @@ var SOURCES=[
   ["Interest and defense",
    "FY2025 outlays: net interest $970.4bn, national defense $916.6bn · SIPRI 2025: U.S. $954bn against $905bn for the next six",
    "MTS Table 9, FY2025 · SIPRI Table 1, 2025"],
-  ["AI capex","Company reports, entered by hand","manual.json"]
+  ["AI capex","Company reports, entered by hand","manual.json"],
+  // Cited in the read. Private foreign investors' net sales of Treasury bonds
+  // and notes in July 2026 were $29.1bn (official institutions bought $25.5bn).
+  // Japan's holdings are the Dec 2025 MFH figure, $1,185.5bn. The hedged yield
+  // is an approximation: 10Y Treasury minus the 3M rate gap (4.08% less 1.25%).
+  ["Foreign buyers",
+   "TIC July 2026: private foreign net sales of Treasuries $29.1bn · Japan holdings $1,185.5bn (Dec 2025) · BoJ policy rate 1.25%, 10Y JGB 2.95% (18 Sep 2026)",
+   "Treasury TIC press release sb0631 · MFH table · Bank of Japan"]
 ];
 function paintSources(){
   var el=document.getElementById("sources"); if(!el) return;
