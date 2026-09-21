@@ -186,9 +186,13 @@
   ],
   "news": [
     {
-      "when": "18 Sep",
-      "what": "10 year is back up to 5%, even after the Fed hike.",
+      "when": "21 Sep",
+      "what": "UN General Assembly this week. Geopolitics → oil fluctuations?",
       "key": true
+    },
+    {
+      "when": "18 Sep",
+      "what": "10 year is back up to 5%, even after the Fed hike."
     },
     {
       "when": "18 Sep",
@@ -209,10 +213,6 @@
     {
       "when": "14 Sep",
       "what": "10 year hit 5% for the first time since 2023. The other time it hit that was in 2007..."
-    },
-    {
-      "when": "14 Sep",
-      "what": "S&P down as a direct effect of the 12 Sep news, semiconductor index down 5%. Investors questioning growth after Amodei, Altman and Musk said models need to slow down, due to regulation testing and the risks of these models."
     }
   ],
   "_news_note": "The newspaper on the map. Dated bullets, newest first, five to seven at most; the oldest falls off. Facts only, the take lives in the read. key:true marks one row rust.",
