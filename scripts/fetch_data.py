@@ -295,6 +295,7 @@ def apply_curve_override(curve, manual, dates):
     if not when or not vals:
         return curve
     notes, alerts = (o.get("notes") or {}), set(o.get("alert") or [])
+    strains = set(o.get("strain") or [])   # a smaller crack, number stays in ink
     key_to_date = {"3M": "y3m", "2Y": "y2y", "10Y": "y10y", "30Y": "y30y"}
     for point in curve:
         k = point["key"]
@@ -312,6 +313,8 @@ def apply_curve_override(curve, manual, dates):
             point["note"] = notes[k]
         if k in alerts:
             point["alert"] = True
+        elif k in strains:
+            point["strain"] = True
     return curve
 
 

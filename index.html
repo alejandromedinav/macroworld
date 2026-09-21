@@ -609,7 +609,8 @@ var DATA = {
     {
       "key": "2Y",
       "label": "2-year note",
-      "yield": 4.75
+      "yield": 4.75,
+      "strain": true
     },
     {
       "key": "10Y",
@@ -3735,13 +3736,17 @@ function clouds(){
 /* --- CURVE: mountain range (peaks are true yields) --- */
 // The alert made visible from across the map: a fault line down the summit,
 // in the same ink as the range, with one branch. Hairline, not a cartoon.
-function fracture(px,py){
+// k scales the crack about the summit (1 for an alert, smaller for a strain);
+// strokes stay hairline either way so the small one reads as a crack, not a smudge.
+function fracture(px,py,k){
+  k=k||1;
   var d='M'+f(px+1,1)+','+f(py+3,1)+' l-3,11 l4,9 l-5,13 l3,10 l-4,12 l2,9';
   var b='M'+f(px-2,1)+','+f(py+23,1)+' l-7,6 l2,8 l-5,7';
-  return '<g pointer-events="none">'
-    +'<path d="'+d+'" fill="none" stroke="var(--ink)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" opacity=".8"/>'
-    +'<path d="'+b+'" fill="none" stroke="var(--ink)" stroke-width="1.2" stroke-linejoin="round" stroke-linecap="round" opacity=".6"/>'
-    +'<path d="'+d+'" fill="none" stroke="var(--rust)" stroke-width=".8" stroke-linejoin="round" opacity=".7"/></g>';
+  var tr=k===1?'':' transform="translate('+f(px,1)+','+f(py,1)+') scale('+k+') translate('+f(-px,1)+','+f(-py,1)+')"';
+  return '<g pointer-events="none"'+tr+'>'
+    +'<path d="'+d+'" fill="none" stroke="var(--ink)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" opacity=".8" vector-effect="non-scaling-stroke"/>'
+    +'<path d="'+b+'" fill="none" stroke="var(--ink)" stroke-width="1.2" stroke-linejoin="round" stroke-linecap="round" opacity=".6" vector-effect="non-scaling-stroke"/>'
+    +'<path d="'+d+'" fill="none" stroke="var(--rust)" stroke-width=".8" stroke-linejoin="round" opacity=".7" vector-effect="non-scaling-stroke"/></g>';
 }
 
 function mountains(){
@@ -3763,7 +3768,7 @@ function mountains(){
       +'<circle class="focusring" cx="'+px+'" cy="'+f(py,1)+'" r="13" fill="none" stroke="var(--verd)" stroke-width="2.5"/>'
       +'<circle class="linkmark" cx="'+px+'" cy="'+f(py,1)+'" r="7" fill="var(--verd)"/>'
       +'<text class="num'+(c.alert?' alert':'')+'" x="'+px+'" y="'+f(py-22,1)+'" text-anchor="middle">'+f(c.yield)+'%</text>'
-      +(c.alert ? fracture(px,py) : '')
+      +(c.alert ? fracture(px,py) : c.strain ? fracture(px,py,0.6) : '')
       +'<text class="lbl'+(c.alert?' alert':'')+'" x="'+px+'" y="'+f(py-41,1)+'" text-anchor="middle" style="font-size:13px">'+c.key+'</text>'
       +(c.note?'<text class="sounding" x="'+px+'" y="'+f(py-62,1)+'" text-anchor="middle" fill="var(--rust)" opacity="1">'+c.note+'</text>':'')
       +'</g>';

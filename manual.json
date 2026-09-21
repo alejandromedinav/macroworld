@@ -275,9 +275,12 @@
     },
     "alert": [
       "10Y"
+    ],
+    "strain": [
+      "2Y"
     ]
   },
-  "_curve_note": "Optional hand entry for a yield FRED has not published yet. Same rule as oil: only used while newer than FRED. notes/alert are display only. Put alert on whatever the day's story is: it turns the figure rust and is the only thing telling a first-time visitor where to look.",
+  "_curve_note": "Optional hand entry for a yield FRED has not published yet. Same rule as oil: only used while newer than FRED. notes/alert are display only. Put alert on whatever the day's story is: it turns the figure rust and is the only thing telling a first-time visitor where to look. strain is the quieter version: a smaller crack on the summit, number stays in ink.",
   "author": "A.M.",
   "_author_note": "Shown under the read, so the opinion is signed and separable from the sourced data.",
   "credit": "Alejandro Medina",
