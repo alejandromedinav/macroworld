@@ -4493,7 +4493,7 @@ function copyForToday(m2){
     body:COPY.fisher, tie:"Ex-post · PCE basis "+sgn(D.realPolicyPce,2,"pp")+" · TIPS "+sgn(D.realMarket,2,"pp")};
   if(m2==="news"){
     var ni=(DATA.news||[]).map(function(n){ return '<li'+(n.key?' class="key"':'')+'><span>'+n.when+'</span>'+n.what+'</li>'; }).join("");
-    return {eyebrow:"What moved it", big:"", chg:"", list:'<ul>'+ni+'</ul>', body:"", tie:COPY.news};
+    return {eyebrow:"What you missed", big:"", chg:"", list:'<ul>'+ni+'</ul>', body:"", tie:COPY.news};
   }
   if(m2==="watch"){
     var li=DATA.watch.map(function(w){ return '<li'+(w.key?' class="key"':'')+'><span>'+w.when+'</span>'+w.what+'</li>'; }).join("");
