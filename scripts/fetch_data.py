@@ -91,6 +91,7 @@ WEIGHTS = {
 SERIES = {
     "y3m":        ("DGS3MO", None),
     "y2y":        ("DGS2", None),
+    "y5y":        ("DGS5", None),
     "y10y":       ("DGS10", None),
     "y30y":       ("DGS30", None),
     "funds":      ("DFF", None),                    # effective rate actually traded
@@ -296,7 +297,7 @@ def apply_curve_override(curve, manual, dates):
         return curve
     notes, alerts = (o.get("notes") or {}), set(o.get("alert") or [])
     strains = set(o.get("strain") or [])   # a smaller crack, number stays in ink
-    key_to_date = {"3M": "y3m", "2Y": "y2y", "10Y": "y10y", "30Y": "y30y"}
+    key_to_date = {"3M": "y3m", "2Y": "y2y", "5Y": "y5y", "10Y": "y10y", "30Y": "y30y"}
     for point in curve:
         k = point["key"]
         if k not in vals or vals[k] is None:
@@ -463,6 +464,8 @@ def build(S, manual):
          "chg": r(S["y3m"].value - S["y3m"].at(1))},
         {"key": "2Y",  "label": "2-year note",  "yield": r(S["y2y"].value),
          "chg": r(S["y2y"].value - S["y2y"].at(1))},
+        {"key": "5Y",  "label": "5-year note",  "yield": r(S["y5y"].value),
+         "chg": r(S["y5y"].value - S["y5y"].at(1))},
         {"key": "10Y", "label": "10-year note", "yield": r(S["y10y"].value),
          "chg": r(S["y10y"].value - S["y10y"].at(1))},
         {"key": "30Y", "label": "30-year bond", "yield": r(S["y30y"].value),
@@ -595,7 +598,7 @@ def fetch_debt_to_penny(start):
 HISTORY_WEEKS = 104
 
 HISTORY_KEYS = [
-    "y3m", "y2y", "y10y", "y30y", "funds", "tgt_lo", "tgt_hi",
+    "y3m", "y2y", "y5y", "y10y", "y30y", "funds", "tgt_lo", "tgt_hi",
     "hy_oas", "hy_yield", "wti", "brent", "cpi", "pce",
     "breakeven", "real_tips", "debt_gdp", "debt_level", "airfare",
     "c_shelter", "c_food", "c_medical", "c_transport", "c_energy",
