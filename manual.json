@@ -186,9 +186,13 @@
   ],
   "news": [
     {
-      "when": "22 Sep",
-      "what": "AI debt is estimated to be $420 billion for 2027, 60% above previous estimates.",
+      "when": "23 Sep",
+      "what": "PMI released today, economy is running too hot. 10 year is at its highest since 2007.",
       "key": true
+    },
+    {
+      "when": "22 Sep",
+      "what": "AI debt is estimated to be $420 billion for 2027, 60% above previous estimates."
     },
     {
       "when": "21 Sep",
@@ -209,10 +213,6 @@
     {
       "when": "16 Sep",
       "what": "The Fed hiked 25bp to 3.75–4.00%. First hike since July 2023."
-    },
-    {
-      "when": "15 Sep",
-      "what": "Mostly political today. But, 10 year is still holding at 5%. Fed decision is tomorrow, will they end the 3-year streak of not hiking rates?"
     }
   ],
   "_news_note": "The newspaper on the map. Dated bullets, newest first, five to seven at most; the oldest falls off. Facts only, the take lives in the read. key:true marks one row rust.",
