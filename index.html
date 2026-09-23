@@ -390,6 +390,9 @@ svg.chart{display:block; width:100%; height:100%}
 .thesis{font-family:"Newsreader",Georgia,serif; font-weight:400; font-size:clamp(19px,2.3vw,27px); line-height:1.58; letter-spacing:.005em; color:#FCFAF4; margin:0 auto; text-wrap:pretty; max-width:46ch; text-shadow:0 1px 10px rgba(0,0,0,.5)}
 /* Sits between the read (#FCFAF4) and the figures row (55% cream): present,
    but not competing with the text it signs. */
+/* Emphasis inside the read: wrap a phrase in *asterisks* in manual.json.
+   Gold rather than the teal label colour, which is reserved for chrome. */
+.thesis .hl{color:#E8B554; font-weight:500}
 .byline{font-family:"IBM Plex Mono",monospace; font-size:12px; font-weight:500; letter-spacing:.24em;
   text-transform:uppercase; color:rgba(250,246,236,.82); margin-top:20px}
 .space-figs{display:flex; flex-wrap:wrap; gap:8px 28px; justify-content:center; margin-top:32px; font-family:"IBM Plex Mono",monospace; font-size:12.5px; color:rgba(237,230,210,.6); letter-spacing:.06em}
@@ -597,7 +600,7 @@ svg.chart{display:block; width:100%; height:100%}
 var DATA = {
   "asOf": "2026-09-21",
   "builtAt": "2026-09-23",
-  "summary": "The 10 year yield just hit its highest since 2007. The Fed hike should have lowered it as it shows their efforts in controlling inflation. However, the PMI data that was released today made the 2 year and 10 year shoot up A LOT. What does this even mean? PMI is a survey for businesses, and the results showed an increase in demand for goods BUT also an increase in backlogging, meaning businesses can't keep up with demand. Along with this, input prices ↑. Mixing this all in a pot: demand > supply, input cost ↑, inflation ↑. All while the Fed is trying to tackle inflation. The economy is aggressively strong. Looking at credit, the high yield OAS is surprisingly still tight at 268bps. So investors aren't demanding too much extra compensation for these companies. Also, another thing to look at → AI debt. Microsoft, Meta, Alphabet, Amazon, and Oracle are issuing so much damn debt ($420 billion projected for 2027) that investors are now demanding more compensation for their bonds. This is a pretty cool mechanism to watch. These companies are investment grade, and the current average spread for investment-grade is 78 basis points. However, for these hyperscalers, the average is trading at 115bps spread. So investors are demanding more because their investments are all concentrated on AI companies, and they want to account for this risk even though these hyperscalers are financially super strong. Basically, there's currently an oversupply of bonds. I might break my piggy bank early and hop on the train. Meta, get ready for my offer.",
+  "summary": "The 10 year yield just hit *its highest since 2007*. The Fed hike should have lowered it since it signals they're serious about inflation. However, the PMI data that was released today made the 2 year and 10 year shoot up A LOT. What does this even mean? PMI is a survey for businesses, and the results showed an increase in demand for goods BUT also an increase in backlogs, meaning businesses can't keep up with demand. Along with this, input prices ↑. Mixing this all in a pot: demand > supply, input cost ↑, inflation ↑. All while the Fed is trying to tackle inflation. The economy is aggressively strong. Looking at credit, the high yield OAS is surprisingly still tight at 268bps. So investors aren't demanding too much extra compensation for these companies. Also, another thing to look at → AI debt. Microsoft, Meta, Alphabet, Amazon, and Oracle are issuing so much damn debt ($420 billion projected for 2027) that investors are now demanding more compensation for their bonds. This is a pretty cool mechanism to watch. These companies are investment grade, and the current average spread for investment-grade is 78 basis points. However, for these hyperscalers, the average is trading at 115bps spread. So investors are demanding more because their investments are all concentrated on AI companies, and they want to account for this risk even though these hyperscalers are financially super strong. Basically, there's currently an oversupply of bonds. I might break my piggy bank early and hop on the train. Meta, get ready for my offer.",
   "author": "A.M.",
   "maker": "Alejandro Medina",
   "curve": [
@@ -4821,7 +4824,7 @@ function buildLaunch(){
   document.getElementById("earth-clouds").innerHTML=continents(true);
 }
 function fillSpaceText(){
-  document.getElementById("thesis").textContent=fill(DATA.summary);
+  document.getElementById("thesis").innerHTML=marks(fill(DATA.summary));
   document.getElementById("space-date").textContent=(DATA.builtAt||DATA.asOf);
   var by=document.getElementById("byline");
   if(by) by.textContent = DATA.author ? "— "+DATA.author : "";
@@ -5120,9 +5123,17 @@ if(!seenHint()){
 /* fill the screen on wide viewports; letterbox rather than crop on narrow ones */
 function isPhone(){ return window.matchMedia("(max-width: 760px)").matches; }
 
+// *phrase* becomes gold. Escaped first, so the read is still plain text on disk
+// and nothing in manual.json can inject markup.
+function marks(t){
+  return String(t).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
+    .replace(/\*([^*]+)\*/g, '<b class="hl">$1</b>');
+}
+function stripMarks(t){ return String(t).replace(/\*([^*]+)\*/g, "$1"); }
+
 function paintTeaser(){
   var el=document.getElementById("teaser"); if(!el) return;
-  var first=fill((DATA.summary||"").split(/(?<=\.)\s/)[0] || "");
+  var first=stripMarks(fill((DATA.summary||"").split(/(?<=\.)\s/)[0] || ""));
   el.innerHTML = first ? first+'<i>rocket for the rest</i>' : "";
 }
 
