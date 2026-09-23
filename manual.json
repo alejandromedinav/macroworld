@@ -220,11 +220,16 @@
   "_ai_note": "Hand-entered - no FRED series covers company capex. The sentence shown lives in COPY.ai in index.html.",
   "_fed_note": "lastMove 0 means the FOMC held; +0.25 / -0.25 for a move. range is the hand-entered target range for decision day, used only while newer than FRED. Hand-entered - nothing validates this.",
   "oil": {
-    "asOf": "2026-09-22",
-    "wti": 90.0,
-    "brent": 100.0,
+    "asOf": "2026-09-23",
+    "wti": 92.0,
+    "brent": 103.0,
     "note": "Front-month futures, read by hand",
     "history": [
+      {
+        "asOf": "2026-09-23",
+        "wti": 92.0,
+        "brent": 103.0
+      },
       {
         "asOf": "2026-09-22",
         "wti": 90.0,
@@ -269,14 +274,18 @@
   },
   "_oil_note": "Optional daily override. Set asOf to the date you read them and fill wti/brent. Used only while newer than FRED's print - if you stop updating, it falls back to FRED automatically rather than showing an ever-staler number.",
   "curve": {
-    "asOf": "2026-09-22",
+    "asOf": "2026-09-23",
     "values": {
-      "3M": 4.11,
-      "2Y": 4.77,
-      "10Y": 4.98
+      "3M": 4.13,
+      "2Y": 4.93,
+      "10Y": 5.14
     },
-    "notes": {},
-    "alert": [],
+    "notes": {
+      "10Y": "Highest since July 2007 · +16bp today"
+    },
+    "alert": [
+      "10Y"
+    ],
     "strain": [
       "2Y"
     ]

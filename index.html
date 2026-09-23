@@ -596,7 +596,7 @@ svg.chart{display:block; width:100%; height:100%}
    === edit manual.json for the read, the watch list and AI capex.        === */
 var DATA = {
   "asOf": "2026-09-21",
-  "builtAt": "2026-09-22",
+  "builtAt": "2026-09-23",
   "summary": "Oil. The topic of conversation almost every day, and for good reason. Crude prices are floating around $100 but far from the average of $65-75. Obviously, this is what pushed energy prices and inflation to be higher in the CPI report for August, but the core CPI, which excludes this noise, still increased. Meaning, there's second order inflation. Basically the oil shock is spilling over to input costs for companies which leads to higher prices for consumers and eventually a demand for higher wages. Also, after the Fed hike, the 10 year is floating near 5%, but what's more interesting is that the 2 year is around 4.77%. That's only a 21bps spread. Why does this matter? The 2 year measures what the Fed is expected to do in its future meetings, and it being this high means it expects the Fed to hike again. Looking at credit, the high yield OAS is surprisingly still tight at 268bps. So investors aren't demanding too much extra compensation for these companies. Also, another thing to look at → AI debt. Microsoft, Meta, Alphabet, Amazon, and Oracle are issuing so much damn debt ($420 billion projected for 2027) that investors are now demanding more compensation for their bonds. This is a pretty cool mechanism to watch. These companies are investment grade, and the current average spread for investment-grade is 78 basis points. However, for these hyperscalers, the average is trading at 115bps spread. So investors are demanding more because their investments are all concentrated on AI companies, and they want to account for this risk even though these hyperscalers are financially super strong. Crazy that there's a bond oversupply right now. I might break my piggy bank early and hop on the train. Meta, get ready for my offer.",
   "author": "A.M.",
   "maker": "Alejandro Medina",
@@ -604,18 +604,20 @@ var DATA = {
     {
       "key": "3M",
       "label": "3-month bill",
-      "yield": 4.11
+      "yield": 4.13
     },
     {
       "key": "2Y",
       "label": "2-year note",
-      "yield": 4.77,
+      "yield": 4.93,
       "strain": true
     },
     {
       "key": "10Y",
       "label": "10-year note",
-      "yield": 4.98
+      "yield": 5.14,
+      "note": "Highest since July 2007 · +16bp today",
+      "alert": true
     },
     {
       "key": "30Y",
@@ -626,28 +628,28 @@ var DATA = {
   ],
   "oil": {
     "wti": {
-      "price": 90.0,
-      "chg": -5.0,
-      "pct": -5.26
+      "price": 92.0,
+      "chg": 2.0,
+      "pct": 2.22
     },
     "brent": {
-      "price": 100.0,
-      "chg": 0.0,
-      "pct": 0.0
+      "price": 103.0,
+      "chg": 3.0,
+      "pct": 3.0
     }
   },
   "dates": {
-    "y3m": "2026-09-22",
-    "y2y": "2026-09-22",
-    "y10y": "2026-09-22",
+    "y3m": "2026-09-23",
+    "y2y": "2026-09-23",
+    "y10y": "2026-09-23",
     "y30y": "2026-09-21",
     "funds": "2026-09-21",
-    "tgt_lo": "2026-09-22",
-    "tgt_hi": "2026-09-22",
-    "hy_oas": "2026-09-21",
-    "hy_yield": "2026-09-21",
-    "wti": "2026-09-22",
-    "brent": "2026-09-22",
+    "tgt_lo": "2026-09-23",
+    "tgt_hi": "2026-09-23",
+    "hy_oas": "2026-09-22",
+    "hy_yield": "2026-09-22",
+    "wti": "2026-09-23",
+    "brent": "2026-09-23",
     "cpi": "2026-08-01",
     "pce": "2026-07-01",
     "breakeven": "2026-09-22",
@@ -672,9 +674,9 @@ var DATA = {
     "stance": "hawkish"
   },
   "credit": {
-    "effYield": 7.46,
-    "oas": 266,
-    "chg": -5
+    "effYield": 7.48,
+    "oas": 268,
+    "chg": -8
   },
   "breakeven": 2.33,
   "realTips": 2.62,
@@ -2113,7 +2115,7 @@ var DATA = {
         87.03,
         92.69,
         102.42,
-        107.02
+        96.97
       ],
       "brent": [
         72.35,
@@ -2219,7 +2221,7 @@ var DATA = {
         89.75,
         104.47,
         121.25,
-        130.8
+        116.15
       ],
       "cpi": [
         2.43,
