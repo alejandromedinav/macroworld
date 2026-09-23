@@ -470,13 +470,12 @@ def build(S, manual):
     ]
     curve = apply_curve_override(curve, manual, dates)
 
-    # Read after the override, not before: a hand-entered yield restamps its own
-    # vintage, and the masthead should date the page by the freshest headline
-    # figure it actually shows rather than by FRED's last Treasury print.
-    headline_dates = [dates.get(k, "") for k in ("y10y", "y2y", "y3m", "y30y", "wti", "brent")]
-
     return {
-        "asOf": max([d for d in headline_dates if d] or [S["y10y"].date]),
+        # FRED's own Treasury print, not the hand entries. The masthead should
+        # show the oldest thing on the page rather than the newest: some series
+        # run days behind, and on a weekend nothing is entered at all. Saying
+        # "data from X, updated Y" is the honest version of both.
+        "asOf": S["y10y"].date,
         # FRED publishes Treasury data a day or two behind, so the data's own
         # date and the day we fetched it are different facts. Show both.
         "builtAt": datetime.date.today().isoformat(),
