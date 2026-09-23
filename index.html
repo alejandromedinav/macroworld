@@ -189,14 +189,17 @@ svg.chart{display:block; width:100%; height:100%}
   font-family:inherit; font-size:12.5px; font-weight:600; letter-spacing:.18em;
   text-transform:uppercase; padding:10px 15px; box-shadow:2px 2px 0 var(--rule)}
 .zoombtn:active{transform:translate(1px,1px); box-shadow:1px 1px 0 var(--rule)}
-/* The read's pitch, on the sand beside the pad: the read's own serif, so it
-   reads as writing rather than as another map label. */
-.pitchline{font-family:"Newsreader",Georgia,serif; font-size:16.5px; fill:var(--ink)}
-.pitchcue{font-family:"IBM Plex Mono",monospace; font-size:11px; letter-spacing:.2em;
-  text-transform:uppercase; fill:var(--ink-soft)}
+/* The pad's site sign. Cream in the world's own hand; on hover it inverts, so
+   the only solid black on the map appears once you are already pointing at it. */
+.placard-t{font-family:"Barlow Condensed",sans-serif; font-size:17px; font-weight:600;
+  letter-spacing:.22em; fill:var(--ink); transition:fill .15s ease}
+.placard-bg{transition:fill .15s ease}
 #obj-rocket{cursor:pointer}
-#obj-rocket:hover .pitchcue{fill:var(--rust)}
-/* A fuelled pad's warning light. Slow enough to be peripheral, not a blink. */
+#obj-rocket.hot .placard-bg, #obj-rocket:focus-visible .placard-bg{fill:var(--ink)}
+#obj-rocket.hot .placard-t, #obj-rocket:focus-visible .placard-t{fill:var(--panel)}
+#obj-rocket:active .placard{transform:translate(1.5px,1.5px)}
+/* A fuelled pad's warning light. Slow enough to be peripheral, not a blink, and
+   unlike .ping it is not switched off once the visitor has explored. */
 @keyframes padpulse{0%,100%{opacity:1} 50%{opacity:.28}}
 .padlamp.live{animation:padpulse 2.4s ease-in-out infinite}
 @media (prefers-reduced-motion: reduce){ .padlamp.live{animation:none} }
@@ -4175,31 +4178,7 @@ function fedBird(px,py){
   return g;
 }
 
-// Greedy wrap at a character budget: the serif is proportional, so this is
-// approximate, but the line count is what matters for placement.
-function wrapAt(t, n){
-  var w=String(t).split(/\s+/), out=[], line="";
-  w.forEach(function(q){ if((line+" "+q).trim().length>n){ out.push(line.trim()); line=q; } else line+=" "+q; });
-  if(line.trim()) out.push(line.trim());
-  return out;
-}
 function isoToday(){ var d=new Date(nyToday()); return d.toISOString().slice(0,10); }
-
-function readPitch(cx, top){
-  var first=stripMarks(fill((DATA.summary||"")))
-    .split(/(?<=\.)\s/)[0] || "";
-  if(!first) return "";
-  var lines=wrapAt(first, 28), lh=19;
-  var t='<g class="pitch" pointer-events="none">';
-  lines.forEach(function(l,i){
-    t+='<text class="pitchline" x="'+cx+'" y="'+(top+i*lh)+'" text-anchor="middle">'+esc(l)+'</text>';
-  });
-  var y=top+(lines.length-1)*lh+12;
-  t+='<line x1="'+(cx-104)+'" y1="'+y+'" x2="'+(cx+104)+'" y2="'+y+'" stroke="var(--ink)" stroke-width="1.2" opacity=".4"/>';
-  t+='<text class="pitchcue" x="'+cx+'" y="'+(y+17)+'" text-anchor="middle">Read the rest &#9656;</text>';
-  return t+'</g>';
-}
-function esc(t){ return String(t).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
 
 /* --- ROCKET on the ground --- */
 var ROCKET_X=800, ROCKET_BASE=NEAR+18;
@@ -4219,13 +4198,23 @@ function rocketPad(){
   g+='<path d="M'+(rx-8)+','+(b-31)+' q-10,15 -9,27 q8,-6 13,-8 Z" fill="var(--rust)" stroke="var(--ink)" stroke-width="1.7" stroke-linejoin="round"/>';
   g+='<path d="M'+(rx+8)+','+(b-31)+' q10,15 9,27 q-8,-6 -13,-8 Z" fill="var(--rust)" stroke="var(--ink)" stroke-width="1.7" stroke-linejoin="round"/>';
   g+='<rect x="'+(rx-8)+'" y="'+(b-8)+'" width="16" height="8" rx="2" fill="var(--ink)"/>';
-  // The read's own first line, set beside the pad in the read's serif. A reason
-  // to press rather than an instruction to; the words do the work the arrow could
-  // not. Wrapped by hand because SVG has no text flow.
-  var point=readPitch(x, b+22);
+  // The label sits left of the hint bar, which owns the middle of the beach for
+  // its first eleven seconds, and a curve carries the eye up to the rocket.
+  var point='<path d="M628,850 C 668,860 712,857 742,840" fill="none" stroke="var(--ink-soft)" stroke-width="1.7" stroke-linecap="round" opacity=".8"/>'
+    +'<polygon points="753,831 739,836 747,846" fill="var(--ink-soft)" opacity=".8"/>'
+    +'<text class="voice" x="616" y="857" text-anchor="end" font-size="15">my opinion</text>';
+  // The pad's sign, lettered in the map's own hand rather than in web chrome:
+  // cream until you point at it, then it fills with ink like a pressed key.
+  var sw=150, sh=34, sl=x-sw/2, st=b+18;
+  point+='<g class="placard">'
+    +'<line x1="'+(sl+22)+'" y1="'+(st+sh)+'" x2="'+(sl+22)+'" y2="'+(st+sh+16)+'" stroke="var(--ink)" stroke-width="2"/>'
+    +'<line x1="'+(sl+sw-22)+'" y1="'+(st+sh)+'" x2="'+(sl+sw-22)+'" y2="'+(st+sh+16)+'" stroke="var(--ink)" stroke-width="2"/>'
+    +'<rect class="placard-bg" x="'+sl+'" y="'+st+'" width="'+sw+'" height="'+sh+'" fill="var(--panel)" stroke="var(--ink)" stroke-width="2"/>'
+    +'<rect x="'+(sl+4)+'" y="'+(st+4)+'" width="'+(sw-8)+'" height="'+(sh-8)+'" fill="none" stroke="var(--ink)" stroke-width="1" opacity=".5" pointer-events="none"/>'
+    +'<text class="placard-t" x="'+x+'" y="'+(st+sh/2+6)+'" text-anchor="middle">LAUNCH</text></g>';
   return '<g class="obj" id="obj-rocket" data-metric="rocket" tabindex="0" role="button" aria-label="Launch: zoom out for the overall read">'
-    +'<rect x="'+(x-118)+'" y="'+(b-hgt-24)+'" width="236" height="'+(hgt+140)+'" fill="transparent"/>'+g
-    +'<rect class="focusring" x="'+(x-52)+'" y="'+(b-hgt-18)+'" width="104" height="'+(hgt+26)+'" fill="none" stroke="var(--verd)" stroke-width="2.5" stroke-dasharray="6 5"/>'
+    +'<rect x="'+(x-86)+'" y="'+(b-hgt-24)+'" width="172" height="'+(hgt+106)+'" fill="transparent"/>'+g
+    +'<ellipse class="focusring" cx="'+x+'" cy="'+(b-hgt/2+4)+'" rx="58" ry="78" fill="none" stroke="var(--verd)" stroke-width="2.5"/>'
     +ping(x,b-hgt/2,56,74)+point
     +'<text class="lbl" x="'+x+'" y="'+(b-hgt-26)+'" text-anchor="middle" style="font-size:12px">Today\'s read &#9652;</text></g>';
 }
@@ -5188,7 +5177,7 @@ function stripMarks(t){ return String(t).replace(/\*([^*]+)\*/g, "$1"); }
 function paintTeaser(){
   var el=document.getElementById("teaser"); if(!el) return;
   var first=fill(stripMarks(DATA.summary||"").split(/(?<=\.)\s/)[0] || "");
-  el.innerHTML = "";   /* the pitch beside the pad says this now */
+  el.innerHTML = first ? first+'<i>rocket for the rest</i>' : "";
 }
 
 function phoneHint(){
