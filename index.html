@@ -189,15 +189,16 @@ svg.chart{display:block; width:100%; height:100%}
   font-family:inherit; font-size:12.5px; font-weight:600; letter-spacing:.18em;
   text-transform:uppercase; padding:10px 15px; box-shadow:2px 2px 0 var(--rule)}
 .zoombtn:active{transform:translate(1px,1px); box-shadow:1px 1px 0 var(--rule)}
-/* The pad's site sign. Cream in the world's own hand; on hover it inverts, so
-   the only solid black on the map appears once you are already pointing at it. */
-.placard-t{font-family:"Barlow Condensed",sans-serif; font-size:17px; font-weight:600;
-  letter-spacing:.22em; fill:var(--ink); transition:fill .15s ease}
-.placard-bg{transition:fill .15s ease}
+/* The launch button. Rust face, cream letters, a hard shadow under it so it
+   sits proud of the pad; pointing at it lifts it, pressing sets it down. */
+.lb-t{font-family:"Barlow Condensed",sans-serif; font-size:16px; font-weight:600;
+  letter-spacing:.22em; fill:#FCFAF3; pointer-events:none}
+.lb-face,.lb-shadow{transition:transform .12s ease, opacity .12s ease}
 #obj-rocket{cursor:pointer}
-#obj-rocket.hot .placard-bg, #obj-rocket:focus-visible .placard-bg{fill:var(--ink)}
-#obj-rocket.hot .placard-t, #obj-rocket:focus-visible .placard-t{fill:var(--panel)}
-#obj-rocket:active .placard{transform:translate(1.5px,1.5px)}
+#obj-rocket.hot .lb-face{transform:translate(-1px,-1px)}
+#obj-rocket.hot .lb-shadow{opacity:.6}
+#obj-rocket:active .lb-face{transform:translate(3px,4px)}
+#obj-rocket:active .lb-shadow{opacity:0}
 /* A fuelled pad's warning light. Slow enough to be peripheral, not a blink, and
    unlike .ping it is not switched off once the visitor has explored. */
 @keyframes padpulse{0%,100%{opacity:1} 50%{opacity:.28}}
@@ -4203,15 +4204,16 @@ function rocketPad(){
   var point='<path d="M628,850 C 668,860 712,857 742,840" fill="none" stroke="var(--ink-soft)" stroke-width="1.7" stroke-linecap="round" opacity=".8"/>'
     +'<polygon points="753,831 739,836 747,846" fill="var(--ink-soft)" opacity=".8"/>'
     +'<text class="voice" x="616" y="857" text-anchor="end" font-size="15">my opinion</text>';
-  // The pad's sign, lettered in the map's own hand rather than in web chrome:
-  // cream until you point at it, then it fills with ink like a pressed key.
-  var sw=150, sh=34, sl=x-sw/2, st=b+18;
-  point+='<g class="placard">'
-    +'<line x1="'+(sl+22)+'" y1="'+(st+sh)+'" x2="'+(sl+22)+'" y2="'+(st+sh+16)+'" stroke="var(--ink)" stroke-width="2"/>'
-    +'<line x1="'+(sl+sw-22)+'" y1="'+(st+sh)+'" x2="'+(sl+sw-22)+'" y2="'+(st+sh+16)+'" stroke="var(--ink)" stroke-width="2"/>'
-    +'<rect class="placard-bg" x="'+sl+'" y="'+st+'" width="'+sw+'" height="'+sh+'" fill="var(--panel)" stroke="var(--ink)" stroke-width="2"/>'
-    +'<rect x="'+(sl+4)+'" y="'+(st+4)+'" width="'+(sw-8)+'" height="'+(sh-8)+'" fill="none" stroke="var(--ink)" stroke-width="1" opacity=".5" pointer-events="none"/>'
-    +'<text class="placard-t" x="'+x+'" y="'+(st+sh/2+6)+'" text-anchor="middle">LAUNCH</text></g>';
+  // The pad's launch button: the red one everybody recognises. Rust is already
+  // the map's alert colour, so it is in palette rather than imported chrome, and
+  // it sits on a small console so it reads as hardware, not as a web widget.
+  var bw=132, bh=34, bx=x-bw/2, by=b+20;
+  point+='<g class="launchbtn">'
+    +'<rect x="'+(bx-7)+'" y="'+(by+bh-3)+'" width="'+(bw+14)+'" height="9" rx="2" fill="var(--panel)" stroke="var(--ink)" stroke-width="1.8"/>'
+    +'<rect class="lb-shadow" x="'+(bx+3)+'" y="'+(by+4)+'" width="'+bw+'" height="'+bh+'" rx="5" fill="var(--ink)" opacity=".45"/>'
+    +'<rect class="lb-face" x="'+bx+'" y="'+by+'" width="'+bw+'" height="'+bh+'" rx="5" fill="var(--rust)" stroke="var(--ink)" stroke-width="2"/>'
+    +'<rect x="'+(bx+4)+'" y="'+(by+3.5)+'" width="'+(bw-8)+'" height="'+(bh/2-4)+'" rx="3" fill="#FFFFFF" opacity=".16" pointer-events="none"/>'
+    +'<text class="lb-t" x="'+x+'" y="'+(by+bh/2+5.5)+'" text-anchor="middle">LAUNCH</text></g>';
   return '<g class="obj" id="obj-rocket" data-metric="rocket" tabindex="0" role="button" aria-label="Launch: zoom out for the overall read">'
     +'<rect x="'+(x-86)+'" y="'+(b-hgt-24)+'" width="172" height="'+(hgt+106)+'" fill="transparent"/>'+g
     +'<ellipse class="focusring" cx="'+x+'" cy="'+(b-hgt/2+4)+'" rx="58" ry="78" fill="none" stroke="var(--verd)" stroke-width="2.5"/>'
