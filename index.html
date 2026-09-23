@@ -189,9 +189,6 @@ svg.chart{display:block; width:100%; height:100%}
   font-family:inherit; font-size:12.5px; font-weight:600; letter-spacing:.18em;
   text-transform:uppercase; padding:10px 15px; box-shadow:2px 2px 0 var(--rule)}
 .zoombtn:active{transform:translate(1px,1px); box-shadow:1px 1px 0 var(--rule)}
-/* The map's one control presses like the page's other buttons. */
-#obj-rocket{cursor:pointer}
-#obj-rocket:active .readbtn{transform:translate(2px,2px)}
 .callout{position:absolute; z-index:5; width:290px; pointer-events:none;
   overscroll-behavior:contain; max-height:calc(100vh - 40px); overflow-y:auto; background:var(--panel); border:1px solid var(--ink); padding:13px 15px 14px; opacity:0; transform:translateY(4px); transition:opacity .18s ease, transform .18s ease; box-shadow:3px 3px 0 var(--rule-soft)}
 .callout.show{opacity:1; transform:translateY(0)}
@@ -4181,20 +4178,16 @@ function rocketPad(){
   g+='<path d="M'+(rx-8)+','+(b-31)+' q-10,15 -9,27 q8,-6 13,-8 Z" fill="var(--rust)" stroke="var(--ink)" stroke-width="1.7" stroke-linejoin="round"/>';
   g+='<path d="M'+(rx+8)+','+(b-31)+' q10,15 9,27 q-8,-6 -13,-8 Z" fill="var(--rust)" stroke="var(--ink)" stroke-width="1.7" stroke-linejoin="round"/>';
   g+='<rect x="'+(rx-8)+'" y="'+(b-8)+'" width="16" height="8" rx="2" fill="var(--ink)"/>';
-  // A pressable shape, not another label. Every object here is a hairline
-  // drawing, so nothing read as clickable and visitors did not press the one
-  // thing that is a control. This is the page's own button style (.zoombtn:
-  // solid ink, cream text, hard offset shadow), the only filled shape on the map.
-  var bw=196, bh=36, bx=x-bw/2, by=b+16;
-  var point='<g class="readbtn">'
-    +'<rect x="'+(bx+3)+'" y="'+(by+3)+'" width="'+bw+'" height="'+bh+'" fill="var(--rule)"/>'
-    +'<rect x="'+bx+'" y="'+by+'" width="'+bw+'" height="'+bh+'" fill="var(--ink)"/>'
-    +'<text x="'+x+'" y="'+(by+bh/2+4.5)+'" text-anchor="middle" fill="var(--panel)" style="font-family:\'Barlow Condensed\',sans-serif; font-size:14px; font-weight:600; letter-spacing:.18em">READ TODAY&#8217;S TAKE</text></g>';
+  // The label sits left of the hint bar, which owns the middle of the beach for
+  // its first eleven seconds, and a curve carries the eye up to the rocket.
+  var point='<path d="M628,850 C 668,860 712,857 742,840" fill="none" stroke="var(--ink-soft)" stroke-width="1.7" stroke-linecap="round" opacity=".8"/>'
+    +'<polygon points="753,831 739,836 747,846" fill="var(--ink-soft)" opacity=".8"/>'
+    +'<text class="voice" x="616" y="857" text-anchor="end" font-size="15">my opinion</text>';
   return '<g class="obj" id="obj-rocket" data-metric="rocket" tabindex="0" role="button" aria-label="Launch: zoom out for the overall read">'
-    +'<rect x="'+(x-100)+'" y="'+(b-hgt-24)+'" width="200" height="'+(hgt+90)+'" fill="transparent"/>'+g
+    +'<rect x="'+(x-58)+'" y="'+(b-hgt-24)+'" width="116" height="'+(hgt+34)+'" fill="transparent"/>'+g
     +'<rect class="focusring" x="'+(x-52)+'" y="'+(b-hgt-18)+'" width="104" height="'+(hgt+26)+'" fill="none" stroke="var(--verd)" stroke-width="2.5" stroke-dasharray="6 5"/>'
     +ping(x,b-hgt/2,56,74)+point
-    +'<text class="lbl" x="'+x+'" y="'+(b-hgt-26)+'" text-anchor="middle" style="font-size:12px">Today\'s read</text></g>';
+    +'<text class="lbl" x="'+x+'" y="'+(b-hgt-26)+'" text-anchor="middle" style="font-size:12px">Today\'s read &#9652;</text></g>';
 }
 
 /* ============================================================
