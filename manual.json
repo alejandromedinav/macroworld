@@ -171,13 +171,13 @@
   },
   "watch": [
     {
-      "when": "26 Sep",
-      "what": "August PCE",
+      "when": "2 Oct",
+      "what": "Payrolls",
       "key": true
     },
     {
-      "when": "2 Oct",
-      "what": "Payrolls"
+      "when": "13 Oct",
+      "what": "September CPI"
     },
     {
       "when": "28 Oct",
@@ -220,11 +220,16 @@
   "_ai_note": "Hand-entered - no FRED series covers company capex. The sentence shown lives in COPY.ai in index.html.",
   "_fed_note": "lastMove 0 means the FOMC held; +0.25 / -0.25 for a move. range is the hand-entered target range for decision day, used only while newer than FRED. Hand-entered - nothing validates this.",
   "oil": {
-    "asOf": "2026-09-23",
-    "wti": 92.0,
-    "brent": 103.0,
+    "asOf": "2026-09-30",
+    "wti": 91.0,
+    "brent": 98.0,
     "note": "Front-month futures, read by hand",
     "history": [
+      {
+        "asOf": "2026-09-30",
+        "wti": 91.0,
+        "brent": 98.0
+      },
       {
         "asOf": "2026-09-23",
         "wti": 92.0,
@@ -259,30 +264,19 @@
         "asOf": "2026-09-15",
         "wti": 106.0,
         "brent": 109.0
-      },
-      {
-        "asOf": "2026-09-14",
-        "wti": 103.0,
-        "brent": 107.0
-      },
-      {
-        "asOf": "2026-09-11",
-        "wti": 100.1,
-        "brent": 105.0
       }
     ]
   },
   "_oil_note": "Optional daily override. Set asOf to the date you read them and fill wti/brent. Used only while newer than FRED's print - if you stop updating, it falls back to FRED automatically rather than showing an ever-staler number.",
   "curve": {
-    "asOf": "2026-09-23",
+    "asOf": "2026-09-30",
     "values": {
-      "3M": 4.13,
-      "2Y": 4.93,
-      "10Y": 5.14,
-      "30Y": 5.4
+      "3M": 4.15,
+      "2Y": 4.9,
+      "10Y": 5.3
     },
     "notes": {
-      "10Y": "Highest since July 2007 · +16bp today"
+      "10Y": "Highest since May 2002"
     },
     "alert": [
       "10Y"
