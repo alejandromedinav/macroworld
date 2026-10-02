@@ -171,24 +171,28 @@
   },
   "watch": [
     {
-      "when": "2 Oct",
-      "what": "Payrolls",
-      "key": true
-    },
-    {
       "when": "13 Oct",
-      "what": "September CPI"
+      "what": "September CPI",
+      "key": true
     },
     {
       "when": "28 Oct",
       "what": "FOMC"
+    },
+    {
+      "when": "30 Oct",
+      "what": "Q3 GDP"
     }
   ],
   "news": [
     {
-      "when": "23 Sep",
-      "what": "Flash PMI released today, composite at 58.4 from 56.0. Economy is running too hot. 10 year is at its highest since 2007.",
+      "when": "2 Oct",
+      "what": "Jobs report came out, only 29,000 new jobs added in Sep compared to the estimated 90,000.",
       "key": true
+    },
+    {
+      "when": "23 Sep",
+      "what": "Flash PMI released today, composite at 58.4 from 56.0. Economy is running too hot. 10 year is at its highest since 2007."
     },
     {
       "when": "22 Sep",
@@ -209,10 +213,6 @@
     {
       "when": "17 Sep",
       "what": "Stock market is up after the Fed hiked yesterday, affirming control of inflation long term."
-    },
-    {
-      "when": "16 Sep",
-      "what": "The Fed hiked 25bp to 3.75–4.00%. First hike since July 2023."
     }
   ],
   "_news_note": "The newspaper on the map. Dated bullets, newest first, five to seven at most; the oldest falls off. Facts only, the take lives in the read. key:true marks one row rust.",
