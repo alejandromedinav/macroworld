@@ -296,6 +296,7 @@ def apply_curve_override(curve, manual, dates):
         return curve
     notes, alerts = (o.get("notes") or {}), set(o.get("alert") or [])
     strains = set(o.get("strain") or [])   # a smaller crack, number stays in ink
+    tracks = o.get("track") or {}          # [open, low, now] for the day, drawn as a path
     key_to_date = {"3M": "y3m", "2Y": "y2y", "10Y": "y10y", "30Y": "y30y"}
     for point in curve:
         k = point["key"]
@@ -315,6 +316,8 @@ def apply_curve_override(curve, manual, dates):
             point["alert"] = True
         elif k in strains:
             point["strain"] = True
+        if tracks.get(k):
+            point["track"] = [float(v) for v in tracks[k]]
     return curve
 
 

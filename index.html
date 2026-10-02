@@ -191,6 +191,7 @@ svg.chart{display:block; width:100%; height:100%}
 .zoombtn:active{transform:translate(1px,1px); box-shadow:1px 1px 0 var(--rule)}
 /* The launch button. Rust face, cream letters, a hard shadow under it so it
    sits proud of the pad; pointing at it lifts it, pressing sets it down. */
+.tracelo{font-family:"IBM Plex Mono",monospace; font-size:11px; fill:var(--rust); letter-spacing:.04em}
 .lb-t{font-family:"Barlow Condensed",sans-serif; font-size:14px; font-weight:600;
   letter-spacing:.22em; fill:#FCFAF3; pointer-events:none}
 .lb-face,.lb-shadow{transition:transform .12s ease, opacity .12s ease}
@@ -630,14 +631,24 @@ var DATA = {
       "label": "2-year note",
       "yield": 4.83,
       "note": "Fell to 4.72% on the jobs miss, then round-tripped higher",
-      "strain": true
+      "strain": true,
+      "track": [
+        4.78,
+        4.72,
+        4.83
+      ]
     },
     {
       "key": "10Y",
       "label": "10-year note",
       "yield": 5.29,
       "note": "Fell to 5.17% on the jobs miss, then round-tripped higher",
-      "alert": true
+      "alert": true,
+      "track": [
+        5.23,
+        5.17,
+        5.29
+      ]
     },
     {
       "key": "30Y",
@@ -3789,11 +3800,39 @@ function mountains(){
       +'<circle class="linkmark" cx="'+px+'" cy="'+f(py,1)+'" r="7" fill="var(--verd)"/>'
       +'<text class="num'+(c.alert?' alert':'')+'" x="'+px+'" y="'+f(py-22,1)+'" text-anchor="middle">'+f(c.yield)+'%</text>'
       +(c.alert ? fracture(px,py) : c.strain ? fracture(px,py,0.6) : '')
+      +trace(px,py,c.track)
       +'<text class="lbl'+(c.alert?' alert':'')+'" x="'+px+'" y="'+f(py-41,1)+'" text-anchor="middle" style="font-size:13px">'+c.key+'</text>'
       +(c.note?'<text class="sounding" x="'+px+'" y="'+f(py-62,1)+'" text-anchor="middle" fill="var(--rust)" opacity="1">'+c.note+'</text>':'')
       +'</g>';
   });
   return s+'</g>';
+}
+
+// A day's path rather than a day's level: the only thing on this map that
+// shows where a number went, not just where it ended. Drawn to the same vertical
+// scale as the range itself (peakY), so the drop you see is the drop that
+// happened; the horizontal is time, evenly spaced, and carries no magnitude.
+// `track` is [open, low, now] on manual.json's curve.track[key].
+function trace(px, py, tr){
+  if(!tr || tr.length<3) return "";
+  var w=104, n=tr.length, dx=w/(n-1), x0=px-w/2;
+  var ys=tr.map(peakY), lo=Math.max.apply(null,ys), hi=Math.min.apply(null,ys);
+  // keep the shape legible when the whole move is only a few basis points
+  var span=lo-hi, k=span<26 ? 26/Math.max(span,1) : 1, mid=(lo+hi)/2;
+  var yAt=function(v){ return mid + (peakY(v)-mid)*k; };
+  var top=py+46;                                   // hangs below the summit
+  var shift=top-yAt(tr[0]);
+  var pt=tr.map(function(v,i){ return [x0+i*dx, yAt(v)+shift]; });
+  var d='M'+pt.map(function(q){ return f(q[0],1)+','+f(q[1],1); }).join(' L');
+  var loI=0; tr.forEach(function(v,i){ if(v<tr[loI]) loI=i; });
+  var g='<g class="trace" pointer-events="none">';
+  g+='<path d="'+d+'" fill="none" stroke="var(--ink)" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" opacity=".85"/>';
+  // the low, marked, because the round trip is the point
+  g+='<circle cx="'+f(pt[loI][0],1)+'" cy="'+f(pt[loI][1],1)+'" r="3.4" fill="var(--panel)" stroke="var(--rust)" stroke-width="2"/>';
+  g+='<text class="tracelo" x="'+f(pt[loI][0],1)+'" y="'+f(pt[loI][1]+15,1)+'" text-anchor="middle">'+f(tr[loI])+'</text>';
+  // and the end, so the recovery has somewhere to land
+  g+='<circle cx="'+f(pt[n-1][0],1)+'" cy="'+f(pt[n-1][1],1)+'" r="3" fill="var(--ink)"/>';
+  return g+'</g>';
 }
 
 /* --- LIGHTHOUSE: back-left corner, small and far off --- */

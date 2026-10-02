@@ -283,9 +283,21 @@
     ],
     "strain": [
       "2Y"
-    ]
+    ],
+    "track": {
+      "2Y": [
+        4.78,
+        4.72,
+        4.83
+      ],
+      "10Y": [
+        5.23,
+        5.17,
+        5.29
+      ]
+    }
   },
-  "_curve_note": "Optional hand entry for a yield FRED has not published yet. Same rule as oil: only used while newer than FRED. notes/alert are display only. Put alert on whatever the day's story is: it turns the figure rust and is the only thing telling a first-time visitor where to look. strain is the quieter version: a smaller crack on the summit, number stays in ink.",
+  "_curve_note": "Optional hand entry for a yield FRED has not published yet. Same rule as oil: only used while newer than FRED. notes/alert are display only. Put alert on whatever the day's story is: it turns the figure rust and is the only thing telling a first-time visitor where to look. strain is the quieter version: a smaller crack on the summit, number stays in ink. track is [open, low, now] for one tenor's day, drawn as a path under the summit; use it only when the path matters more than the close, and leave it out otherwise.",
   "author": "A.M.",
   "_author_note": "Shown under the read, so the opinion is signed and separable from the sourced data.",
   "credit": "Alejandro Medina",
