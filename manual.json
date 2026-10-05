@@ -220,11 +220,16 @@
   "_ai_note": "Hand-entered - no FRED series covers company capex. The sentence shown lives in COPY.ai in index.html.",
   "_fed_note": "lastMove 0 means the FOMC held; +0.25 / -0.25 for a move. range is the hand-entered target range for decision day, used only while newer than FRED. Hand-entered - nothing validates this.",
   "oil": {
-    "asOf": "2026-09-30",
-    "wti": 91.0,
-    "brent": 98.0,
+    "asOf": "2026-10-05",
+    "wti": 90.0,
+    "brent": 100.0,
     "note": "Front-month futures, read by hand",
     "history": [
+      {
+        "asOf": "2026-10-05",
+        "wti": 90.0,
+        "brent": 100.0
+      },
       {
         "asOf": "2026-09-30",
         "wti": 91.0,
@@ -259,43 +264,26 @@
         "asOf": "2026-09-16",
         "wti": 102.6,
         "brent": 106.0
-      },
-      {
-        "asOf": "2026-09-15",
-        "wti": 106.0,
-        "brent": 109.0
       }
     ]
   },
   "_oil_note": "Optional daily override. Set asOf to the date you read them and fill wti/brent. Used only while newer than FRED's print - if you stop updating, it falls back to FRED automatically rather than showing an ever-staler number.",
   "curve": {
-    "asOf": "2026-10-02",
+    "asOf": "2026-10-05",
     "values": {
-      "2Y": 4.83,
-      "10Y": 5.29
+      "3M": 4.12,
+      "2Y": 4.85,
+      "10Y": 5.35
     },
     "notes": {
-      "2Y": "Fell to 4.72% on the jobs miss, then round-tripped higher",
-      "10Y": "Fell to 5.17% on the jobs miss, then round-tripped higher"
+      "10Y": "Highest since April 2002"
     },
     "alert": [
       "10Y"
     ],
     "strain": [
       "2Y"
-    ],
-    "track": {
-      "2Y": [
-        4.78,
-        4.72,
-        4.83
-      ],
-      "10Y": [
-        5.23,
-        5.17,
-        5.29
-      ]
-    }
+    ]
   },
   "_curve_note": "Optional hand entry for a yield FRED has not published yet. Same rule as oil: only used while newer than FRED. notes/alert are display only. Put alert on whatever the day's story is: it turns the figure rust and is the only thing telling a first-time visitor where to look. strain is the quieter version: a smaller crack on the summit, number stays in ink. track is [open, low, now] for one tenor's day, drawn as a path under the summit; use it only when the path matters more than the close, and leave it out otherwise.",
   "author": "A.M.",
