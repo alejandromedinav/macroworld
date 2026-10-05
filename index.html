@@ -4899,7 +4899,7 @@ function launch(){
   launchEl.setAttribute("aria-hidden","false");
   if(reduced()){
     launchEl.classList.add("show","lift","arrived");
-    document.getElementById("space-close").focus();
+    focusQuiet(document.getElementById("space-close"));
     return;
   }
   // 1. zoom into the rocket
@@ -4911,7 +4911,7 @@ function launch(){
   // 3. arrive in space
   timers.push(setTimeout(function(){
     launchEl.classList.add("arrived");
-    document.getElementById("space-close").focus();
+    focusQuiet(document.getElementById("space-close"));
   },2500));
 }
 function closeSpace(){
@@ -4919,7 +4919,7 @@ function closeSpace(){
   launchEl.classList.remove("show","lift","arrived");
   launchEl.setAttribute("aria-hidden","true");
   scene.classList.remove("zooming");
-  var r=document.getElementById("obj-rocket"); if(r) r.focus();
+  focusQuiet(document.getElementById("obj-rocket"));
 }
 document.getElementById("space-close").addEventListener("click",closeSpace);
 document.addEventListener("keydown",function(e){
@@ -5155,14 +5155,25 @@ document.getElementById("btn-cpi").addEventListener("click",function(){ setMeasu
 document.getElementById("btn-pce").addEventListener("click",function(){ setMeasure("pce"); });
 
 /* the satellite opens the figures; the panel closes itself */
+// Focus without letting the browser scroll to the element. .world is
+// overflow:hidden but still programmatically scrollable, and the figures panel
+// parks just below its bottom edge; a scroll-into-view clipped the top of the
+// map and pulled that panel's white edge up into the frame.
+function focusQuiet(el){
+  if(!el) return;
+  try{ el.focus({preventScroll:true}); }catch(e){ el.focus(); }
+  var w=document.querySelector(".world");
+  if(w){ w.scrollTop=0; w.scrollLeft=0; }
+}
+
 var panel=document.getElementById("panel");
 function setPanel(open){
   panel.classList.toggle("open",open);
   panel.setAttribute("aria-hidden",String(!open));
   var tz=document.getElementById("teaser"); if(tz) tz.classList.toggle("dim",open);
   var tm=document.getElementById("timeline"); if(tm) tm.classList.toggle("dim",open);
-  if(open) document.getElementById("panel-close").focus();
-  else { var sat=document.getElementById("obj-satellite"); if(sat) sat.focus(); }
+  if(open) focusQuiet(document.getElementById("panel-close"));
+  else focusQuiet(document.getElementById("obj-satellite"));
 }
 document.getElementById("panel-close").addEventListener("click",function(){ setPanel(false); });
 
@@ -5172,7 +5183,7 @@ function setSources(open){
   srcSheet.classList.toggle("open",open);
   srcSheet.setAttribute("aria-hidden",String(!open));
   srcBtn.setAttribute("aria-expanded",String(open));
-  if(open) document.getElementById("srcclose").focus(); else srcBtn.focus();
+  if(open) focusQuiet(document.getElementById("srcclose")); else focusQuiet(srcBtn);
 }
 srcBtn.addEventListener("click",function(){ setSources(!srcSheet.classList.contains("open")); });
 document.getElementById("srcclose").addEventListener("click",function(){ setSources(false); });
@@ -5494,7 +5505,7 @@ function repaintWorld(){
     tl.setAttribute("data-open", on?"1":"0");
     body.hidden=!on;
     open.setAttribute("aria-expanded", on?"true":"false");
-    if(on) sl.focus(); else open.focus();
+    if(on) focusQuiet(sl); else focusQuiet(open);
   }
   open.addEventListener("click",function(){ setOpen(true); });
   var back=document.getElementById("timeline-now");
