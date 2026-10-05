@@ -616,7 +616,7 @@ svg.chart{display:block; width:100%; height:100%}
 var DATA = {
   "asOf": "2026-10-01",
   "builtAt": "2026-10-05",
-  "summary": "*The 10 year yield just hit its highest since 2007.* The Fed hike should have lowered it since it signals they're serious about inflation. However, the PMI data that was released today made the 2 year and 10 year shoot up A LOT. What does this even mean? PMI is a survey for businesses, and the results showed an increase in demand for goods BUT also an increase in backlogs, meaning businesses can't keep up with demand. Along with this, input prices ↑. Mixing this all in a pot: demand > supply, input cost ↑, inflation ↑. All while the Fed is trying to tackle inflation. The economy is aggressively strong. Looking at credit, the high yield OAS is surprisingly still tight at 268bps. So investors aren't demanding too much extra compensation for these companies. Also, another thing to look at → AI debt. Microsoft, Meta, Alphabet, Amazon, and Oracle are issuing so much damn debt ($420 billion projected for 2027) that investors are now demanding more compensation for their bonds. This is a pretty cool mechanism to watch. These companies are investment grade, and the current average spread for investment-grade is 78 basis points. However, for these hyperscalers, the average is trading at 115bps spread. So investors are demanding more because their investments are all concentrated on AI companies, and they want to account for this risk even though these hyperscalers are financially super strong. Basically, there's currently an oversupply of bonds. I might break my piggy bank early and hop on the train. Meta, get ready for my offer.",
+  "summary": "Jobs came in lower than expected. ISM services report released: services PMI 54.9 and prices paid 74 (highest since 2022). So, economic activity is still strong and prices are increasing, inflation risk isn't gone. 10 year is *back up to 5.35%* from Friday, meaning the market is still questioning the long end factors of treasury supply, inflation expectations, AI related capital demand, and term premium. On the equities side, AI companies are doing well, so the market is saying these AI returns and growth are overcoming the high discount rates. Also, AI related companies now represent 16% of the investment grade bond market. AI bubble? I think not.",
   "author": "A.M.",
   "maker": "Alejandro Medina",
   "curve": [
@@ -756,9 +756,13 @@ var DATA = {
   ],
   "news": [
     {
-      "when": "2 Oct",
-      "what": "Jobs report came out, only 29,000 new jobs added in Sep compared to the estimated 90,000.",
+      "when": "5 Oct",
+      "what": "ISM services report: PMI 54.9, prices paid 74, the highest since 2022. Activity and spending still high.",
       "key": true
+    },
+    {
+      "when": "2 Oct",
+      "what": "Jobs report came out, only 29,000 new jobs added in Sep compared to the estimated 90,000."
     },
     {
       "when": "23 Sep",
@@ -779,10 +783,6 @@ var DATA = {
     {
       "when": "18 Sep",
       "what": "Bank of Japan hiked to 1.25%, highest since 1995. Its 10 year sits near 3%."
-    },
-    {
-      "when": "17 Sep",
-      "what": "Stock market is up after the Fed hiked yesterday, affirming control of inflation long term."
     }
   ],
   "fedPath": [
@@ -5086,6 +5086,11 @@ var SOURCES=[
   ["Flash PMI",
    "S&P Global flash US composite 58.4 in September, from 56.0 in August · manufacturing 57.0, services 58.7 · input cost inflation the fastest since October 2022",
    "S&P Global Flash US PMI, 23 Sep 2026"],
+  // Cited in the read. ISM's own September release: the Prices Index at 74.0%
+  // is the highest since July 2022 (74.5%), its 22nd straight month above 60.
+  ["ISM services",
+   "September: Services PMI 54.9% · Prices Index 74.0%, highest since July 2022",
+   "ISM Services Report On Business, 5 Oct 2026"],
   ["AI debt",
    "Hyperscaler debt financing projected at $420bn for 2027, about 60% above 2026 · AI-linked spreads near 115bp against 78bp for investment grade",
    "Reuters, 22 Sep 2026 · Goldman Sachs estimates"],
