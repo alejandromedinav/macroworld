@@ -1,6 +1,6 @@
 {
   "_comment": "The hand-written half. Edit this daily; fetch-data.mjs merges it with FRED and never overwrites it.",
-  "summary": "Jobs came in lower than expected. ISM services report released: services PMI 54.9 and prices paid 74 (highest since 2022). So, economic activity is still strong and prices are increasing, inflation risk isn't gone. 10 year is *back up to 5.35%* from Friday, meaning the market is still questioning the long end factors of treasury supply, inflation expectations, AI related capital demand, and term premium. On the equities side, AI companies are doing well, so the market is saying these AI returns and growth are overcoming the high discount rates. Also, AI related companies now represent 16% of the investment grade bond market. AI isn't just a speculative story anymore, it's a weight that heavily shifts the bond market now. AI bubble? I think not.",
+  "summary": "Jobs came in lower than expected. ISM services report released: services PMI 54.9 and prices paid 74 (highest since 2022). So, economic activity is still strong and prices are increasing, inflation risk isn't gone. 10 year is *back up to 5.32%* from Friday, meaning the market is still questioning the long end factors of treasury supply, inflation expectations, AI related capital demand, and term premium. On the equities side, AI companies are doing well, so the market is saying these AI returns and growth are overcoming the high discount rates. Also, AI related companies now represent 16% of the investment grade bond market. AI isn't just a speculative story anymore, it's a weight that heavily shifts the bond market now. AI bubble? I think not.",
   "fed": {
     "lastMove": 0.25,
     "lastDate": "16 Sep 2026",
@@ -273,10 +273,10 @@
     "values": {
       "3M": 4.12,
       "2Y": 4.85,
-      "10Y": 5.35
+      "10Y": 5.32
     },
     "notes": {
-      "10Y": "Highest since April 2002"
+      "10Y": "Highest since May 2002"
     },
     "alert": [
       "10Y"
