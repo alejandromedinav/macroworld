@@ -171,24 +171,32 @@
   },
   "watch": [
     {
-      "when": "13 Oct",
-      "what": "September CPI",
-      "key": true
-    },
-    {
       "when": "28 Oct",
-      "what": "FOMC"
+      "what": "FOMC (hike or hold)",
+      "key": true
     },
     {
       "when": "30 Oct",
       "what": "Q3 GDP"
+    },
+    {
+      "when": "6 Nov",
+      "what": "Payrolls"
     }
   ],
   "news": [
     {
-      "when": "5 Oct",
-      "what": "ISM services report: PMI 54.9, prices paid 74, the highest since 2022. Activity and spending still high.",
+      "when": "14 Oct",
+      "what": "CPI came in hot. Headline 3.7% YoY (3.4% in Aug, 3.6% expected), core 2.6%. Gas +9.1% on the month was over half the headline increase.",
       "key": true
+    },
+    {
+      "when": "14 Oct",
+      "what": "Odds of another hike at the 28 Oct meeting jumped to about 50%, from 22% before the report."
+    },
+    {
+      "when": "5 Oct",
+      "what": "ISM services report: PMI 54.9, prices paid 74, the highest since 2022. Activity and spending still high."
     },
     {
       "when": "2 Oct",
@@ -205,14 +213,6 @@
     {
       "when": "21 Sep",
       "what": "UN General Assembly this week. Iran and the Strait of Hormuz are on the agenda."
-    },
-    {
-      "when": "18 Sep",
-      "what": "10 year is back up to 5%, even after the Fed hike."
-    },
-    {
-      "when": "18 Sep",
-      "what": "Bank of Japan hiked to 1.25%, highest since 1995. Its 10 year sits near 3%."
     }
   ],
   "_news_note": "The newspaper on the map. Dated bullets, newest first, five to seven at most; the oldest falls off. Facts only, the take lives in the read. key:true marks one row rust.",
@@ -220,11 +220,16 @@
   "_ai_note": "Hand-entered - no FRED series covers company capex. The sentence shown lives in COPY.ai in index.html.",
   "_fed_note": "lastMove 0 means the FOMC held; +0.25 / -0.25 for a move. range is the hand-entered target range for decision day, used only while newer than FRED. Hand-entered - nothing validates this.",
   "oil": {
-    "asOf": "2026-10-08",
-    "wti": 91.0,
-    "brent": 104.0,
+    "asOf": "2026-10-14",
+    "wti": 95.9,
+    "brent": 106.7,
     "note": "Front-month futures, read by hand",
     "history": [
+      {
+        "asOf": "2026-10-14",
+        "wti": 95.9,
+        "brent": 106.7
+      },
       {
         "asOf": "2026-10-08",
         "wti": 91.0,
@@ -259,23 +264,21 @@
         "asOf": "2026-09-22",
         "wti": 90.0,
         "brent": 100.0
-      },
-      {
-        "asOf": "2026-09-21",
-        "wti": 95.0,
-        "brent": 100.0
       }
     ]
   },
   "_oil_note": "Optional daily override. Set asOf to the date you read them and fill wti/brent. Used only while newer than FRED's print - if you stop updating, it falls back to FRED automatically rather than showing an ever-staler number.",
   "curve": {
-    "asOf": "2026-10-08",
+    "asOf": "2026-10-14",
     "values": {
-      "3M": 4.15,
-      "2Y": 4.8,
-      "10Y": 5.3
+      "3M": 4.21,
+      "2Y": 4.83,
+      "10Y": 5.21,
+      "30Y": 5.53
     },
-    "notes": {},
+    "notes": {
+      "10Y": "Spiked to 5.30% on the CPI, then gave it back"
+    },
     "alert": [
       "10Y"
     ],

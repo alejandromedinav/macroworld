@@ -623,64 +623,63 @@ var DATA = {
     {
       "key": "3M",
       "label": "3-month bill",
-      "yield": 4.25,
-      "chg": 0.02
+      "yield": 4.21
     },
     {
       "key": "2Y",
       "label": "2-year note",
-      "yield": 4.8,
-      "chg": 0.05
+      "yield": 4.83,
+      "strain": true
     },
     {
       "key": "10Y",
       "label": "10-year note",
-      "yield": 5.24,
-      "chg": 0.02
+      "yield": 5.21,
+      "note": "Spiked to 5.30% on the CPI, then gave it back",
+      "alert": true
     },
     {
       "key": "30Y",
       "label": "30-year bond",
-      "yield": 5.6,
-      "chg": 0.0
+      "yield": 5.53
     }
   ],
   "oil": {
     "wti": {
-      "price": 91.0,
-      "chg": 3.0,
-      "pct": 3.41
+      "price": 95.9,
+      "chg": 4.9,
+      "pct": 5.38
     },
     "brent": {
-      "price": 104.0,
-      "chg": 4.0,
-      "pct": 4.0
+      "price": 106.7,
+      "chg": 2.7,
+      "pct": 2.6
     }
   },
   "dates": {
-    "y3m": "2026-10-09",
-    "y2y": "2026-10-09",
-    "y10y": "2026-10-09",
-    "y30y": "2026-10-09",
+    "y3m": "2026-10-14",
+    "y2y": "2026-10-14",
+    "y10y": "2026-10-14",
+    "y30y": "2026-10-14",
     "funds": "2026-10-12",
-    "tgt_lo": "2026-10-13",
-    "tgt_hi": "2026-10-13",
-    "hy_oas": "2026-10-12",
-    "hy_yield": "2026-10-12",
-    "wti": "2026-10-08",
-    "brent": "2026-10-08",
-    "cpi": "2026-08-01",
+    "tgt_lo": "2026-10-14",
+    "tgt_hi": "2026-10-14",
+    "hy_oas": "2026-10-13",
+    "hy_yield": "2026-10-13",
+    "wti": "2026-10-14",
+    "brent": "2026-10-14",
+    "cpi": "2026-09-01",
     "pce": "2026-08-01",
     "breakeven": "2026-10-13",
     "real_tips": "2026-10-09",
     "debt_gdp": "2026-01-01",
     "debt_level": "2026-04-01",
-    "airfare": "2026-08-01",
-    "c_shelter": "2026-08-01",
-    "c_food": "2026-08-01",
-    "c_medical": "2026-08-01",
-    "c_transport": "2026-08-01",
-    "c_energy": "2026-08-01"
+    "airfare": "2026-09-01",
+    "c_shelter": "2026-09-01",
+    "c_food": "2026-09-01",
+    "c_medical": "2026-09-01",
+    "c_transport": "2026-09-01",
+    "c_energy": "2026-09-01"
   },
   "oilSource": "Manual (front-month futures)",
   "fed": {
@@ -693,9 +692,9 @@ var DATA = {
     "stance": "hawkish"
   },
   "credit": {
-    "effYield": 8.09,
-    "oas": 311,
-    "chg": -1
+    "effYield": 8.13,
+    "oas": 316,
+    "chg": 13
   },
   "breakeven": 2.33,
   "realTips": 2.91,
@@ -706,12 +705,12 @@ var DATA = {
     "levelSource": "Treasury, daily"
   },
   "airfare": {
-    "yoy": 23.4,
-    "chg": -2.1
+    "yoy": 22.4,
+    "chg": -1.0
   },
   "inflation": {
-    "cpi": 3.4,
-    "cpiChg": 0.0,
+    "cpi": 3.7,
+    "cpiChg": 0.4,
     "pce": 3.4,
     "pceChg": 0.1
   },
@@ -741,24 +740,32 @@ var DATA = {
   },
   "watch": [
     {
-      "when": "13 Oct",
-      "what": "September CPI",
-      "key": true
-    },
-    {
       "when": "28 Oct",
-      "what": "FOMC"
+      "what": "FOMC (hike or hold)",
+      "key": true
     },
     {
       "when": "30 Oct",
       "what": "Q3 GDP"
+    },
+    {
+      "when": "6 Nov",
+      "what": "Payrolls"
     }
   ],
   "news": [
     {
-      "when": "5 Oct",
-      "what": "ISM services report: PMI 54.9, prices paid 74, the highest since 2022. Activity and spending still high.",
+      "when": "14 Oct",
+      "what": "CPI came in hot. Headline 3.7% YoY (3.4% in Aug, 3.6% expected), core 2.6%. Gas +9.1% on the month was over half the headline increase.",
       "key": true
+    },
+    {
+      "when": "14 Oct",
+      "what": "Odds of another hike at the 28 Oct meeting jumped to about 50%, from 22% before the report."
+    },
+    {
+      "when": "5 Oct",
+      "what": "ISM services report: PMI 54.9, prices paid 74, the highest since 2022. Activity and spending still high."
     },
     {
       "when": "2 Oct",
@@ -775,14 +782,6 @@ var DATA = {
     {
       "when": "21 Sep",
       "what": "UN General Assembly this week. Iran and the Strait of Hormuz are on the agenda."
-    },
-    {
-      "when": "18 Sep",
-      "what": "10 year is back up to 5%, even after the Fed hike."
-    },
-    {
-      "when": "18 Sep",
-      "what": "Bank of Japan hiked to 1.25%, highest since 1995. Its 10 year sits near 3%."
     }
   ],
   "fedPath": [
@@ -923,7 +922,7 @@ var DATA = {
       "name": "Shelter",
       "cpi": 34.9,
       "pce": 15.4,
-      "yoy": 3.0,
+      "yoy": 3.2,
       "kind": "houses"
     },
     {
@@ -931,7 +930,7 @@ var DATA = {
       "name": "Food",
       "cpi": 13.6,
       "pce": 7.6,
-      "yoy": 2.6,
+      "yoy": 2.5,
       "kind": "market"
     },
     {
@@ -939,7 +938,7 @@ var DATA = {
       "name": "Medical care",
       "cpi": 8.1,
       "pce": 17.2,
-      "yoy": 1.6,
+      "yoy": 1.5,
       "kind": "hospital"
     },
     {
@@ -947,7 +946,7 @@ var DATA = {
       "name": "Transportation",
       "cpi": 16.4,
       "pce": 9.0,
-      "yoy": 6.0,
+      "yoy": 7.8,
       "kind": "transit"
     },
     {
@@ -955,7 +954,7 @@ var DATA = {
       "name": "Energy",
       "cpi": 6.6,
       "pce": 3.8,
-      "yoy": 16.0,
+      "yoy": 20.4,
       "kind": "fuel"
     },
     {
@@ -963,9 +962,9 @@ var DATA = {
       "name": "Other goods & services",
       "cpi": 20.4,
       "pce": 47.0,
-      "yoy": -1.1,
+      "yoy": -2.4,
       "kind": "shops",
-      "yoyPce": 2.8
+      "yoyPce": 2.1
     }
   ],
   "history": {
@@ -2341,12 +2340,12 @@ var DATA = {
         3.35,
         3.35,
         3.35,
-        3.35,
-        3.35,
-        3.35,
-        3.35,
-        3.35,
-        3.35
+        3.72,
+        3.72,
+        3.72,
+        3.72,
+        3.72,
+        3.72
       ],
       "pce": [
         2.41,
@@ -2977,12 +2976,12 @@ var DATA = {
         23.41,
         23.41,
         23.41,
-        23.41,
-        23.41,
-        23.41,
-        23.41,
-        23.41,
-        23.41
+        22.45,
+        22.45,
+        22.45,
+        22.45,
+        22.45,
+        22.45
       ],
       "c_shelter": [
         4.9,
@@ -3083,12 +3082,12 @@ var DATA = {
         3.03,
         3.03,
         3.03,
-        3.03,
-        3.03,
-        3.03,
-        3.03,
-        3.03,
-        3.03
+        3.22,
+        3.22,
+        3.22,
+        3.22,
+        3.22,
+        3.22
       ],
       "c_food": [
         2.16,
@@ -3189,12 +3188,12 @@ var DATA = {
         2.63,
         2.63,
         2.63,
-        2.63,
-        2.63,
-        2.63,
-        2.63,
-        2.63,
-        2.63
+        2.45,
+        2.45,
+        2.45,
+        2.45,
+        2.45,
+        2.45
       ],
       "c_medical": [
         3.31,
@@ -3295,12 +3294,12 @@ var DATA = {
         1.56,
         1.56,
         1.56,
-        1.56,
-        1.56,
-        1.56,
-        1.56,
-        1.56,
-        1.56
+        1.5,
+        1.5,
+        1.5,
+        1.5,
+        1.5,
+        1.5
       ],
       "c_transport": [
         -0.28,
@@ -3401,12 +3400,12 @@ var DATA = {
         5.97,
         5.97,
         5.97,
-        5.97,
-        5.97,
-        5.97,
-        5.97,
-        5.97,
-        5.97
+        7.77,
+        7.77,
+        7.77,
+        7.77,
+        7.77,
+        7.77
       ],
       "c_energy": [
         -4.8,
@@ -3507,12 +3506,12 @@ var DATA = {
         16.05,
         16.05,
         16.05,
-        16.05,
-        16.05,
-        16.05,
-        16.05,
-        16.05,
-        16.05
+        20.35,
+        20.35,
+        20.35,
+        20.35,
+        20.35,
+        20.35
       ],
       "debt_penny": [
         35.77,
@@ -5088,6 +5087,12 @@ var SOURCES=[
    "S&P Global Flash US PMI, 23 Sep 2026"],
   // Cited in the read. ISM's own September release: the Prices Index at 74.0%
   // is the highest since July 2022 (74.5%), its 22nd straight month above 60.
+  // Cited in the news scroll. September CPI, released 14 Oct. Year-over-year
+  // figures are the published NSA rates; the monthly changes are seasonally
+  // adjusted, which is how BLS reports each.
+  ["September CPI",
+   "Headline 3.7% y/y (3.4% in August) · core 2.6% · headline +0.6% m/m, core +0.3% · gasoline +9.1%, energy +5.2%, shelter +0.4%, food +0.0%",
+   "BLS CPI release, 14 Oct 2026"],
   ["ISM services",
    "September: Services PMI 54.9% · Prices Index 74.0%, highest since July 2022",
    "ISM Services Report On Business, 5 Oct 2026"],
