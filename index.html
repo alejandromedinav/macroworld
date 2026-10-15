@@ -615,7 +615,7 @@ svg.chart{display:block; width:100%; height:100%}
    === edit manual.json for the read, the watch list and AI capex.        === */
 var DATA = {
   "asOf": "2026-10-13",
-  "builtAt": "2026-10-14",
+  "builtAt": "2026-10-15",
   "summary": "CPI came in hot. Headline 3.7% YoY (3.4% in August, 3.6% expected), core 2.6%. Gas alone was up 9.1% on the month, more than half of the entire headline increase. So inflation is still mostly an oil story. But look at what the bond market did with it. The 10 year spiked to 5.30% on the report, then gave every basis point back and settled at *5.21%*. At the same time the 2 year went up and the 30 year went down. What does this even mean? For weeks the long end has been selling off on its own, no matter what the Fed did. Today that flipped. Hike odds for the 28 Oct meeting jumped from 22% to 50%, and the long end rallied on that. Mixing this all in a pot: the market is pricing a Fed that hikes, and trusting it to work. That is credibility, and the Fed has not had it since it hiked in September. Also, I flagged ISM prices paid at 74 {{since:2026-10-05}}. This print is what that looked like arriving.",
   "author": "A.M.",
   "maker": "Alejandro Medina",
@@ -623,51 +623,50 @@ var DATA = {
     {
       "key": "3M",
       "label": "3-month bill",
-      "yield": 4.21
+      "yield": 4.3
     },
     {
       "key": "2Y",
       "label": "2-year note",
-      "yield": 4.83,
-      "strain": true
+      "yield": 4.75
     },
     {
       "key": "10Y",
       "label": "10-year note",
-      "yield": 5.21,
-      "note": "Spiked to 5.30% on the CPI, then gave it back",
-      "alert": true
+      "yield": 5.1,
+      "strain": true
     },
     {
       "key": "30Y",
       "label": "30-year bond",
-      "yield": 5.53
+      "yield": 5.56,
+      "chg": -0.04
     }
   ],
   "oil": {
     "wti": {
-      "price": 95.9,
-      "chg": 4.9,
-      "pct": 5.38
+      "price": 98.0,
+      "chg": 2.1,
+      "pct": 2.19
     },
     "brent": {
-      "price": 106.7,
-      "chg": 2.7,
-      "pct": 2.6
+      "price": 106.0,
+      "chg": -0.7,
+      "pct": -0.66
     }
   },
   "dates": {
-    "y3m": "2026-10-14",
-    "y2y": "2026-10-14",
-    "y10y": "2026-10-14",
-    "y30y": "2026-10-14",
+    "y3m": "2026-10-15",
+    "y2y": "2026-10-15",
+    "y10y": "2026-10-15",
+    "y30y": "2026-10-13",
     "funds": "2026-10-13",
-    "tgt_lo": "2026-10-14",
-    "tgt_hi": "2026-10-14",
-    "hy_oas": "2026-10-13",
-    "hy_yield": "2026-10-13",
-    "wti": "2026-10-14",
-    "brent": "2026-10-14",
+    "tgt_lo": "2026-10-15",
+    "tgt_hi": "2026-10-15",
+    "hy_oas": "2026-10-14",
+    "hy_yield": "2026-10-14",
+    "wti": "2026-10-15",
+    "brent": "2026-10-15",
     "cpi": "2026-09-01",
     "pce": "2026-08-01",
     "breakeven": "2026-10-14",
@@ -692,9 +691,9 @@ var DATA = {
     "stance": "hawkish"
   },
   "credit": {
-    "effYield": 8.13,
-    "oas": 316,
-    "chg": 13
+    "effYield": 8.2,
+    "oas": 325,
+    "chg": 16
   },
   "breakeven": 2.35,
   "realTips": 2.88,
