@@ -616,7 +616,7 @@ svg.chart{display:block; width:100%; height:100%}
 var DATA = {
   "asOf": "2026-10-13",
   "builtAt": "2026-10-15",
-  "summary": "CPI came in hot. Headline 3.7% YoY (3.4% in August, 3.6% expected), core 2.6%. Gas alone was up 9.1% on the month, more than half of the entire headline increase. So inflation is still mostly an oil story. But look at what the bond market did with it. The 10 year spiked to 5.30% on the report, then gave every basis point back and settled at *5.21%*. At the same time the 2 year went up and the 30 year went down. What does this even mean? For weeks the long end has been selling off on its own, no matter what the Fed did. Today that flipped. Hike odds for the 28 Oct meeting jumped from 22% to 50%, and the long end rallied on that. Mixing this all in a pot: the market is pricing a Fed that hikes, and trusting it to work. That is credibility, and the Fed has not had it since it hiked in September. Also, I flagged ISM prices paid at 74 {{since:2026-10-05}}. This print is what that looked like arriving.",
+  "summary": "PPI report today. Recall: the Producer Price Index is what prices businesses are receiving for their goods and services, so it shows up in CPI later. Results: headline 6.3% YoY, the largest increase since December 2022, and +1.3% on the month against +0.5% prior. Core 5% YoY. Retail sales also came in at +0.8%, where about 0.3% was expected. But careful with that one. Retail sales measure nominal spending, so it doesn't tell you if people are buying more goods or just paying a higher price for the same quantity. Nominal growth is not real growth. So inflation is hot at the producer level and the 10 year should have gone up. Surprisingly it fell to *5.10%*, a lot. Means inflation expectations aren't the only thing that moves this. What did then? One idea: AI bonds are getting riskier as that debt piles up, so investors are rotating back into government treasuries (high demand → prices go up → rates fall). Look at the two pieces. Corporate yield = treasury yield + credit spread. Today the treasury yield fell 11bp and the high yield spread widened 9bp, to 325. So what a risky borrower pays all in barely moved. What changed is where the compensation comes from: less from the risk free part, more from the risk.",
   "author": "A.M.",
   "maker": "Alejandro Medina",
   "curve": [
@@ -5089,6 +5089,10 @@ var SOURCES=[
   // Cited in the news scroll. September CPI, released 14 Oct. Year-over-year
   // figures are the published NSA rates; the monthly changes are seasonally
   // adjusted, which is how BLS reports each.
+  // Cited in the read. September PPI and retail sales, both released 15 Oct.
+  ["September PPI",
+   "Final demand +6.3% y/y, the largest since December 2022 · +1.3% m/m against +0.5% prior · core (less food and energy) +5.0% y/y · retail sales +0.8% m/m",
+   "BLS PPI and Census retail sales, 15 Oct 2026"],
   ["September CPI",
    "Headline 3.7% y/y (3.4% in August) · core 2.6% · headline +0.6% m/m, core +0.3% · gasoline +9.1%, energy +5.2%, shelter +0.4%, food +0.0%",
    "BLS CPI release, 14 Oct 2026"],
