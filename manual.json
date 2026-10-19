@@ -186,9 +186,17 @@
   ],
   "news": [
     {
-      "when": "14 Oct",
-      "what": "CPI came in hot. Headline 3.7% YoY (3.4% in Aug, 3.6% expected), core 2.6%. Gas +9.1% on the month was over half the headline increase.",
+      "when": "19 Oct",
+      "what": "Market now prices about 83% odds the Fed holds next week, but about 75% odds of a hike in December. Warsh gave nothing away at the IMF meetings.",
       "key": true
+    },
+    {
+      "when": "15 Oct",
+      "what": "PPI hot: headline 6.3% YoY, the largest increase since December 2022. Retail sales +0.8% against 0.3% expected."
+    },
+    {
+      "when": "14 Oct",
+      "what": "CPI came in hot. Headline 3.7% YoY (3.4% in Aug, 3.6% expected), core 2.6%. Gas +9.1% on the month was over half the headline increase."
     },
     {
       "when": "14 Oct",
@@ -205,14 +213,6 @@
     {
       "when": "23 Sep",
       "what": "Flash PMI released today, composite at 58.4 from 56.0. Economy is running too hot. 10 year is at its highest since 2007."
-    },
-    {
-      "when": "22 Sep",
-      "what": "AI debt is estimated to be $420 billion for 2027, 60% above previous estimates."
-    },
-    {
-      "when": "21 Sep",
-      "what": "UN General Assembly this week. Iran and the Strait of Hormuz are on the agenda."
     }
   ],
   "_news_note": "The newspaper on the map. Dated bullets, newest first, five to seven at most; the oldest falls off. Facts only, the take lives in the read. key:true marks one row rust.",
@@ -220,11 +220,16 @@
   "_ai_note": "Hand-entered - no FRED series covers company capex. The sentence shown lives in COPY.ai in index.html.",
   "_fed_note": "lastMove 0 means the FOMC held; +0.25 / -0.25 for a move. range is the hand-entered target range for decision day, used only while newer than FRED. Hand-entered - nothing validates this.",
   "oil": {
-    "asOf": "2026-10-15",
-    "wti": 98.0,
-    "brent": 106.0,
+    "asOf": "2026-10-19",
+    "wti": 103.6,
+    "brent": 109.3,
     "note": "Front-month futures, read by hand",
     "history": [
+      {
+        "asOf": "2026-10-19",
+        "wti": 103.6,
+        "brent": 109.3
+      },
       {
         "asOf": "2026-10-15",
         "wti": 98.0,
@@ -259,21 +264,17 @@
         "asOf": "2026-09-30",
         "wti": 91.0,
         "brent": 98.0
-      },
-      {
-        "asOf": "2026-09-23",
-        "wti": 92.0,
-        "brent": 103.0
       }
     ]
   },
   "_oil_note": "Optional daily override. Set asOf to the date you read them and fill wti/brent. Used only while newer than FRED's print - if you stop updating, it falls back to FRED automatically rather than showing an ever-staler number.",
   "curve": {
-    "asOf": "2026-10-15",
+    "asOf": "2026-10-19",
     "values": {
-      "3M": 4.3,
-      "2Y": 4.75,
-      "10Y": 5.1
+      "3M": 4.18,
+      "2Y": 4.77,
+      "10Y": 5.14,
+      "30Y": 5.49
     },
     "notes": {},
     "alert": [],
