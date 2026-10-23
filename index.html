@@ -615,60 +615,58 @@ svg.chart{display:block; width:100%; height:100%}
    === edit manual.json for the read, the watch list and AI capex.        === */
 var DATA = {
   "asOf": "2026-10-21",
-  "builtAt": "2026-10-22",
-  "summary": "Oil came off its high. Crude fell to $98 and Brent to $109 on hopes of US-Iran diplomacy, after touching a five month high on Monday. To be clear, that is still expensive. The long run average is $65 to $75, so we are nowhere near normal. What changed today is the direction, not the level. Recall: almost every inflation print this fall has been an energy print. Gas alone was more than half of September's headline CPI increase. So if the war talk holds, the biggest driver of this inflation stops getting worse. It doesn't reverse, it just stops adding. Housing is the other half of today. Housing starts fell 5.2% in September and pending home sales hit a record low. What does this even mean? Mortgage rates track the 10 year, and the 10 year has been above 5% since September. That is the part of the economy rate hikes actually reach, and it is already breaking. Mixing this all in a pot: energy cooling, housing cracking, and the 10 year down to *5.12%*, a one month low. But look at credit again. The high yield spread is 329, still the widest of this run. Treasuries up, corporate risk down. Investors aren't calling an all clear, they are moving to safety. And the Fed? The market says hold on the 28th (83%), hike in December (75%). The hike isn't gone, it just got pushed. The question for next week is whether the Fed hikes into a housing market that is already on the floor.",
+  "builtAt": "2026-10-23",
+  "summary": "Oil is back, and worse. Brent hit $117, the highest since June 2022 and above where it peaked at the start of this war. Crude is at $103, a five week high. Three days ago the story was US-Iran diplomacy. Now the expectation is that the US resumes strikes in the coming weeks. So much for the direction changing. Here is the part that matters. Yields fell anyway. The 10 year dropped 17bp on Thursday, the largest single day decline in more than a year, and sits at *5.00%* after a small bounce. The 2 year and 30 year are both down 10bp this week. Oil up 7%, the whole curve down. What does this even mean? I have been saying this for three weeks and this is the cleanest version yet: the long end is not trading on inflation. If it were, this week would have been a selloff. It is trading on where money wants to hide. Concerns about AI spending weighed on sentiment all week, and when investors get nervous about corporate credit they buy treasuries. Mixing this all in a pot: oil at a four year high, yields down, and the high yield spread at 340, the widest of this entire run. That is not an inflation trade, that is a risk trade. And the Fed? 91% say hold on Wednesday, 76% say hike in December. Add midterms in less than two weeks. Nobody wants to move first.",
   "author": "A.M.",
   "maker": "Alejandro Medina",
   "curve": [
     {
       "key": "3M",
       "label": "3-month bill",
-      "yield": 4.25,
-      "chg": -0.01
+      "yield": 4.14
     },
     {
       "key": "2Y",
       "label": "2-year note",
-      "yield": 4.81,
-      "chg": 0.02
+      "yield": 4.69
     },
     {
       "key": "10Y",
       "label": "10-year note",
-      "yield": 5.13,
-      "chg": 0.01
+      "yield": 5.0,
+      "note": "Fell 17bp on Thursday, the largest one day drop in over a year",
+      "strain": true
     },
     {
       "key": "30Y",
       "label": "30-year bond",
-      "yield": 5.42,
-      "chg": 0.0
+      "yield": 5.33
     }
   ],
   "oil": {
     "wti": {
-      "price": 98.2,
-      "chg": -5.4,
-      "pct": -5.21
+      "price": 103.4,
+      "chg": 5.2,
+      "pct": 5.3
     },
     "brent": {
-      "price": 109.0,
-      "chg": -0.3,
-      "pct": -0.27
+      "price": 117.0,
+      "chg": 8.0,
+      "pct": 7.34
     }
   },
   "dates": {
-    "y3m": "2026-10-21",
-    "y2y": "2026-10-21",
-    "y10y": "2026-10-21",
-    "y30y": "2026-10-21",
+    "y3m": "2026-10-23",
+    "y2y": "2026-10-23",
+    "y10y": "2026-10-23",
+    "y30y": "2026-10-23",
     "funds": "2026-10-21",
-    "tgt_lo": "2026-10-22",
-    "tgt_hi": "2026-10-22",
-    "hy_oas": "2026-10-21",
-    "hy_yield": "2026-10-21",
-    "wti": "2026-10-20",
-    "brent": "2026-10-20",
+    "tgt_lo": "2026-10-23",
+    "tgt_hi": "2026-10-23",
+    "hy_oas": "2026-10-22",
+    "hy_yield": "2026-10-22",
+    "wti": "2026-10-23",
+    "brent": "2026-10-23",
     "cpi": "2026-09-01",
     "pce": "2026-08-01",
     "breakeven": "2026-10-22",
@@ -693,9 +691,9 @@ var DATA = {
     "stance": "hawkish"
   },
   "credit": {
-    "effYield": 8.17,
-    "oas": 327,
-    "chg": 2
+    "effYield": 8.14,
+    "oas": 340,
+    "chg": 17
   },
   "breakeven": 2.32,
   "realTips": 2.76,
@@ -756,9 +754,17 @@ var DATA = {
   ],
   "news": [
     {
-      "when": "20 Oct",
-      "what": "Oil fell on hopes of US-Iran diplomacy. Housing starts dropped 5.2% in September and pending home sales hit a record low.",
+      "when": "23 Oct",
+      "what": "Brent hit $117, the highest since June 2022, on expectations the US resumes strikes on Iran. Diplomacy hopes lasted three days.",
       "key": true
+    },
+    {
+      "when": "22 Oct",
+      "what": "10 year fell 17bp in one session, the largest single day drop in more than a year."
+    },
+    {
+      "when": "20 Oct",
+      "what": "Oil fell on hopes of US-Iran diplomacy. Housing starts dropped 5.2% in September and pending home sales hit a record low."
     },
     {
       "when": "19 Oct",
@@ -775,14 +781,6 @@ var DATA = {
     {
       "when": "14 Oct",
       "what": "Odds of another hike at the 28 Oct meeting jumped to about 50%, from 22% before the report."
-    },
-    {
-      "when": "5 Oct",
-      "what": "ISM services report: PMI 54.9, prices paid 74, the highest since 2022. Activity and spending still high."
-    },
-    {
-      "when": "2 Oct",
-      "what": "Jobs report came out, only 29,000 new jobs added in Sep compared to the estimated 90,000."
     }
   ],
   "fedPath": [
