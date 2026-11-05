@@ -616,59 +616,57 @@ svg.chart{display:block; width:100%; height:100%}
 var DATA = {
   "asOf": "2026-11-03",
   "builtAt": "2026-11-05",
-  "summary": "Oil is back, and worse. Brent hit $117, the highest since June 2022 and above where it peaked at the start of this war. Crude is at $103, a five week high. Three days ago the story was US-Iran diplomacy. Now the expectation is that the US resumes strikes in the coming weeks. So much for the direction changing. Here is the part that matters. Yields fell anyway. The 10 year dropped 17bp on Thursday, the largest single day decline in more than a year, and sits at *5.00%* after a small bounce. The 2 year and 30 year are both down 10bp this week. Oil up 7%, the whole curve down. What does this even mean? I have been saying this for three weeks and this is the cleanest version yet: the long end is not trading on inflation. If it were, this week would have been a selloff. It is trading on where money wants to hide. Concerns about AI spending weighed on sentiment all week, and when investors get nervous about corporate credit they buy treasuries. Mixing this all in a pot: oil at a four year high, yields down, and the high yield spread at 340, the widest of this entire run. That is not an inflation trade, that is a risk trade. And the Fed? 91% say hold on Wednesday, 76% say hike in December. Add midterms in less than two weeks. Nobody wants to move first.",
+  "summary": "A lot broke at once. Democrats swept Congress in the midterms, and the market read it two ways at the same time. First, oil. Brent plunged more than 8% in a single session to a near two month low, because a Democratic Congress raises the odds of a deal with Iran. Brent is $97 and crude is $90, down from $117 and $103 two weeks ago. Second, AI. Investors are cutting tech exposure over what that same Congress means for AI and data centre spending. Equities sold off and money ran to treasuries. So the two things I have been writing about all fall just reversed together, from one election. Look at the curve. The 10 year is *4.83%*, a two month low, and the 2 year is 4.49%, down 31bp in a month. Remember when the 10 year was 5.35% and I said the long end was not trading on inflation? This is the proof. Oil collapsed and yields fell anyway. Both times the answer was risk, not prices. And the Fed held on 28 Oct, two voted to hike. Markets now say 75% chance of a hike in December. Mixing this all in a pot: GDP at 3.4%, jobless claims at a 57 year low, inflation still elevated, and the Fed getting ready to hike into an equity selloff. Payrolls tomorrow.",
   "author": "A.M.",
   "maker": "Alejandro Medina",
   "curve": [
     {
       "key": "3M",
       "label": "3-month bill",
-      "yield": 4.21,
-      "chg": 0.0
+      "yield": 4.1
     },
     {
       "key": "2Y",
       "label": "2-year note",
-      "yield": 4.61,
-      "chg": 0.02
+      "yield": 4.49,
+      "note": "Down 31bp in a month",
+      "strain": true
     },
     {
       "key": "10Y",
       "label": "10-year note",
-      "yield": 4.95,
-      "chg": 0.04
+      "yield": 4.83
     },
     {
       "key": "30Y",
       "label": "30-year bond",
-      "yield": 5.32,
-      "chg": 0.04
+      "yield": 5.25
     }
   ],
   "oil": {
     "wti": {
-      "price": 103.4,
-      "chg": 5.2,
-      "pct": 5.3
+      "price": 90.2,
+      "chg": -13.2,
+      "pct": -12.77
     },
     "brent": {
-      "price": 117.0,
-      "chg": 8.0,
-      "pct": 7.34
+      "price": 97.3,
+      "chg": -19.7,
+      "pct": -16.84
     }
   },
   "dates": {
-    "y3m": "2026-11-03",
-    "y2y": "2026-11-03",
-    "y10y": "2026-11-03",
-    "y30y": "2026-11-03",
+    "y3m": "2026-11-05",
+    "y2y": "2026-11-05",
+    "y10y": "2026-11-05",
+    "y30y": "2026-11-05",
     "funds": "2026-11-03",
-    "tgt_lo": "2026-11-04",
-    "tgt_hi": "2026-11-04",
-    "hy_oas": "2026-11-03",
-    "hy_yield": "2026-11-03",
-    "wti": "2026-10-23",
-    "brent": "2026-10-23",
+    "tgt_lo": "2026-11-05",
+    "tgt_hi": "2026-11-05",
+    "hy_oas": "2026-11-04",
+    "hy_yield": "2026-11-04",
+    "wti": "2026-11-05",
+    "brent": "2026-11-05",
     "cpi": "2026-09-01",
     "pce": "2026-09-01",
     "breakeven": "2026-11-04",
@@ -687,15 +685,15 @@ var DATA = {
     "lower": 3.75,
     "upper": 4.0,
     "effective": 3.88,
-    "lastMove": 0.25,
-    "lastDate": "16 Sep 2026",
-    "nextDate": "28 Oct 2026",
+    "lastMove": 0,
+    "lastDate": "28 Oct 2026",
+    "nextDate": "16 Dec 2026",
     "stance": "hawkish"
   },
   "credit": {
-    "effYield": 8.14,
-    "oas": 340,
-    "chg": 22
+    "effYield": 8.0,
+    "oas": 332,
+    "chg": 18
   },
   "breakeven": 2.26,
   "realTips": 2.65,
@@ -741,48 +739,44 @@ var DATA = {
   },
   "watch": [
     {
-      "when": "28 Oct",
-      "what": "FOMC (hike or hold)",
+      "when": "6 Nov",
+      "what": "Payrolls",
       "key": true
     },
     {
-      "when": "30 Oct",
-      "what": "Q3 GDP"
+      "when": "12 Nov",
+      "what": "October CPI"
     },
     {
-      "when": "6 Nov",
-      "what": "Payrolls"
+      "when": "16 Dec",
+      "what": "FOMC"
     }
   ],
   "news": [
     {
-      "when": "23 Oct",
-      "what": "Brent hit $117, the highest since June 2022, on expectations the US resumes strikes on Iran. Diplomacy hopes lasted three days.",
+      "when": "5 Nov",
+      "what": "Equity selloff and a flight to safety. Investors cutting tech exposure over what a Democratic Congress means for AI and data centre spending. 10 year at a two month low.",
       "key": true
     },
     {
-      "when": "22 Oct",
-      "what": "10 year fell 17bp in one session, the largest single day drop in more than a year."
+      "when": "4 Nov",
+      "what": "Brent plunged more than 8% in a session to a near two month low, on hopes the midterm result improves the odds of a deal with Iran."
     },
     {
-      "when": "20 Oct",
-      "what": "Oil fell on hopes of US-Iran diplomacy. Housing starts dropped 5.2% in September and pending home sales hit a record low."
+      "when": "3 Nov",
+      "what": "Democrats swept Congress in the midterms. The 10 year fell about 8bp on the result."
     },
     {
-      "when": "19 Oct",
-      "what": "Market now prices about 83% odds the Fed holds next week, but about 75% odds of a hike in December. Warsh gave nothing away at the IMF meetings."
+      "when": "30 Oct",
+      "what": "Q3 GDP came in at 3.4% annualised, up from 2.2% in Q2."
     },
     {
-      "when": "15 Oct",
-      "what": "PPI hot: headline 6.3% YoY, the largest increase since December 2022. Retail sales +0.8% against 0.3% expected."
+      "when": "28 Oct",
+      "what": "Fed held at 3.75-4.00%. Two policymakers voted to hike. Warsh said the Fed will cut the number of voting meetings starting in 2027."
     },
     {
-      "when": "14 Oct",
-      "what": "CPI came in hot. Headline 3.7% YoY (3.4% in Aug, 3.6% expected), core 2.6%. Gas +9.1% on the month was over half the headline increase."
-    },
-    {
-      "when": "14 Oct",
-      "what": "Odds of another hike at the 28 Oct meeting jumped to about 50%, from 22% before the report."
+      "when": "23 Oct",
+      "what": "Brent hit $117, the highest since June 2022, on expectations the US resumes strikes on Iran."
     }
   ],
   "fedPath": [
@@ -915,6 +909,11 @@ var DATA = {
       "d": "2026-09-16",
       "upper": 4.0,
       "kind": "hike"
+    },
+    {
+      "d": "2026-10-28",
+      "upper": 4.0,
+      "kind": "hold"
     }
   ],
   "components": [
