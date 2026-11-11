@@ -1,6 +1,6 @@
 {
   "_comment": "The hand-written half. Edit this daily; fetch-data.mjs merges it with FRED and never overwrites it.",
-  "summary": "A lot broke at once. Democrats swept Congress in the midterms, and the market read it two ways at the same time. First, oil. Brent plunged more than 8% in a single session to a near two month low, because a Democratic Congress raises the odds of a deal with Iran. Brent is $97 and crude is $90, down from $117 and $103 two weeks ago. Second, AI. Investors are cutting tech exposure over what that same Congress means for AI and data centre spending. Equities sold off and money ran to treasuries. So the two things I have been writing about all fall just reversed together, from one election. Look at the curve. The 10 year is *4.83%*, a two month low, and the 2 year is 4.49%, down 31bp in a month. Remember when the 10 year was 5.35% and I said the long end was not trading on inflation? This is the proof. Oil collapsed and yields fell anyway. Both times the answer was risk, not prices. And the Fed held on 28 Oct, two voted to hike. Markets now say 75% chance of a hike in December. Mixing this all in a pot: GDP at 3.4%, jobless claims at a 57 year low, inflation still elevated, and the Fed getting ready to hike into an equity selloff. Payrolls tomorrow.",
+  "summary": "I have to correct myself. Remember the 29,000 jobs print I wrote about? It has been revised to 60,000, and August and September together were revised up by 84,000. Then October came in at 165,000 against 65,000 expected, and unemployment fell to 4.1%. The labour market was never as weak as the first print said. First prints lie, revisions tell the truth. CPI on Tuesday: headline +0.4% on the month, core +0.3%, both above expectations. Recall: there is no year over year rate this time. BLS could not publish one, because last year's government shutdown wiped out the October 2025 data it would be measured against. So the site still shows September's 3.7%. Sometimes the number just doesn't exist. The market's answer was fast. The 2 year jumped 18bp in a session to *4.75%* and the 10 year went back through 5%. What does this even mean? For two months the long end moved on risk, not inflation, and I kept saying so. This week it flipped. The front end led, and the front end is pure Fed expectations. So this time it really is an inflation trade. Mixing this all in a pot: a strong jobs market, sticky monthly inflation, oil at a ten week low, and a Fed that held in October with two members voting to hike. December is live.",
   "fed": {
     "lastMove": 0,
     "lastDate": "28 Oct 2026",
@@ -171,32 +171,40 @@
   },
   "watch": [
     {
-      "when": "6 Nov",
-      "what": "Payrolls",
+      "when": "16 Dec",
+      "what": "FOMC (hike or hold)",
       "key": true
     },
     {
-      "when": "12 Nov",
-      "what": "October CPI"
+      "when": "24 Nov",
+      "what": "October PCE"
     },
     {
-      "when": "16 Dec",
-      "what": "FOMC"
+      "when": "4 Dec",
+      "what": "Payrolls"
     }
   ],
   "news": [
     {
-      "when": "5 Nov",
-      "what": "Equity selloff and a flight to safety. Investors cutting tech exposure over what a Democratic Congress means for AI and data centre spending. 10 year at a two month low.",
+      "when": "10 Nov",
+      "what": "October CPI: headline +0.4% MoM and core +0.3%, both above expectations. BLS published no year over year rate, because last year's shutdown wiped out the October 2025 data.",
       "key": true
     },
     {
-      "when": "4 Nov",
-      "what": "Brent plunged more than 8% in a session to a near two month low, on hopes the midterm result improves the odds of a deal with Iran."
+      "when": "10 Nov",
+      "what": "2 year jumped 18bp in a session and the 10 year went back through 5%, as the market priced more hikes."
+    },
+    {
+      "when": "6 Nov",
+      "what": "Payrolls +165,000 in October against 65,000 expected. August and September revised up by a combined 84,000. Unemployment fell to 4.1%."
+    },
+    {
+      "when": "9 Nov",
+      "what": "Oil hit a 10 week low. Brent is down 13% on the month as peace talks drag on."
     },
     {
       "when": "3 Nov",
-      "what": "Democrats swept Congress in the midterms. The 10 year fell about 8bp on the result."
+      "what": "Democrats swept Congress in the midterms."
     },
     {
       "when": "30 Oct",
@@ -204,11 +212,7 @@
     },
     {
       "when": "28 Oct",
-      "what": "Fed held at 3.75-4.00%. Two policymakers voted to hike. Warsh said the Fed will cut the number of voting meetings starting in 2027."
-    },
-    {
-      "when": "23 Oct",
-      "what": "Brent hit $117, the highest since June 2022, on expectations the US resumes strikes on Iran."
+      "what": "Fed held at 3.75-4.00%. Two policymakers voted to hike."
     }
   ],
   "_news_note": "The newspaper on the map. Dated bullets, newest first, five to seven at most; the oldest falls off. Facts only, the take lives in the read. key:true marks one row rust.",
@@ -216,11 +220,16 @@
   "_ai_note": "Hand-entered - no FRED series covers company capex. The sentence shown lives in COPY.ai in index.html.",
   "_fed_note": "lastMove 0 means the FOMC held; +0.25 / -0.25 for a move. range is the hand-entered target range for decision day, used only while newer than FRED. Hand-entered - nothing validates this.",
   "oil": {
-    "asOf": "2026-11-05",
-    "wti": 90.2,
-    "brent": 97.3,
+    "asOf": "2026-11-11",
+    "wti": 86.3,
+    "brent": 92.5,
     "note": "Front-month futures, read by hand",
     "history": [
+      {
+        "asOf": "2026-11-11",
+        "wti": 86.3,
+        "brent": 92.5
+      },
       {
         "asOf": "2026-11-05",
         "wti": 90.2,
@@ -255,25 +264,20 @@
         "asOf": "2026-10-08",
         "wti": 91.0,
         "brent": 104.0
-      },
-      {
-        "asOf": "2026-10-07",
-        "wti": 88.0,
-        "brent": 100.0
       }
     ]
   },
   "_oil_note": "Optional daily override. Set asOf to the date you read them and fill wti/brent. Used only while newer than FRED's print - if you stop updating, it falls back to FRED automatically rather than showing an ever-staler number.",
   "curve": {
-    "asOf": "2026-11-05",
+    "asOf": "2026-11-11",
     "values": {
-      "3M": 4.1,
-      "2Y": 4.49,
-      "10Y": 4.83,
-      "30Y": 5.25
+      "3M": 4.23,
+      "2Y": 4.75,
+      "10Y": 4.99,
+      "30Y": 5.36
     },
     "notes": {
-      "2Y": "Down 31bp in a month"
+      "2Y": "Up 18bp in a session on the CPI"
     },
     "alert": [],
     "strain": [

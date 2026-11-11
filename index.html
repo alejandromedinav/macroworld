@@ -616,59 +616,57 @@ svg.chart{display:block; width:100%; height:100%}
 var DATA = {
   "asOf": "2026-11-09",
   "builtAt": "2026-11-11",
-  "summary": "A lot broke at once. Democrats swept Congress in the midterms, and the market read it two ways at the same time. First, oil. Brent plunged more than 8% in a single session to a near two month low, because a Democratic Congress raises the odds of a deal with Iran. Brent is $97 and crude is $90, down from $117 and $103 two weeks ago. Second, AI. Investors are cutting tech exposure over what that same Congress means for AI and data centre spending. Equities sold off and money ran to treasuries. So the two things I have been writing about all fall just reversed together, from one election. Look at the curve. The 10 year is *4.83%*, a two month low, and the 2 year is 4.49%, down 31bp in a month. Remember when the 10 year was 5.35% and I said the long end was not trading on inflation? This is the proof. Oil collapsed and yields fell anyway. Both times the answer was risk, not prices. And the Fed held on 28 Oct, two voted to hike. Markets now say 75% chance of a hike in December. Mixing this all in a pot: GDP at 3.4%, jobless claims at a 57 year low, inflation still elevated, and the Fed getting ready to hike into an equity selloff. Payrolls tomorrow.",
+  "summary": "I have to correct myself. Remember the 29,000 jobs print I wrote about? It has been revised to 60,000, and August and September together were revised up by 84,000. Then October came in at 165,000 against 65,000 expected, and unemployment fell to 4.1%. The labour market was never as weak as the first print said. First prints lie, revisions tell the truth. CPI on Tuesday: headline +0.4% on the month, core +0.3%, both above expectations. Recall: there is no year over year rate this time. BLS could not publish one, because last year's government shutdown wiped out the October 2025 data it would be measured against. So the site still shows September's 3.7%. Sometimes the number just doesn't exist. The market's answer was fast. The 2 year jumped 18bp in a session to *4.75%* and the 10 year went back through 5%. What does this even mean? For two months the long end moved on risk, not inflation, and I kept saying so. This week it flipped. The front end led, and the front end is pure Fed expectations. So this time it really is an inflation trade. Mixing this all in a pot: a strong jobs market, sticky monthly inflation, oil at a ten week low, and a Fed that held in October with two members voting to hike. December is live.",
   "author": "A.M.",
   "maker": "Alejandro Medina",
   "curve": [
     {
       "key": "3M",
       "label": "3-month bill",
-      "yield": 4.24,
-      "chg": 0.05
+      "yield": 4.23
     },
     {
       "key": "2Y",
       "label": "2-year note",
-      "yield": 4.56,
-      "chg": 0.05
+      "yield": 4.75,
+      "note": "Up 18bp in a session on the CPI",
+      "strain": true
     },
     {
       "key": "10Y",
       "label": "10-year note",
-      "yield": 4.88,
-      "chg": 0.02
+      "yield": 4.99
     },
     {
       "key": "30Y",
       "label": "30-year bond",
-      "yield": 5.26,
-      "chg": 0.0
+      "yield": 5.36
     }
   ],
   "oil": {
     "wti": {
-      "price": 90.2,
-      "chg": -13.2,
-      "pct": -12.77
+      "price": 86.3,
+      "chg": -3.9,
+      "pct": -4.32
     },
     "brent": {
-      "price": 97.3,
-      "chg": -19.7,
-      "pct": -16.84
+      "price": 92.5,
+      "chg": -4.8,
+      "pct": -4.93
     }
   },
   "dates": {
-    "y3m": "2026-11-09",
-    "y2y": "2026-11-09",
-    "y10y": "2026-11-09",
-    "y30y": "2026-11-09",
+    "y3m": "2026-11-11",
+    "y2y": "2026-11-11",
+    "y10y": "2026-11-11",
+    "y30y": "2026-11-11",
     "funds": "2026-11-09",
-    "tgt_lo": "2026-11-10",
-    "tgt_hi": "2026-11-10",
+    "tgt_lo": "2026-11-11",
+    "tgt_hi": "2026-11-11",
     "hy_oas": "2026-11-09",
     "hy_yield": "2026-11-09",
-    "wti": "2026-11-05",
-    "brent": "2026-11-05",
+    "wti": "2026-11-11",
+    "brent": "2026-11-11",
     "cpi": "2026-09-01",
     "pce": "2026-09-01",
     "breakeven": "2026-11-10",
@@ -741,32 +739,40 @@ var DATA = {
   },
   "watch": [
     {
-      "when": "6 Nov",
-      "what": "Payrolls",
+      "when": "16 Dec",
+      "what": "FOMC (hike or hold)",
       "key": true
     },
     {
-      "when": "12 Nov",
-      "what": "October CPI"
+      "when": "24 Nov",
+      "what": "October PCE"
     },
     {
-      "when": "16 Dec",
-      "what": "FOMC"
+      "when": "4 Dec",
+      "what": "Payrolls"
     }
   ],
   "news": [
     {
-      "when": "5 Nov",
-      "what": "Equity selloff and a flight to safety. Investors cutting tech exposure over what a Democratic Congress means for AI and data centre spending. 10 year at a two month low.",
+      "when": "10 Nov",
+      "what": "October CPI: headline +0.4% MoM and core +0.3%, both above expectations. BLS published no year over year rate, because last year's shutdown wiped out the October 2025 data.",
       "key": true
     },
     {
-      "when": "4 Nov",
-      "what": "Brent plunged more than 8% in a session to a near two month low, on hopes the midterm result improves the odds of a deal with Iran."
+      "when": "10 Nov",
+      "what": "2 year jumped 18bp in a session and the 10 year went back through 5%, as the market priced more hikes."
+    },
+    {
+      "when": "6 Nov",
+      "what": "Payrolls +165,000 in October against 65,000 expected. August and September revised up by a combined 84,000. Unemployment fell to 4.1%."
+    },
+    {
+      "when": "9 Nov",
+      "what": "Oil hit a 10 week low. Brent is down 13% on the month as peace talks drag on."
     },
     {
       "when": "3 Nov",
-      "what": "Democrats swept Congress in the midterms. The 10 year fell about 8bp on the result."
+      "what": "Democrats swept Congress in the midterms."
     },
     {
       "when": "30 Oct",
@@ -774,11 +780,7 @@ var DATA = {
     },
     {
       "when": "28 Oct",
-      "what": "Fed held at 3.75-4.00%. Two policymakers voted to hike. Warsh said the Fed will cut the number of voting meetings starting in 2027."
-    },
-    {
-      "when": "23 Oct",
-      "what": "Brent hit $117, the highest since June 2022, on expectations the US resumes strikes on Iran."
+      "what": "Fed held at 3.75-4.00%. Two policymakers voted to hike."
     }
   ],
   "fedPath": [
@@ -5093,6 +5095,15 @@ var SOURCES=[
   // figures are the published NSA rates; the monthly changes are seasonally
   // adjusted, which is how BLS reports each.
   // Cited in the read. September PPI and retail sales, both released 15 Oct.
+  // Cited in the read. BLS published no 12-month CPI change for October 2026:
+  // the October 2025 shutdown left no base month to measure against, so the
+  // year-over-year figure on this page remains September's.
+  ["October CPI",
+   "Headline +0.4% m/m (from +0.6%), core +0.3%, both above forecast · no year-over-year rate published, October 2025 data missing",
+   "BLS CPI release, 10 Nov 2026"],
+  ["October payrolls",
+   "+165,000 against 65,000 expected · August and September revised up by a combined 84,000 · unemployment 4.1% from 4.2%",
+   "BLS Employment Situation, 6 Nov 2026"],
   ["September PPI",
    "Final demand +6.3% y/y, the largest since December 2022 · +1.3% m/m against +0.5% prior · core (less food and energy) +5.0% y/y · retail sales +0.8% m/m",
    "BLS PPI and Census retail sales, 15 Oct 2026"],
