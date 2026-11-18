@@ -1,6 +1,6 @@
 {
   "_comment": "The hand-written half. Edit this daily; fetch-data.mjs merges it with FRED and never overwrites it.",
-  "summary": "Oil is down 16% on the month and the 10 year is at a one month high. Read that twice. Brent is $91 and crude is $85, with the IEA pointing to better Middle East supply and plenty of physical barrels. The thing that caused this inflation is going away, and yields went up anyway. What does this even mean? Core inflation rose more than expected in October, and that is the whole story. The oil shock already seeped into core services, so it stopped being an oil problem and became a wage and services problem. Cheaper crude does not fix that. The market has now fully priced a 25bp hike in December and more next year. The 2 year is *4.84%* and the real 10 year, the one after inflation, is 2.91%. That is the highest cost of real money since 2008. Also, something new. Treasuries did not catch a bid during the AI selloff this time. Funds are liquidating bonds to raise cash as AI infrastructure stocks unwind. Recall: for two months the answer was always flight to safety. Not anymore. When the selling gets big enough, people sell what they can, not what they want. Mixing this all in a pot: cheap oil, hot core, a hiking Fed, and a forced seller in the bond market. December is no longer a question.",
+  "summary": "Treasury yields fell across every maturity today and credit is still getting more expensive. The 10 year is at 5.07% and the 30 year at 5.41%, both down about 7 basis points. Meanwhile high yield spreads closed yesterday at *343 basis points*, the widest since the 5th of November. What does this even mean? A spread is the extra yield a company pays over the government for the same maturity. Since the 12th the 10 year has gone essentially nowhere and that spread has widened 23 basis points, so the all-in cost for a high yield borrower went from 8.16% to 8.31% without any help from rates. Credit is repricing on its own. Here is the part worth noticing. The widening is not where fear usually shows up. Investment grade moved 3 basis points. CCC, the worst paper in the market, moved 15 on a spread of over 1,300, which is noise. The high yield index moved 23 on a spread of 320, which is not. The pain is in the liquid middle, the paper everyone owns. That is not a default story, that is a selling story. Funds raising cash sell what has a bid, not what has a problem. Mixing this all in a pot: oil is down 16% on the month, the Fed hikes in December, and credit is tightening the screws without the Treasury market's permission.",
   "fed": {
     "lastMove": 0,
     "lastDate": "28 Oct 2026",
@@ -186,17 +186,29 @@
   ],
   "news": [
     {
-      "when": "16 Nov",
-      "what": "Market now fully prices a 25bp hike in December, and more next year. Core inflation rising faster than expected says the oil shock has seeped into core services.",
+      "when": "18 Nov",
+      "what": "High yield spreads widened to 343 basis points, the widest since 5 November, after touching 320 on the 12th. The high yield effective yield is 8.31%.",
       "key": true
+    },
+    {
+      "when": "18 Nov",
+      "what": "Treasury yields fell across the curve. The 10 year is at 5.07% and the 30 year at 5.41%, both down roughly 7 basis points."
+    },
+    {
+      "when": "18 Nov",
+      "what": "Investment grade widened 3 basis points over the same stretch against 23 for high yield. The move sits in the liquid middle of the market, not in CCC."
+    },
+    {
+      "when": "18 Nov",
+      "what": "Crude fell below $83, down 16% on the month. Brent is $91.50."
+    },
+    {
+      "when": "16 Nov",
+      "what": "Market now fully prices a 25bp hike in December, and more next year. Core inflation rising faster than expected says the oil shock has seeped into core services."
     },
     {
       "when": "16 Nov",
       "what": "Treasuries did not catch a bid during the AI selloff. Funds are liquidating bonds to raise cash as AI infrastructure stocks unwind."
-    },
-    {
-      "when": "16 Nov",
-      "what": "Brent below $94 and crude below $86. The IEA points to improving Middle East supply and ample physical availability."
     },
     {
       "when": "13 Nov",
@@ -205,14 +217,6 @@
     {
       "when": "10 Nov",
       "what": "October CPI: headline +0.4% MoM and core +0.3%, both above expectations. No year over year rate published, last year's shutdown left no base month."
-    },
-    {
-      "when": "6 Nov",
-      "what": "Payrolls +165,000 in October against 65,000 expected. August and September revised up by a combined 84,000."
-    },
-    {
-      "when": "28 Oct",
-      "what": "Fed held at 3.75-4.00%. Two policymakers voted to hike."
     }
   ],
   "_news_note": "The newspaper on the map. Dated bullets, newest first, five to seven at most; the oldest falls off. Facts only, the take lives in the read. key:true marks one row rust.",
@@ -220,11 +224,16 @@
   "_ai_note": "Hand-entered - no FRED series covers company capex. The sentence shown lives in COPY.ai in index.html.",
   "_fed_note": "lastMove 0 means the FOMC held; +0.25 / -0.25 for a move. range is the hand-entered target range for decision day, used only while newer than FRED. Hand-entered - nothing validates this.",
   "oil": {
-    "asOf": "2026-11-16",
-    "wti": 85.1,
+    "asOf": "2026-11-18",
+    "wti": 82.8,
     "brent": 91.5,
     "note": "Front-month futures, read by hand",
     "history": [
+      {
+        "asOf": "2026-11-18",
+        "wti": 82.8,
+        "brent": 91.5
+      },
       {
         "asOf": "2026-11-16",
         "wti": 85.1,
@@ -259,31 +268,24 @@
         "asOf": "2026-10-15",
         "wti": 98.0,
         "brent": 106.0
-      },
-      {
-        "asOf": "2026-10-14",
-        "wti": 95.9,
-        "brent": 106.7
       }
     ]
   },
   "_oil_note": "Optional daily override. Set asOf to the date you read them and fill wti/brent. Used only while newer than FRED's print - if you stop updating, it falls back to FRED automatically rather than showing an ever-staler number.",
   "curve": {
-    "asOf": "2026-11-16",
+    "asOf": "2026-11-18",
     "values": {
-      "3M": 4.23,
-      "2Y": 4.84,
-      "10Y": 5.14,
-      "30Y": 5.48
+      "3M": 4.26,
+      "2Y": 4.8,
+      "10Y": 5.07,
+      "30Y": 5.41
     },
     "notes": {
-      "10Y": "Back to a one month high"
+      "10Y": "Down 7bp, credit widened anyway"
     },
-    "alert": [
-      "10Y"
-    ],
     "strain": [
-      "2Y"
+      "2Y",
+      "10Y"
     ]
   },
   "_curve_note": "Optional hand entry for a yield FRED has not published yet. Same rule as oil: only used while newer than FRED. notes/alert are display only. Put alert on whatever the day's story is: it turns the figure rust and is the only thing telling a first-time visitor where to look. strain is the quieter version: a smaller crack on the summit, number stays in ink. track is [open, low, now] for one tenor's day, drawn as a path under the summit; use it only when the path matters more than the close, and leave it out otherwise.",
